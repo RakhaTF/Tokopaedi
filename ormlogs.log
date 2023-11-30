@@ -1,0 +1,212 @@
+[2023-11-30T08:18:55.688Z][QUERY]: SELECT `User`.`id` AS `User_id`, `User`.`firstName` AS `User_firstName`, `User`.`lastName` AS `User_lastName`, `User`.`email` AS `User_email`, `User`.`age` AS `User_age`, `User`.`password` AS `User_password`, `User`.`createdAt` AS `User_createdAt`, `User`.`updatedAt` AS `User_updatedAt` FROM `user` `User` WHERE ((`User`.`email` = ?)) LIMIT 1 -- PARAMETERS: ["test@gmail.com"]
+[2023-11-30T08:19:24.834Z][QUERY]: SELECT `User`.`id` AS `User_id`, `User`.`firstName` AS `User_firstName`, `User`.`lastName` AS `User_lastName`, `User`.`email` AS `User_email`, `User`.`age` AS `User_age`, `User`.`password` AS `User_password`, `User`.`createdAt` AS `User_createdAt`, `User`.`updatedAt` AS `User_updatedAt` FROM `user` `User` WHERE ((`User`.`email` = ?)) LIMIT 1 -- PARAMETERS: ["admin@gmail.com"]
+[2023-11-30T08:19:24.838Z][QUERY]: START TRANSACTION
+[2023-11-30T08:19:24.842Z][QUERY]: INSERT INTO `user`(`id`, `firstName`, `lastName`, `email`, `age`, `password`, `createdAt`, `updatedAt`) VALUES (DEFAULT, DEFAULT, DEFAULT, ?, DEFAULT, ?, ?, ?) -- PARAMETERS: ["admin@gmail.com","12345678",1701332364,1701332364]
+[2023-11-30T08:19:24.846Z][QUERY]: COMMIT
+[2023-11-30T08:22:19.537Z][QUERY]: SELECT VERSION() AS `version`
+[2023-11-30T08:22:19.574Z][QUERY]: START TRANSACTION
+[2023-11-30T08:22:19.580Z][QUERY]: SELECT DATABASE() AS `db_name`
+[2023-11-30T08:22:19.583Z][QUERY]: SELECT `TABLE_SCHEMA`, `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'tokopaedi' AND `TABLE_NAME` = 'user'
+[2023-11-30T08:22:19.586Z][QUERY]: SELECT * FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = 'tokopaedi' AND `TABLE_NAME` = 'typeorm_metadata'
+[2023-11-30T08:22:19.650Z][QUERY]: CREATE TABLE `user` (`id` int NOT NULL AUTO_INCREMENT, `firstName` varchar(255) NOT NULL, `lastName` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, `age` int NOT NULL, `password` varchar(255) NOT NULL, `createdAt` int(10) NOT NULL, `updatedAt` int(10) NOT NULL, UNIQUE INDEX `IDX_e12875dfb3b1d92d7d7c5377e2` (`email`), PRIMARY KEY (`id`)) ENGINE=InnoDB
+[2023-11-30T08:22:19.705Z][QUERY]: COMMIT
+[2023-11-30T08:22:55.433Z][QUERY]: SELECT VERSION() AS `version`
+[2023-11-30T08:22:55.506Z][QUERY]: START TRANSACTION
+[2023-11-30T08:22:55.516Z][QUERY]: SELECT DATABASE() AS `db_name`
+[2023-11-30T08:22:55.521Z][QUERY]: SELECT `TABLE_SCHEMA`, `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'tokopaedi' AND `TABLE_NAME` = 'user'
+[2023-11-30T08:22:55.525Z][QUERY]: 
+                SELECT
+                    *
+                FROM
+                    `INFORMATION_SCHEMA`.`COLUMNS`
+                WHERE
+                    `TABLE_SCHEMA` = 'tokopaedi'
+                    AND
+                    `TABLE_NAME` = 'user'
+                
+[2023-11-30T08:22:55.528Z][QUERY]: SELECT * FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'tokopaedi'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+            ) `kcu` WHERE `CONSTRAINT_NAME` = 'PRIMARY'
+[2023-11-30T08:22:55.529Z][QUERY]: 
+            SELECT
+                `SCHEMA_NAME`,
+                `DEFAULT_CHARACTER_SET_NAME` as `CHARSET`,
+                `DEFAULT_COLLATION_NAME` AS `COLLATION`
+            FROM `INFORMATION_SCHEMA`.`SCHEMATA`
+            
+[2023-11-30T08:22:55.531Z][QUERY]: 
+            SELECT
+                `s`.*
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`STATISTICS`
+                WHERE
+                    `TABLE_SCHEMA` = 'tokopaedi'
+                    AND
+                    `TABLE_NAME` = 'user'
+            ) `s`
+            LEFT JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'tokopaedi'
+                    AND
+                    `TABLE_NAME` = 'user'
+            ) `rc`
+                ON
+                    `s`.`INDEX_NAME` = `rc`.`CONSTRAINT_NAME`
+                    AND
+                    `s`.`TABLE_SCHEMA` = `rc`.`CONSTRAINT_SCHEMA`
+            WHERE
+                `s`.`INDEX_NAME` != 'PRIMARY'
+                AND
+                `rc`.`CONSTRAINT_NAME` IS NULL
+            
+[2023-11-30T08:22:55.533Z][QUERY]: 
+            SELECT
+                `kcu`.`TABLE_SCHEMA`,
+                `kcu`.`TABLE_NAME`,
+                `kcu`.`CONSTRAINT_NAME`,
+                `kcu`.`COLUMN_NAME`,
+                `kcu`.`REFERENCED_TABLE_SCHEMA`,
+                `kcu`.`REFERENCED_TABLE_NAME`,
+                `kcu`.`REFERENCED_COLUMN_NAME`,
+                `rc`.`DELETE_RULE` `ON_DELETE`,
+                `rc`.`UPDATE_RULE` `ON_UPDATE`
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'tokopaedi'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+            ) `kcu`
+            INNER JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'tokopaedi'
+                    AND
+                    `TABLE_NAME` = 'user'
+            ) `rc`
+                ON
+                    `rc`.`CONSTRAINT_SCHEMA` = `kcu`.`CONSTRAINT_SCHEMA`
+                    AND
+                    `rc`.`TABLE_NAME` = `kcu`.`TABLE_NAME`
+                    AND
+                    `rc`.`CONSTRAINT_NAME` = `kcu`.`CONSTRAINT_NAME`
+            
+[2023-11-30T08:22:56.400Z][QUERY]: SELECT VERSION() AS `version`
+[2023-11-30T08:22:56.408Z][QUERY]: SELECT * FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = 'tokopaedi' AND `TABLE_NAME` = 'typeorm_metadata'
+[2023-11-30T08:22:56.440Z][QUERY]: ALTER TABLE `user` ADD `test` int NOT NULL
+[2023-11-30T08:22:56.469Z][QUERY]: COMMIT
+[2023-11-30T08:23:26.901Z][QUERY]: SELECT VERSION() AS `version`
+[2023-11-30T08:23:26.955Z][QUERY]: START TRANSACTION
+[2023-11-30T08:23:26.964Z][QUERY]: SELECT DATABASE() AS `db_name`
+[2023-11-30T08:23:26.969Z][QUERY]: SELECT `TABLE_SCHEMA`, `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'tokopaedi' AND `TABLE_NAME` = 'user'
+[2023-11-30T08:23:26.973Z][QUERY]: 
+                SELECT
+                    *
+                FROM
+                    `INFORMATION_SCHEMA`.`COLUMNS`
+                WHERE
+                    `TABLE_SCHEMA` = 'tokopaedi'
+                    AND
+                    `TABLE_NAME` = 'user'
+                
+[2023-11-30T08:23:26.975Z][QUERY]: SELECT * FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'tokopaedi'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+            ) `kcu` WHERE `CONSTRAINT_NAME` = 'PRIMARY'
+[2023-11-30T08:23:26.977Z][QUERY]: 
+            SELECT
+                `SCHEMA_NAME`,
+                `DEFAULT_CHARACTER_SET_NAME` as `CHARSET`,
+                `DEFAULT_COLLATION_NAME` AS `COLLATION`
+            FROM `INFORMATION_SCHEMA`.`SCHEMATA`
+            
+[2023-11-30T08:23:26.978Z][QUERY]: 
+            SELECT
+                `s`.*
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`STATISTICS`
+                WHERE
+                    `TABLE_SCHEMA` = 'tokopaedi'
+                    AND
+                    `TABLE_NAME` = 'user'
+            ) `s`
+            LEFT JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'tokopaedi'
+                    AND
+                    `TABLE_NAME` = 'user'
+            ) `rc`
+                ON
+                    `s`.`INDEX_NAME` = `rc`.`CONSTRAINT_NAME`
+                    AND
+                    `s`.`TABLE_SCHEMA` = `rc`.`CONSTRAINT_SCHEMA`
+            WHERE
+                `s`.`INDEX_NAME` != 'PRIMARY'
+                AND
+                `rc`.`CONSTRAINT_NAME` IS NULL
+            
+[2023-11-30T08:23:26.980Z][QUERY]: 
+            SELECT
+                `kcu`.`TABLE_SCHEMA`,
+                `kcu`.`TABLE_NAME`,
+                `kcu`.`CONSTRAINT_NAME`,
+                `kcu`.`COLUMN_NAME`,
+                `kcu`.`REFERENCED_TABLE_SCHEMA`,
+                `kcu`.`REFERENCED_TABLE_NAME`,
+                `kcu`.`REFERENCED_COLUMN_NAME`,
+                `rc`.`DELETE_RULE` `ON_DELETE`,
+                `rc`.`UPDATE_RULE` `ON_UPDATE`
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'tokopaedi'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+            ) `kcu`
+            INNER JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'tokopaedi'
+                    AND
+                    `TABLE_NAME` = 'user'
+            ) `rc`
+                ON
+                    `rc`.`CONSTRAINT_SCHEMA` = `kcu`.`CONSTRAINT_SCHEMA`
+                    AND
+                    `rc`.`TABLE_NAME` = `kcu`.`TABLE_NAME`
+                    AND
+                    `rc`.`CONSTRAINT_NAME` = `kcu`.`CONSTRAINT_NAME`
+            
+[2023-11-30T08:23:27.886Z][QUERY]: SELECT VERSION() AS `version`
+[2023-11-30T08:23:27.898Z][QUERY]: SELECT * FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = 'tokopaedi' AND `TABLE_NAME` = 'typeorm_metadata'
+[2023-11-30T08:23:27.939Z][QUERY]: ALTER TABLE `user` DROP COLUMN `test`
+[2023-11-30T08:23:27.973Z][QUERY]: COMMIT
