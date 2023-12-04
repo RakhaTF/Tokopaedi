@@ -1,6 +1,7 @@
 import fastify from "fastify";
 import FastifyBaseAddon from "./application/boot/fastify/base"
 import FastifyRouteAddon from "@application/boot/fastify/route";
+import FastifySwaggerAddon from "@application/boot/fastify/swagger";
 import { AppDataSource } from "@infrastructure/mysql/connection";
 
 const server = fastify({
@@ -21,6 +22,7 @@ AppDataSource.initialize()
     });
 
 server.register(FastifyBaseAddon)
+server.register(FastifySwaggerAddon)
 server.register(FastifyRouteAddon)
 
 server.listen({ port: 8080 }, (err, address) => {
