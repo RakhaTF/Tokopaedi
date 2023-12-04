@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { ShippingAddress } from "./ShippingAddress";
 
+export type UserRole = "user" | "admin"
+
 @Entity()
 export class User {
 	@PrimaryGeneratedColumn()
@@ -19,7 +21,7 @@ export class User {
 	shipping_addresses: ShippingAddress[];
 
 	@Column({ type: "enum", enum: ["user", "admin"], default: "user" })
-	role: "user" | "admin";
+	role: UserRole
 
 	@Column({ type: "int", width: 10 })
 	created_at: number;
