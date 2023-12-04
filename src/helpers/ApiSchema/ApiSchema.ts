@@ -9,6 +9,23 @@ type BaseObjectSchema = {
     [key: string]: BaseProperty
 }
 
+type BaseParamsSchema = {
+    type: string
+    default?: string
+}
+
+type BodySchema = {
+    [key: string]: BaseParamsSchema
+}
+
+type BodySchemaHelper = {
+    type: string;
+    description: string;
+    properties: {
+        [key: string]: BaseParamsSchema | { isFile: boolean }
+    }
+}
+
 type ArrayOfObject = BaseObjectSchema[];
 type ArrayOfString = string[];
 type ArrayOfNumber = number[];
@@ -123,6 +140,25 @@ export const ResponseSchema = ({ type, message }: BaseResponseSchema) => {
     return schema;
 }
 
+//Request schema for non pagination.
+export const BaseRequestSchema = (pic: string, requestBodyProperties: BodySchema) => {
+    const BaseRequestSchema: BodySchemaHelper = {
+        type: "object",
+        description: `PIC: ${pic}`,
+        properties: {} //Example: limit: { type: "integer", default: 500 }
+    }
+
+    for (let data in requestBodyProperties) {
+        if (requestBodyProperties[data].type == "file") {
+            BaseRequestSchema.properties[data] = { isFile: true }
+        } else {
+            BaseRequestSchema.properties[data] = requestBodyProperties[data]
+        }
+    }
+
+    return BaseRequestSchema
+}
+
 //Result schema for pagination
 export const BasePaginationResultSchema = {
     200: {
@@ -165,4 +201,73 @@ export const BasePaginationResultSchema = {
         },
     },
     ...errorResponse
+}
+
+export const BaseResponse = ({ type, message }: BaseResponseSchema) => {
+    let sub;
+
+    if (type == "String") {
+        sub = {
+            type: "string"
+        }
+    } else if (type == "Array of Object" && typeof message != 'boolean' && typeof message != 'string') {
+        sub = {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    ...message
+                }
+            }
+        }
+    } else if (type == "Boolean") {
+        sub = {
+            type: "boolean"
+        }
+    } else if (type == "Array of String") {
+        sub = {
+            type: "array",
+            items: {
+                type: "string"
+            }
+        }
+    } else if (type == "Array of Number") {
+        sub = {
+            type: "array",
+            items: {
+                type: "number"
+            }
+        }
+    } else if (type == "Object" && typeof message != 'boolean' && typeof message != 'string') {
+        sub = {
+            type: "object",
+            properties: {
+                ...message
+            }
+        }
+    } else if (type == "Dynamic Key Object" && typeof message != 'boolean' && typeof message != 'string') {
+        sub = {
+            type: "object",
+            additionalProperties: {
+                ...message
+            }
+        }
+    } else if (type == 'File') {
+        return {
+            200: {},
+            ...errorResponse
+        }
+    }
+
+    let schema = {
+        200: {
+            type: "object",
+            properties: {
+                message: sub
+            }
+        },
+        ...errorResponse
+    }
+
+    return schema;
 }
