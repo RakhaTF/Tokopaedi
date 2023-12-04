@@ -5,6 +5,7 @@ import {
 	ManyToOne,
 	OneToMany,
 	JoinColumn,
+	OneToOne,
 } from "typeorm";
 import { PaymentResult } from "./PaymentResult";
 import { OrderItem } from "./OrderItems";
@@ -25,7 +26,7 @@ export class Transaction {
 	@Column()
 	payment_method: string;
 
-	@ManyToOne(() => PaymentResult, { nullable: true })
+	@OneToOne(() => PaymentResult, { nullable: true })
 	@JoinColumn({ name: "payment_result_id" })
 	payment_result: PaymentResult;
 
