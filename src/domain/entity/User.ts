@@ -1,31 +1,26 @@
-import { IsEmail } from "class-validator";
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { ShippingAddress } from "./ShippingAddress";
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+	@PrimaryGeneratedColumn()
+	id: number;
 
-    @Column()
-    username: string;
+	@Column()
+	name: string;
 
-    @Column({ unique: true })
-    @IsEmail()
-    email: string;
+	@Column()
+	email: string;
 
-    @Column()
-    password: string;
+	@Column()
+	password: string;
 
-    @Column()
-    address: string;
+	@OneToMany(() => ShippingAddress, (shippingAddress) => shippingAddress.user)
+	shipping_addresses: ShippingAddress[];
 
-    @Column()
-    role: string;
+	@Column({ type: "enum", enum: ["user", "admin"], default: "user" })
+	role: "user" | "admin";
 
-    @Column({
-        type: 'int',
-        width: 10,
-    })
-    createdAt: number;
+	@Column({ type: "int", width: 10 })
+	created_at: number;
 }
