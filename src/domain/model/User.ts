@@ -1,9 +1,11 @@
+import { UserRole } from "@domain/entity/User";
+
 export type CreateUserRequest = {
     username: string;
     email: string;
     password: string;
     address: string;
-    role: string;
+    role: UserRole;
 }
 
 export type CreateUserParams = CreateUserRequest & {
