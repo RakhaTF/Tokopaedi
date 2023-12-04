@@ -4,10 +4,12 @@ import * as UserDomainService from "@domain/service/UserDomainService"
 import moment from 'moment'
 import jwt from 'jsonwebtoken'
 import { env } from "process";
+import { hashPassword } from "helpers/Password/Password"
+import { signJWT } from "helpers/jwt/jwt";
 
 export async function Register(params: UserDto.CreateUserRequest) {
-    const { address, level, username, email, password } = params
-    const { error } = UserSchema.Register.validate({ address, level, username, email, password });
+    const { address, role = "user", username, email, password } = params
+    const { error } = UserSchema.Register.validate({ address, role, username, email, password });
 
     if (error) {
         const errorMessages = error.details.map((detail) => ({
@@ -22,7 +24,26 @@ export async function Register(params: UserDto.CreateUserRequest) {
         throw new Error("Email already in use.");
     }
 
-    return await UserDomainService.CreateUser({ ...params, createdAt: moment().unix(), updatedAt: moment().unix() });
+    const user = {
+        username,
+        email,
+        password: await hashPassword(password),
+        address,
+        role,
+        createdAt: moment().unix()
+    }
+
+    const user_result = await UserDomainService.CreateUser(user);
+    const expiresIn = process.env.EXPIRES_IN || "1h"
+
+    const result = {
+        token: await signJWT({
+            userid: user_result.id
+        }, process.env.JWT_SECRET || "TOKOPAEDI", {expiresIn}),
+        user: user_result
+    }
+
+    return result
 }
 
 export async function Login(params: UserDto.LoginParams) {

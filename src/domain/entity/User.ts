@@ -8,30 +8,24 @@ export class User {
     id: number;
 
     @Column()
-    firstName: string;
-
-    @Column()
-    lastName: string;
+    username: string;
 
     @Column({ unique: true })
     @IsEmail()
     email: string;
 
     @Column()
-    age: number;
+    password: string;
 
     @Column()
-    password: string;
+    address: string;
+
+    @Column()
+    role: string;
 
     @Column({
         type: 'int',
         width: 10,
     })
     createdAt: number;
-
-    @Column({
-        type: 'int',
-        width: 10,
-    })
-    updatedAt: number;
 }
