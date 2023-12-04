@@ -6,7 +6,7 @@ export default class AuthController {
     static async Register(request: FastifyRequest) {
         try {
             const register = await AuthService.Register(request.body as UserDto.CreateUserRequest)
-            return { message: "Register Success", data: register };
+            return { message: register };
         } catch (error) {
             throw error
         }
