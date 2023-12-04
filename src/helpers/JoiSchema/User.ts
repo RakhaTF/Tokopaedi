@@ -1,20 +1,20 @@
 import Joi from "joi"
 
 export const Register = Joi.object({
-    username: Joi.string().alphanum().min(3).required().messages({
+    username: Joi.string().min(3).required().max(50).regex(/^[a-zA-Z ]+$/).messages({
         'any.required': 'name is required',
     }),
     email: Joi.string().email().required().messages({
         'any.required': 'Email is required',
         'string.email': 'Email must be a valid email',
     }),
-    password: Joi.string().alphanum().min(8).required().messages({
+    password: Joi.string().alphanum().min(8).max(12).required().messages({
         'any.required': 'Password is required',
     }),
     address: Joi.string().required().messages({
         'any.required': 'Address is required',
     }),
-    level: Joi.string().valid("client", "admin").required().messages({
+    role: Joi.string().valid("user", "admin").required().messages({
         'any.required': 'role is required',
     }),
 }).options({ abortEarly: false });

@@ -3,12 +3,11 @@ export type CreateUserRequest = {
     email: string;
     password: string;
     address: string;
-    level: string;
+    role: string;
 }
 
 export type CreateUserParams = CreateUserRequest & {
     createdAt: number;
-    updatedAt: number;
 }
 
 export type UpdateUserRequest = {
