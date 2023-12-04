@@ -1,15 +1,14 @@
 import { UserRole } from "@domain/entity/User";
 
 export type CreateUserRequest = {
-    username: string;
+    name: string;
     email: string;
     password: string;
-    address: string;
     role: UserRole;
 }
 
 export type CreateUserParams = CreateUserRequest & {
-    createdAt: number;
+    created_at: number;
 }
 
 export type UpdateUserRequest = {

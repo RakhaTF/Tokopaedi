@@ -6,7 +6,7 @@ const dataSource = AppDataSource;
 const UserRepository = dataSource.getRepository(User)
 
 export async function DBCreateUser(user: UserDto.CreateUserParams): Promise<User> {
-    return await UserRepository.create(user)
+    return await UserRepository.save(user)
 }   
 
 export const DBGetOneUser = async ({ email, id }: { email?: string, id?: number }): Promise<User> => await UserRepository.findOne({ where: [{ email }, { id }] })
@@ -14,7 +14,7 @@ export const DBGetOneUser = async ({ email, id }: { email?: string, id?: number 
 export async function DBCheckUserExists(email: string) {
     return await UserRepository.manager.query<User[]>(`
     SELECT 
-    u.id, u.firstname, u.lastname, u.email, u.password, u.age, u.createdAt as register_time
+    u.id, u.username, u.email, u.password, u.address, u.role, u.createdAt
     FROM user u
     WHERE u.email = ?`, [email])
 }
