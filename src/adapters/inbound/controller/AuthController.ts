@@ -15,7 +15,7 @@ export default class AuthController {
     static async Login(request: FastifyRequest) {
         try {
             const login = await AuthService.Login(request.body as UserDto.LoginRequest)
-            return { message: "Login Success", data: login };
+            return { message: login };
         } catch (error) {
             throw error
         }

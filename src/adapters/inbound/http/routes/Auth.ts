@@ -23,12 +23,11 @@ const routes: RouteOptions[] = [
                     user: {
                         type: "object",
                         properties: {
-                            username: {type: "string"},
+                            name: {type: "string"},
                             email: {type: "string"},
                             password: {type: "string"},
-                            address: {type: "string"},
                             role: {type: "string"},
-                            createdAt: {type: "number"},
+                            created_at: {type: "number"},
                             id: {type: "number"}
                         }
                     }

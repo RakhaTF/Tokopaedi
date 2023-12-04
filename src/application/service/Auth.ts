@@ -8,8 +8,8 @@ import { hashPassword } from "helpers/Password/Password"
 import { signJWT } from "helpers/jwt/jwt";
 
 export async function Register(params: UserDto.CreateUserRequest) {
-    const { address, role = "user", username, email, password } = params
-    await UserSchema.Register.validateAsync({ address, role, username, email, password });
+    const { role = "user", name, email, password } = params
+    await UserSchema.Register.validateAsync({ name, email, password, role});
 
     const existingUser = await UserDomainService.GetUserDomain({ email })
     if (existingUser && existingUser.email == email) {
@@ -17,12 +17,11 @@ export async function Register(params: UserDto.CreateUserRequest) {
     }
 
     const user = {
-        username,
+        name,
         email,
         password: await hashPassword(password),
-        address,
         role,
-        createdAt: moment().unix()
+        created_at: moment().unix()
     }
 
     const user_result = await UserDomainService.CreateUser(user);
@@ -40,26 +39,27 @@ export async function Register(params: UserDto.CreateUserRequest) {
 
 export async function Login(params: UserDto.LoginParams) {
     const { email, password } = params
-    const { error } = UserSchema.Login.validate({ email, password });
-
-    if (error) {
-        const errorMessages = error.details.map((detail) => ({
-            path: detail.path.join('.'),
-            message: detail.message
-        }));
-        return { message: "Validation errors", data: errorMessages };
-    }
+    await UserSchema.Login.validateAsync({ email, password });
 
     const existingUser = await UserDomainService.CheckUserExistsDomain(email)
     if (!existingUser || existingUser.password !== password) {
         throw new Error("Wrong password!")
     }
     // ** This is our JWT Token
-    const token = jwt.sign(
-        { _id: existingUser.id, email: existingUser.email }, env.SECRET_KEY,
-        { expiresIn: "1d" }
-    );
-    return { ...existingUser, token };
+    // const token = jwt.sign(
+    //     { _id: existingUser.id, email: existingUser.email }, env.SECRET_KEY,
+    //     { expiresIn: "1d" }
+    // );
+
+    const expiresIn = process.env.EXPIRES_IN || "1h"
+
+    const result = {
+        token: await signJWT({
+            userid: existingUser.id
+        }, process.env.JWT_SECRET || "TOKOPAEDI", {expiresIn}),
+        user: existingUser
+    }
+    return result
 }
 
 export async function AuthUser(token: string) {
