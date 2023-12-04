@@ -9,7 +9,7 @@ import { signJWT } from "helpers/jwt/jwt";
 
 export async function Register(params: UserDto.CreateUserRequest) {
     const { address, role = "user", username, email, password } = params
-    await UserSchema.Register.validate({ address, role, username, email, password });
+    await UserSchema.Register.validateAsync({ address, role, username, email, password });
 
     const existingUser = await UserDomainService.GetUserDomain({ email })
     if (existingUser && existingUser.email == email) {
