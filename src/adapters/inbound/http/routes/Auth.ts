@@ -10,25 +10,24 @@ const routes: RouteOptions[] = [
         handler: AuthController.Register,
         schema: {
             body: Schema.BaseRequestSchema('Raihan', {
-                username: {type: "string"},
-                email: {type: "string"},
-                password: {type: "string"},
-                address: {type: "string"},
-                role: {type: "string"},
+                name: { type: "string" },
+                email: { type: "string" },
+                password: { type: "string" },
+                role: { type: "string" },
             }),
             response: Schema.BaseResponse({
                 type: 'Object',
                 message: {
-                    token: {type: 'string'},
+                    token: { type: 'string' },
                     user: {
                         type: "object",
                         properties: {
-                            name: {type: "string"},
-                            email: {type: "string"},
-                            password: {type: "string"},
-                            role: {type: "string"},
-                            created_at: {type: "number"},
-                            id: {type: "number"}
+                            name: { type: "string" },
+                            email: { type: "string" },
+                            address: { type: "string" },
+                            role: { type: "string" },
+                            created_at: { type: "number" },
+                            id: { type: "number" }
                         }
                     }
                 }

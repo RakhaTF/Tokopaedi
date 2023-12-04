@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify";
-import * as AuthService from "@application/service/Auth"
+import AuthService from "@application/service/Auth"
 import * as UserDto from "@domain/model/User"
 
 export default class AuthController {
