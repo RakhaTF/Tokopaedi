@@ -4,7 +4,7 @@ import * as UserDomainService from "@domain/service/UserDomainService"
 import moment from 'moment'
 import jwt from 'jsonwebtoken'
 import { env } from "process";
-import { hashPassword } from "helpers/Password/Password"
+import { hashPassword, checkPassword } from "helpers/Password/Password"
 import { signJWT } from "helpers/jwt/jwt";
 
 export async function Register(params: UserDto.CreateUserRequest) {
@@ -42,14 +42,11 @@ export async function Login(params: UserDto.LoginParams) {
     await UserSchema.Login.validateAsync({ email, password });
 
     const existingUser = await UserDomainService.CheckUserExistsDomain(email)
-    if (!existingUser || existingUser.password !== password) {
+
+    const checkPasswordUser = await checkPassword(password, existingUser.password)
+    if (!checkPasswordUser) {
         throw new Error("Wrong password!")
     }
-    // ** This is our JWT Token
-    // const token = jwt.sign(
-    //     { _id: existingUser.id, email: existingUser.email }, env.SECRET_KEY,
-    //     { expiresIn: "1d" }
-    // );
 
     const expiresIn = process.env.EXPIRES_IN || "1h"
 

@@ -5,3 +5,9 @@ export async function hashPassword(password: string): Promise<string> {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     return hashedPassword;
   }
+
+  //checkpassword with bcript and acak
+export async function checkPassword(password: string, hashedPassword: string):Promise<boolean>{
+  const passwordMatches = await bcrypt.compare(password, hashedPassword);
+  return passwordMatches
+}

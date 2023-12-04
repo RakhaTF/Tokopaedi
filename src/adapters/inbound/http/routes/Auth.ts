@@ -10,10 +10,9 @@ const routes: RouteOptions[] = [
         handler: AuthController.Register,
         schema: {
             body: Schema.BaseRequestSchema('Raihan', {
-                username: {type: "string"},
+                name: {type: "string"},
                 email: {type: "string"},
                 password: {type: "string"},
-                address: {type: "string"},
                 role: {type: "string"},
             }),
             response: Schema.BaseResponse({
@@ -38,7 +37,30 @@ const routes: RouteOptions[] = [
     {
         method: ["POST"],
         url: "/api/v1/auth/login",
-        handler: AuthController.Login
+        handler: AuthController.Login,
+        schema: {
+            body: Schema.BaseRequestSchema('Raihan', {
+                email: {type: "string"},
+                password: {type: "string"}
+            }),
+            response: Schema.BaseResponse({
+                type: 'Object',
+                message: {
+                    token: {type: "string"},
+                    user: {
+                        type: "object",
+                        properties: {
+                            name: {type: "string"},
+                            email: {type: "string"},
+                            password: {type: "string"},
+                            role: {type: "string"},
+                            created_at: {type: "number"},
+                            id: {type: "number"}
+                        }
+                    }
+                }
+            })
+        }
     }
 ]
 

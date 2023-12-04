@@ -14,7 +14,7 @@ export const DBGetOneUser = async ({ email, id }: { email?: string, id?: number 
 export async function DBCheckUserExists(email: string) {
     return await UserRepository.manager.query<User[]>(`
     SELECT 
-    u.id, u.username, u.email, u.password, u.address, u.role, u.createdAt
+    u.id, u.name, u.email, u.password, u.role, u.created_at
     FROM user u
     WHERE u.email = ?`, [email])
 }
