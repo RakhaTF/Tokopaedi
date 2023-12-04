@@ -32,7 +32,8 @@ export default class AuthAppService {
 
         const result = {
             token: await signJWT({
-                userid: user_result.id
+                userid: user_result.id,
+                role: user_result.role
             }, process.env.JWT_SECRET || "TOKOPAEDI", { expiresIn }),
             user: user_result
         }
