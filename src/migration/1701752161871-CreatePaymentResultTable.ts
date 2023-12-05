@@ -6,7 +6,7 @@ export class CreatePaymentResultTable1701752161871 implements MigrationInterface
         await queryRunner.query(`
             CREATE TABLE payment_result (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                status VARCHAR(255),
+                status TINYINT(1) DEFAULT '0',
                 update_time VARCHAR(255),
                 email VARCHAR(255)
             )

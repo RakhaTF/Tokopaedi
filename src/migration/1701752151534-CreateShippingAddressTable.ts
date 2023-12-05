@@ -11,7 +11,7 @@ export class CreateShippingAddressTable1701752151534 implements MigrationInterfa
                 city VARCHAR(255) NOT NULL,
                 postal_code VARCHAR(255) NOT NULL,
                 country VARCHAR(255) NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES user(id)
+                FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
             )
         `);
     }

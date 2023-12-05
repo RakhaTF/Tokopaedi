@@ -10,9 +10,9 @@ export class CreateOrderItemTable1701752189548 implements MigrationInterface {
                 name VARCHAR(255) NOT NULL,
                 qty INT NOT NULL,
                 price DECIMAL(10,2) NOT NULL,
-                product_id INT NOT NULL,
-                FOREIGN KEY (order_id) REFERENCES transaction(id),
-                FOREIGN KEY (product_id) REFERENCES product(id)
+                product_id INT,
+                FOREIGN KEY (order_id) REFERENCES transaction(id) ON DELETE CASCADE,
+                FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE SET NULL
             )
         `);
     }
