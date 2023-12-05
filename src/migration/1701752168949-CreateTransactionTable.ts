@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class CreateTransactionTable1701688045900 implements MigrationInterface {
+export class CreateTransactionTable1701752168949 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -8,7 +8,7 @@ export class CreateTransactionTable1701688045900 implements MigrationInterface {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
                 payment_method VARCHAR(255) NOT NULL,
-                payment_result_id INT(10),
+                payment_result_id INT UNIQUE DEFAULT NULL,
                 items_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 shipping_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 total_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,

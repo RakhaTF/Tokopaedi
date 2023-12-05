@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class CreateUserGroupsTable1701690005707 implements MigrationInterface {
+export class CreateUserGroupsTable1701752076794 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             CREATE TABLE user_groups (
-                id TINYINT,
-                group_name VARCHAR(255),
-                PRIMARY KEY (id),
-                FOREIGN KEY (id) REFERENCES user(level)
+                level_id TINYINT(1) AUTO_INCREMENT,
+                group_name VARCHAR(255) NOT NULL,
+                PRIMARY KEY (level_id),
+                UNIQUE (group_name)
             )
         `);
     }
@@ -18,6 +18,5 @@ export class CreateUserGroupsTable1701690005707 implements MigrationInterface {
             DROP TABLE user_groups
         `);
     }
-
 
 }

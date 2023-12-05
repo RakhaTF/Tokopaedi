@@ -1,15 +1,14 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class CreateUserGroupsRulesTable1701690035298 implements MigrationInterface {
+export class CreateUserGroupsRulesTable1701752083731 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             CREATE TABLE user_group_rules (
-                group_id INT,
+                group_id TINYINT(1),
                 rules_id INT,
-                PRIMARY KEY (group_id, rules_id),
-                FOREIGN KEY (group_id) REFERENCES user_groups(id),
-                FOREIGN KEY (rules_id) REFERENCES user_rules(id)
+                PRIMARY KEY (rules_id),
+                FOREIGN KEY (group_id) REFERENCES user_groups(level_id)
             )
         `);
     }

@@ -1,21 +1,22 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class CreatePaymentResultTable1701688028004 implements MigrationInterface {
+export class CreateProductTable1701752181655 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
-            CREATE TABLE payment_result (
+            CREATE TABLE product (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                status VARCHAR(255),
-                update_time VARCHAR(255),
-                email VARCHAR(255)
+                name VARCHAR(255) NOT NULL,
+                description TEXT,
+                price DECIMAL(10,2) NOT NULL,
+                stock INT NOT NULL
             )
         `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
-            DROP TABLE payment_result
+            DROP TABLE product
         `);
     }
 
