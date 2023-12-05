@@ -18,8 +18,8 @@ export class CreateTransactionTable1701752168949 implements MigrationInterface {
                 delivered_at INT(11),
                 created_at INT(11) NOT NULL,
                 updated_at INT(11) NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES user(id),
-                FOREIGN KEY (payment_result_id) REFERENCES payment_result(id)
+                FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+                FOREIGN KEY (payment_result_id) REFERENCES payment_result(id) ON DELETE SET NULL
             )
         `);
     }
