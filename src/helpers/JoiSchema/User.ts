@@ -11,8 +11,8 @@ export const Register = Joi.object({
     password: Joi.string().alphanum().min(8).max(12).required().messages({
         'any.required': 'Password is required',
     }),
-    role: Joi.string().valid("user", "admin").required().messages({
-        'any.required': 'role is required',
+    level: Joi.number().valid(2,3).required().messages({
+        'any.required': 'level is required',
     }),
 }).options({ abortEarly: false });
 

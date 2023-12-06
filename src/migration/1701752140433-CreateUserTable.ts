@@ -9,7 +9,7 @@ export class CreateUserTable1701752140433 implements MigrationInterface {
                 name VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL,
                 password VARCHAR(255) NOT NULL,
-                level TINYINT(1) NOT NULL DEFAULT '1', 
+                level TINYINT(1) NOT NULL DEFAULT '3', 
                 created_at INT NOT NULL,
                 FOREIGN KEY (level) REFERENCES user_groups(level_id)
             )
