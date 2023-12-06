@@ -1,10 +1,11 @@
-import * as UserDto from "@domain/model/User"
 import * as UserSchema from "helpers/JoiSchema/User";
 import UserDomainService from "@domain/service/UserDomainService"
 import moment from 'moment'
 import { checkPassword, hashPassword } from "helpers/Password/Password"
 import { signJWT } from "helpers/jwt/jwt";
 import { AppDataSource } from "@infrastructure/mysql/connection";
+import { UserParamsDto } from "@domain/model/params";
+import { UserResponseDto } from "@domain/model/response";
 
 export default class AuthAppService {
     static async Register({level = 3, name, email, password}) {
@@ -56,7 +57,7 @@ export default class AuthAppService {
         }
     }
 
-    static async Login(params: UserDto.LoginParams) {
+    static async Login(params: UserParamsDto.LoginParams) {
         const { email, password } = params
         await UserSchema.Login.validateAsync({ email, password });
 
@@ -81,7 +82,7 @@ export default class AuthAppService {
 
         delete user_data.group_rules
 
-        const user_claims : UserDto.UserClaimsResponse = {
+        const user_claims : UserResponseDto.UserClaimsResponse = {
             id: user_data.id,
             level: user_data.level,
             authority: user_data.authority

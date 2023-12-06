@@ -1,13 +1,14 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
-import * as UserDto from "@domain/model/User"
 import { User } from "@domain/entity/User";
 import { error } from "console";
 import { QueryRunner } from 'typeorm';
+import { UserResponseDto } from "@domain/model/response";
+import { UserParamsDto } from "@domain/model/params";
 
 const db = AppDataSource;
 
 export default class UserRepository {
-    static async DBCreateUser(user: UserDto.CreateUserParams, query_runner?:QueryRunner){
+    static async DBCreateUser(user: UserParamsDto.RegisterParams, query_runner?:QueryRunner){
         if(query_runner && !query_runner.isTransactionActive){
             throw new error("Must in Transaction")
         }
@@ -18,8 +19,8 @@ export default class UserRepository {
         return result
     }
 
-    static async DBGetEmailExist(email: string): Promise<UserDto.GetEmailExistResult[]> {
-        const result = await db.query<UserDto.GetEmailExistResult[]>(`
+    static async DBGetEmailExist(email: string): Promise<UserResponseDto.GetEmailExistResult[]> {
+        const result = await db.query<UserResponseDto.GetEmailExistResult[]>(`
             SELECT 
             u.id
             FROM user u
@@ -37,8 +38,8 @@ export default class UserRepository {
         )
     }
 
-    static async DBGetUserDataById(id: number): Promise<UserDto.GetUserDataByIdResult[]>{
-        const result = await db.query<UserDto.GetUserDataByIdResult[]>(`SELECT 
+    static async DBGetUserDataById(id: number): Promise<UserResponseDto.GetUserDataByIdResult[]>{
+        const result = await db.query<UserResponseDto.GetUserDataByIdResult[]>(`SELECT 
         u.id, u.name, u.email, u.level, u.created_at,
         GROUP_CONCAT(DISTINCT d.rules_id separator ',') as group_rules
         FROM user u
@@ -48,8 +49,8 @@ export default class UserRepository {
         return result
     }
 
-    static async DBGetUserById(id: number, query_runner?: QueryRunner):  Promise<UserDto.GetUserByIdResult[]> {
-        const result = await db.query<UserDto.GetUserByIdResult[]>(`
+    static async DBGetUserById(id: number, query_runner?: QueryRunner):  Promise<UserResponseDto.GetUserByIdResult[]> {
+        const result = await db.query<UserResponseDto.GetUserByIdResult[]>(`
             SELECT 
             u.id, u.name, u.email, u.level, u.created_at
             FROM user u

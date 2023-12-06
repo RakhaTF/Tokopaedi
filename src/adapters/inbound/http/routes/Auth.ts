@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify";
 import AuthController from "../../controller/AuthController";
 import * as Schema from "helpers/ApiSchema/ApiSchema"
-import { AuthValidate } from "helpers/prehandler/AuthValidate";
 
 const routes: RouteOptions[] = [
     {
@@ -67,7 +66,6 @@ export default async function AuthRoute(
     fastify: FastifyInstance,
     options: FastifyPluginOptions
 ) {
-    fastify.addHook("preValidation", AuthValidate)
     for (const route of routes) {
         fastify.route({ ...route, config: options });
     }

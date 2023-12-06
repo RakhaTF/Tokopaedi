@@ -1,5 +1,5 @@
 import UserDomainService from "@domain/service/UserDomainService";
-import { UserClaimsResponse } from "../User";
+import { UserClaimsResponse } from "../response/UserResponse";
 
 export async function getUserData(id: number) {
     return await UserDomainService.GetUserDataByIdDomain(id)

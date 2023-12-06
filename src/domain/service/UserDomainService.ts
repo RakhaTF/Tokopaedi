@@ -1,17 +1,18 @@
 import UserRepository from "@adapters/outbound/repository/UserRepository"
-import * as UserDto from "@domain/model/User"
+import { UserParamsDto } from "@domain/model/params";
+import { UserResponseDto } from "@domain/model/response";
 import { QueryRunner } from 'typeorm';
 
 export default class UserDomainService {
-    static async CreateUserDomain(user: UserDto.CreateUserParams, query_runner?: QueryRunner) {
+    static async CreateUserDomain(user: UserParamsDto.RegisterParams, query_runner?: QueryRunner) {
         return await UserRepository.DBCreateUser(user, query_runner)
     }
 
-    static async GetEmailExistDomain(email: string): Promise<UserDto.GetEmailExistResult[]> {
+    static async GetEmailExistDomain(email: string): Promise<UserResponseDto.GetEmailExistResult[]> {
         const result = await UserRepository.DBGetEmailExist(email);
 
-        if (result.length > 0){
-            throw new Error ("Email already exist")
+        if (result.length > 0) {
+            throw new Error("Email already exist")
         }
 
         return result
@@ -27,7 +28,7 @@ export default class UserDomainService {
 
     static async GetUserDataByIdDomain(id: number) {
         const result = await UserRepository.DBGetUserDataById(id)
-        if (result.length < 1){
+        if (result.length < 1) {
             throw new Error("User not found")
         }
 
@@ -36,10 +37,10 @@ export default class UserDomainService {
 
     static async GetUserByIdDomain(id: number, query_runner?: QueryRunner) {
         const result = await UserRepository.DBGetUserById(id, query_runner)
-        if (result.length < 1){
+        if (result.length < 1) {
             throw new Error("Cant get user")
         }
 
-        return result[0] 
+        return result[0]
     }
 }
