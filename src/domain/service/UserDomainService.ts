@@ -12,7 +12,7 @@ export default class UserDomainService {
         const result = await UserRepository.DBGetEmailExist(email);
 
         if (result.length > 0){
-            throw error ("Email already exist")
+            throw new Error ("Email already exist")
         }
 
         return result
@@ -36,6 +36,11 @@ export default class UserDomainService {
     }
 
     static async GetUserByIdDomain(id: number, query_runner?: QueryRunner) {
-        return await UserRepository.DBGetUserById(id, query_runner)
+        const result = await UserRepository.DBGetUserById(id, query_runner)
+        if (result.length < 1){
+            throw new Error("Cant get user")
+        }
+
+        return result[0] 
     }
 }

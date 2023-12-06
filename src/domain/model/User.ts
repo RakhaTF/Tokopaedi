@@ -16,6 +16,7 @@ export type GetEmailExistResult = {
 }
 
 export type GetUserByIdResult = {
+    id: number;
     name: string;
     email: string;
     level: number;

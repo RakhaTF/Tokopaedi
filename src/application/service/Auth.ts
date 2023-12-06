@@ -12,7 +12,7 @@ export default class AuthAppService {
 
         await UserDomainService.GetEmailExistDomain(email)
 
-        if (name == 'SuperAdmin') {
+        if (name === 'SuperAdmin') {
             throw new Error("Prohibited name")
         }
 
@@ -24,8 +24,6 @@ export default class AuthAppService {
             created_at: moment().unix()
         }
 
-        let user_result = null
-
         const db = AppDataSource;
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
@@ -35,30 +33,27 @@ export default class AuthAppService {
 
             const {insertId} = await UserDomainService.CreateUserDomain(user, query_runner);
 
-            const getUserById = await UserDomainService.GetUserByIdDomain(insertId, query_runner)
-            user_result = getUserById[0]
+            const user_result = await UserDomainService.GetUserByIdDomain(insertId, query_runner)
 
             await query_runner.commitTransaction();
             await query_runner.release();
+
+            const expiresIn = process.env.EXPIRES_IN || "1h"
+
+            const result = {
+                token: await signJWT({
+                    userid: user_result.id,
+                    level: user_result.level
+                }, process.env.JWT_SECRET || "TOKOPAEDI", { expiresIn }),
+                user: user_result
+            }
+
+            return result
         } catch (error) {
             await query_runner.rollbackTransaction();
             await query_runner.release();
             throw error
         }
-
-        const expiresIn = process.env.EXPIRES_IN || "1h"
-        delete user_result.password
-
-
-        const result = {
-            token: await signJWT({
-                userid: user_result.id,
-                level: user_result.level
-            }, process.env.JWT_SECRET || "TOKOPAEDI", { expiresIn }),
-            user: user_result
-        }
-
-        return result
     }
 
     static async Login(params: UserDto.LoginParams) {
