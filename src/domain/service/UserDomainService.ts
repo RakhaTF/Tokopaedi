@@ -1,9 +1,6 @@
 import UserRepository from "@adapters/outbound/repository/UserRepository"
-import { User } from "@domain/entity/User"
 import * as UserDto from "@domain/model/User"
 import { error } from "console"
-import jwt from 'jsonwebtoken'
-import { env } from "process"
 import { QueryRunner } from 'typeorm';
 
 export default class UserDomainService {

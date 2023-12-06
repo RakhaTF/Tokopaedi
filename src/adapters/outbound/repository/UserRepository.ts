@@ -1,8 +1,7 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import * as UserDto from "@domain/model/User"
 import { User } from "@domain/entity/User";
-import { error, time } from "console";
-import moment from "moment";
+import { error } from "console";
 import { QueryRunner } from 'typeorm';
 
 const db = AppDataSource;
@@ -40,7 +39,7 @@ export default class UserRepository {
 
     static async DBGetUserDataById(id: number): Promise<UserDto.GetUserDataByIdResult[]>{
         const result = await db.query<UserDto.GetUserDataByIdResult[]>(`SELECT 
-        u.id, u.name, u.email, u.password, u.level, u.created_at,
+        u.id, u.name, u.email, u.level, u.created_at,
         GROUP_CONCAT(DISTINCT d.rules_id separator ',') as group_rules
         FROM user u
         LEFT JOIN user_group_rules d ON u.level = d.group_id
@@ -52,7 +51,7 @@ export default class UserRepository {
     static async DBGetUserById(id: number, query_runner?: QueryRunner):  Promise<UserDto.GetUserByIdResult[]> {
         const result = await db.query<UserDto.GetUserByIdResult[]>(`
             SELECT 
-            u.id, u.name, u.email, u.password, u.level, u.created_at
+            u.id, u.name, u.email, u.level, u.created_at
             FROM user u
             WHERE u.id = ?`, [id], query_runner
         )

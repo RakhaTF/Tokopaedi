@@ -2,11 +2,8 @@ import * as UserDto from "@domain/model/User"
 import * as UserSchema from "helpers/JoiSchema/User";
 import UserDomainService from "@domain/service/UserDomainService"
 import moment from 'moment'
-import jwt from 'jsonwebtoken'
-import { env } from "process";
 import { checkPassword, hashPassword } from "helpers/Password/Password"
 import { signJWT } from "helpers/jwt/jwt";
-import { DataSource } from "typeorm";
 import { AppDataSource } from "@infrastructure/mysql/connection";
 
 export default class AuthAppService {
@@ -14,6 +11,10 @@ export default class AuthAppService {
         await UserSchema.Register.validateAsync({ level, name, email, password });
 
         await UserDomainService.GetEmailExistDomain(email)
+
+        if (name == 'SuperAdmin') {
+            throw new Error("Prohibited name")
+        }
 
         const user = {
             name,
@@ -23,22 +24,19 @@ export default class AuthAppService {
             created_at: moment().unix()
         }
 
-
-        let userid = 0;
         let user_result = null
 
         const db = AppDataSource;
-        const query_runner = await db.createQueryRunner()
+        const query_runner = db.createQueryRunner()
         await query_runner.connect()
 
         try {
             await query_runner.startTransaction()
 
-            const result1 = await UserDomainService.CreateUserDomain(user, query_runner);
-            userid = result1.insertId
+            const {insertId} = await UserDomainService.CreateUserDomain(user, query_runner);
 
-            const result2 = await UserDomainService.GetUserByIdDomain(userid, query_runner)
-            user_result = result2[0]
+            const getUserById = await UserDomainService.GetUserByIdDomain(insertId, query_runner)
+            user_result = getUserById[0]
 
             await query_runner.commitTransaction();
             await query_runner.release();
@@ -50,7 +48,7 @@ export default class AuthAppService {
 
         const expiresIn = process.env.EXPIRES_IN || "1h"
         delete user_result.password
-        
+
 
         const result = {
             token: await signJWT({
@@ -65,7 +63,7 @@ export default class AuthAppService {
 
     static async Login(params: UserDto.LoginParams) {
         const { email, password } = params
-        await UserSchema.Login.validate({ email, password });
+        await UserSchema.Login.validateAsync({ email, password });
 
         const existingUser = await UserDomainService.CheckUserExistsDomain(email)
 
@@ -86,13 +84,11 @@ export default class AuthAppService {
             authority: grouprules
         }
 
-        delete user_data.password
         delete user_data.group_rules
         delete user_data.level
 
         const user_claims : UserDto.UserClaimsResponse = {
             id: user_data.id,
-            userid: user_data.id,
             level: user_data.level,
             authority: user_data.authority
         }
