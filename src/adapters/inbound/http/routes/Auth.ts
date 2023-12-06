@@ -13,7 +13,7 @@ const routes: RouteOptions[] = [
                 name: { type: "string" },
                 email: { type: "string" },
                 password: { type: "string" },
-                role: { type: "string" },
+                level: { type: "number" },
             }),
             response: Schema.BaseResponse({
                 type: 'Object',
@@ -24,8 +24,8 @@ const routes: RouteOptions[] = [
                         properties: {
                             name: { type: "string" },
                             email: { type: "string" },
-                            address: { type: "string" },
-                            role: { type: "string" },
+                            password: { type: "string" },
+                            level: { type: "number" },
                             created_at: { type: "number" },
                             id: { type: "number" }
                         }
