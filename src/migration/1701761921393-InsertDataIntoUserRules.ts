@@ -45,6 +45,7 @@ export class InsertDataIntoUserGroupsRules1701761921393 implements MigrationInte
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`DELETE FROM user_rules`);
     }
 
 }

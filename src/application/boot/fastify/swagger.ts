@@ -2,7 +2,7 @@ import fp from "fastify-plugin";
 import swagger, { SwaggerOptions } from "@fastify/swagger";
 import swaggerUi, { FastifySwaggerUiOptions } from "@fastify/swagger-ui";
 
-export default fp((fastify, opts, done) => {
+export default fp((fastify, _opts, done) => {
 	const options = {
 		exposeRoute: true,
 		swagger: {

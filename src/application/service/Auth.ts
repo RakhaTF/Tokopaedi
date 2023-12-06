@@ -80,20 +80,16 @@ export default class AuthAppService {
         }
 
         delete user_data.group_rules
-        delete user_data.level
 
         const user_claims : UserDto.UserClaimsResponse = {
             id: user_data.id,
             level: user_data.level,
             authority: user_data.authority
         }
-
         const expiresIn = process.env.EXPIRES_IN || "1h"
 
         const result = {
-            token: await signJWT({
-                user_claims
-            }, process.env.JWT_SECRET || "TOKOPAEDI", { expiresIn }),
+            token: await signJWT(user_claims, process.env.JWT_SECRET || "TOKOPAEDI", { expiresIn }),
             user: user_data
         }
 
