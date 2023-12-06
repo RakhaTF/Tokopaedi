@@ -1,6 +1,5 @@
 import UserRepository from "@adapters/outbound/repository/UserRepository"
 import * as UserDto from "@domain/model/User"
-import { error } from "console"
 import { QueryRunner } from 'typeorm';
 
 export default class UserDomainService {
