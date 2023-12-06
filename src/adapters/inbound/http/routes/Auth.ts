@@ -37,7 +37,29 @@ const routes: RouteOptions[] = [
     {
         method: ["POST"],
         url: "/api/v1/auth/login",
-        handler: AuthController.Login
+        handler: AuthController.Login,
+        schema: {
+            body: Schema.BaseRequestSchema('Raihan', {
+                email: { type: "string" },
+                password: { type: "string" }
+            }),
+            response: Schema.BaseResponse({
+                type: 'Object',
+                message: {
+                    token: { type: 'string' },
+                    user: {
+                        type: "object",
+                        properties: {
+                            id: { type: "number" },
+                            name: { type: "string" },
+                            email: { type: "string" },
+                            created_at: { type: "number" },
+                            authority: {type: "array", items: {type: "number"}}
+                        }
+                    }
+                }
+            })
+        }
     }
 ]
 
