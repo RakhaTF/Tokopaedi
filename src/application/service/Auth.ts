@@ -39,13 +39,7 @@ export default class AuthAppService {
             await query_runner.commitTransaction();
             await query_runner.release();
 
-            const expiresIn = process.env.EXPIRES_IN || "1h"
-
             const result = {
-                token: await signJWT({
-                    userid: user_result.id,
-                    level: user_result.level
-                }, process.env.JWT_SECRET || "TOKOPAEDI", { expiresIn }),
                 user: user_result
             }
 

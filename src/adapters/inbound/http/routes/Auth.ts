@@ -17,7 +17,6 @@ const routes: RouteOptions[] = [
             response: Schema.BaseResponse({
                 type: 'Object',
                 message: {
-                    token: { type: 'string' },
                     user: {
                         type: "object",
                         properties: {
