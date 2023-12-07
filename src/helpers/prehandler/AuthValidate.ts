@@ -67,7 +67,6 @@ export async function AuthValidate(request: FastifyRequest) {
 
         //Verifying Token
         const user_claims = await verifyJWT<UserClaimsResponse>(request.headers.authorization, process.env.JWT_SECRET)
-
         const checkClaims = Joi.object({
             id: Joi.number().required(),
             level: Joi.number().required(),

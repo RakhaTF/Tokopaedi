@@ -1,0 +1,50 @@
+import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify";
+import ProductController from "@adapters/inbound/controller/ProductController";
+import * as Schema from "helpers/ApiSchema/ApiSchema"
+
+const routes: RouteOptions[] = [
+    {
+        method: ["GET"],
+        url: "/api/v1/product/list",
+        handler: ProductController.GetProductList,
+        schema: {
+            response: Schema.BaseResponse({
+                type: "Object",
+                message: {
+                    id: { type: "integer" },
+                    name: { type: "string" },
+                    description: { type: "string" },
+                    price: { type: "integer" },
+                    stock: { type: "integer" }
+                }
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/product/detail",
+        handler: ProductController.GetProductDetail,
+        schema: {
+            body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
+            response: Schema.BaseResponse({
+                type: "Object",
+                message: {
+                    id: { type: "integer" },
+                    name: { type: "string" },
+                    description: { type: "string" },
+                    price: { type: "integer" },
+                    stock: { type: "integer" }
+                }
+            })
+        }
+    }
+]
+
+export default async function ProductRoute(
+    fastify: FastifyInstance,
+    options: FastifyPluginOptions
+) {
+    for (const route of routes) {
+        fastify.route({ ...route, config: options });
+    }
+}
