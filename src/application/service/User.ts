@@ -2,6 +2,8 @@ import { UserParamsDto } from "@domain/model/params";
 import UserDomainService from "@domain/service/UserDomainService";
 import * as UserSchema from "helpers/JoiSchema/User";
 
+const prohibitedWords = require("indonesian-badwords")
+
 export default class UserAppService {
     static async GetUserProfileService({id}) {
         await UserSchema.GetUserProfile.validateAsync({id})
@@ -47,12 +49,9 @@ export default class UserAppService {
             "Product Management Staff",
             "User Management Staff",
             "Shipping and Transaction Management Staff",
-            "bangsat",
-            "plerrr",
-            "kontol",
         ]
 
-        if (banned.includes(params.name)){
+        if (banned.includes(params.name) || prohibitedWords.flag(params.name)){
             throw new Error("Banned words name")
         }
 
