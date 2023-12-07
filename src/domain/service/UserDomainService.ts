@@ -43,4 +43,16 @@ export default class UserDomainService {
 
         return result[0]
     }
+
+    static async GetUserEmailExistDomainService(email: string) {
+        return await UserRepository.DBGetUserEmailExist(email)
+    }
+
+    static async UpdateUserEditProfileDomainService(params: UserParamsDto.UpdateUserEditProfileParams){
+        const result = await UserRepository.DBUpdateUserEditProfile(params)
+        if (result.affectedRows < 1){
+            throw new Error ("Failed update data")
+        }
+        return result
+    }
 }
