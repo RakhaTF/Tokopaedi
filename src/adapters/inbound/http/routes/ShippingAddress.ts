@@ -6,7 +6,7 @@ import * as Schema from "helpers/ApiSchema/ApiSchema"
 const routes: RouteOptions[] = [
     {
         method: ["POST"],
-        url: "/api/v1/shipping-address/create",
+        url: "/api/v1/user/shipping-address/create",
         handler: ShippingAddressController.CreateShippingAddress,
         schema: {
             body: Schema.BaseRequestSchema("Rakha", {
@@ -21,7 +21,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/shipping-address/detail",
+        url: "/api/v1/user/shipping-address/detail",
         handler: ShippingAddressController.GetShippingAddressDetail,
         schema: {
             body: Schema.BaseRequestSchema("Rakha", {
@@ -47,7 +47,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["GET"],
-        url: "/api/v1/shipping-address/list",
+        url: "/api/v1/user/shipping-address/list",
         handler: ShippingAddressController.GetShippingAddressList,
         schema: {
             response: Schema.BaseResponse({
@@ -66,7 +66,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/shipping-address/update",
+        url: "/api/v1/user/shipping-address/update",
         handler: ShippingAddressController.UpdateShippingAddress,
         schema: {
             body: Schema.BaseRequestSchema("Rakha", {
@@ -81,7 +81,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/shipping-address/delete",
+        url: "/api/v1/user/shipping-address/delete",
         handler: ShippingAddressController.DeleteShippingAddress,
         schema: {
             body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
