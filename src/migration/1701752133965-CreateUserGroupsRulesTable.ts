@@ -8,8 +8,8 @@ export class CreateUserGroupsRulesTable1701752133965 implements MigrationInterfa
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 group_id TINYINT(1),
                 rules_id INT,
-                FOREIGN KEY (rules_id) REFERENCES user_rules(rules_id),
-                FOREIGN KEY (group_id) REFERENCES user_groups(level_id)
+                FOREIGN KEY (rules_id) REFERENCES user_rules(rules_id) ON DELETE CASCADE, 
+                FOREIGN KEY (group_id) REFERENCES user_groups(level_id) ON DELETE CASCADE
             )
         `);
     }
