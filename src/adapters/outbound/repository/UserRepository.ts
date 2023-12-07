@@ -4,6 +4,7 @@ import { error } from "console";
 import { QueryRunner } from 'typeorm';
 import { UserResponseDto } from "@domain/model/response";
 import { UserParamsDto } from "@domain/model/params";
+import {ResultSetHeader} from "mysql2"
 
 const db = AppDataSource;
 
@@ -68,7 +69,7 @@ export default class UserRepository {
     }
 
     static async DBUpdateUserEditProfile(params: UserParamsDto.UpdateUserEditProfileParams){
-        const result = await db.query(`UPDATE user SET NAME = ?, email = ? WHERE id = ? `, [params.id, params.email, params.name])
+        const result = await db.query<ResultSetHeader>(`UPDATE user SET NAME = ?, email = ? WHERE id = ? `, [params.name, params.email, params.id])
 
         return result
     }

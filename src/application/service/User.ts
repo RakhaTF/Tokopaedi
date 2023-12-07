@@ -44,7 +44,7 @@ export default class UserAppService {
             throw new Error("Banned words name")
         }
 
-        const obj = {
+        const obj: UserParamsDto.UpdateUserEditProfileParams = {
             id: user.id,
             email: params.email,
             name: params.name

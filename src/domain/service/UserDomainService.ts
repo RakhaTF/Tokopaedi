@@ -49,6 +49,10 @@ export default class UserDomainService {
     }
 
     static async UpdateUserEditProfileDomainService(params: UserParamsDto.UpdateUserEditProfileParams){
-        return await UserRepository.DBUpdateUserEditProfile(params)
+        const result = await UserRepository.DBUpdateUserEditProfile(params)
+        if (result.affectedRows < 1){
+            throw new Error ("Failed update data")
+        }
+        return result
     }
 }
