@@ -8,8 +8,9 @@ export class CreateShippingAddressTable1701752151534 implements MigrationInterfa
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
                 address VARCHAR(255) NOT NULL,
-                city VARCHAR(255) NOT NULL,
                 postal_code VARCHAR(255) NOT NULL,
+                city VARCHAR(255) NOT NULL,
+                province VARCHAR(255) NOT NULL,
                 country VARCHAR(255) NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
             )
