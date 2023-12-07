@@ -12,3 +12,9 @@ export type UpdateUserParams = {
     email: string;
     name: string;
 }
+
+export type UpdateUserEditProfileParams = {
+    id: number;
+    email: string;
+    name: string;
+}

@@ -22,11 +22,6 @@ export default class UserAppService {
 
         const user = await UserDomainService.GetUserDataByIdDomain(params.id)
 
-        let own = false
-        if (user.id == params.id) {
-            own = true
-        }
-
         if (user.id < 1){
             throw new Error ("User not found")
         }
@@ -35,12 +30,6 @@ export default class UserAppService {
             let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email)
             if (userEmailExist.length > 0) {
                 throw new Error ("Email is not available")
-            }
-        }
-
-        if (!own){
-            if (user.level == 3){
-                throw new Error("You can't change other profile")
             }
         }
 
@@ -55,21 +44,13 @@ export default class UserAppService {
             throw new Error("Banned words name")
         }
 
-        let levelAllowed = [1, 2, 5, 3]
-
-        if (user.email != params.email){
-            if (!levelAllowed.includes(user.level)){
-                throw new Error ("Change email prohibited")
-            }
-        }
-
         const obj = {
             id: user.id,
             email: params.email,
             name: params.name
         }
 
-        await UserDomainService.UpdateUserEditProfileDomainService(obj.id, obj.email, obj.name)
+        await UserDomainService.UpdateUserEditProfileDomainService(obj)
 
         return obj
     }

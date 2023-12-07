@@ -27,7 +27,6 @@ const routes: RouteOptions[] = [
     {
         method: ["POST"],
         url: "/api/v1/user/profile/update",
-        preHandler: CheckAuthAdmin({rules: Rules.UPDATE_PROFILE}),
         handler: UserController.UpdateUserProfile,
         schema: {
             body: Schema.BaseRequestSchema('Raihan', {

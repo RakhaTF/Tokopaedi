@@ -67,8 +67,8 @@ export default class UserRepository {
         return result
     }
 
-    static async DBUpdateUserEditProfile(id: number, email: string, name: string){
-        const result = await db.query(`UPDATE user SET NAME = ?, email = ? WHERE id = ? `, [name, email, id])
+    static async DBUpdateUserEditProfile(params: UserParamsDto.UpdateUserEditProfileParams){
+        const result = await db.query(`UPDATE user SET NAME = ?, email = ? WHERE id = ? `, [params.id, params.email, params.name])
 
         return result
     }
