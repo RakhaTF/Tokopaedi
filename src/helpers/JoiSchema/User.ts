@@ -25,3 +25,22 @@ export const Login = Joi.object({
         'any.required': 'Password is required',
     }),
 }).options({ abortEarly: false });
+
+export const GetUserProfile = Joi.object({
+    id: Joi.number().required().messages({
+        'any.required': 'Id is required',
+    }),
+}).options({ abortEarly: false });
+
+export const UpdateUserProfile = Joi.object({
+    id: Joi.number().required().messages({
+        'any.required': 'Id is required',
+    }),
+    email: Joi.string().email().required().messages({
+        'any.required': 'Email is required',
+        'string.email': 'Email must be a valid email',
+    }),
+    name: Joi.string().min(3).required().max(50).regex(/^[a-zA-Z ]+$/).messages({
+        'any.required': 'name is required',
+    })
+}).options({ abortEarly: false });

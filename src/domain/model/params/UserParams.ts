@@ -6,3 +6,9 @@ export type RegisterParams = RegisterRequest & {
 }
 
 export type LoginParams = LoginRequest
+
+export type UpdateUserParams = {
+    id: number;
+    email: string;
+    name: string;
+}

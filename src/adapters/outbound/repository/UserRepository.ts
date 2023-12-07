@@ -59,4 +59,17 @@ export default class UserRepository {
 
         return result
     }
+
+    static async DBGetUserEmailExist(email: string): Promise<UserResponseDto.GetUserEmailExistResult[]> {
+        const result = await db.query<UserResponseDto.GetUserEmailExistResult[]>(`
+        SELECT u.email FROM user u WHERE u.email = ?`, [email])
+
+        return result
+    }
+
+    static async DBUpdateUserEditProfile(id: number, email: string, name: string){
+        const result = await db.query(`UPDATE user SET NAME = ?, email = ? WHERE id = ? `, [name, email, id])
+
+        return result
+    }
 }

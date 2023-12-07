@@ -24,3 +24,7 @@ export type UserClaimsResponse = {
     level: number;
     authority: number[];
 }
+
+export type GetUserEmailExistResult = {
+    email: string;
+}

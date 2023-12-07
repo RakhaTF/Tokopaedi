@@ -43,4 +43,12 @@ export default class UserDomainService {
 
         return result[0]
     }
+
+    static async GetUserEmailExistDomainService(email: string) {
+        return await UserRepository.DBGetUserEmailExist(email)
+    }
+
+    static async UpdateUserEditProfileDomainService(id: number, email: string, name: string){
+        return await UserRepository.DBUpdateUserEditProfile(id, email, name)
+    }
 }
