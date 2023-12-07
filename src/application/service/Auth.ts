@@ -39,11 +39,7 @@ export default class AuthAppService {
             await query_runner.commitTransaction();
             await query_runner.release();
 
-            const result = {
-                user: user_result
-            }
-
-            return result
+            return user_result
         } catch (error) {
             await query_runner.rollbackTransaction();
             await query_runner.release();
