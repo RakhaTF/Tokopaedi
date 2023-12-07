@@ -8,7 +8,7 @@ export class CreateTransactionTable1701752168949 implements MigrationInterface {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
                 payment_method VARCHAR(255) NOT NULL,
-                payment_result_id INT UNIQUE DEFAULT NULL,
+                transaction_status_id INT UNIQUE DEFAULT NULL,
                 items_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 shipping_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 total_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
@@ -19,7 +19,7 @@ export class CreateTransactionTable1701752168949 implements MigrationInterface {
                 created_at INT(11) NOT NULL,
                 updated_at INT(11) NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-                FOREIGN KEY (payment_result_id) REFERENCES payment_result(id) ON DELETE SET NULL
+                FOREIGN KEY (transaction_status_id) REFERENCES transaction_status(id) ON DELETE SET NULL
             )
         `);
     }
