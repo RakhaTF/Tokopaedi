@@ -7,7 +7,7 @@ import * as Schema from "helpers/ApiSchema/ApiSchema"
 const routes: RouteOptions[] = [
     {
         method: ["POST"],
-        url: "/api/v1/product/create",
+        url: "/api/v1/admin/product/create",
         preHandler: CheckAuthAdmin({ rules: Rules.CREATE_PRODUCT }),
         handler: ProductController.CreateProduct,
         schema: {
@@ -22,7 +22,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/product/delete",
+        url: "/api/v1/admin/product/delete",
         preHandler: CheckAuthAdmin({ rules: Rules.DELETE_PRODUCT }),
         handler: ProductController.DeleteProduct,
         schema: {
@@ -32,11 +32,17 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/product/update",
+        url: "/api/v1/admin/product/update",
         preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_PRODUCT }),
         handler: ProductController.UpdateProduct,
         schema: {
-            body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
+            body: Schema.BaseRequestSchema("Rakha", {
+                id: { type: "integer" },
+                name: { type: "string" },
+                description: { type: "string" },
+                price: { type: "integer" },
+                stock: { type: "integer" },
+            }),
             response: Schema.BaseResponse({ type: 'Boolean' })
         }
     }
