@@ -18,7 +18,6 @@ export default class AdminRepository {
 
     static async DBDeleteUser(email: string){
         const result = await db.query(`DELETE FROM user WHERE email = ?`, [email])
-        console.log(result,"resss")
         return result
     }
 }
