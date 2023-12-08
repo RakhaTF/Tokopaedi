@@ -15,3 +15,8 @@ export type DeleteUserParams = {
     id: number;
     email: string;
 }
+
+export type GetUserDetailProfileParams = {
+    id: number;
+    email: string;
+}

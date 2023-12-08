@@ -143,6 +143,43 @@ const routes: RouteOptions[] = [
                 type: 'Boolean'
             })
         }
+    },
+    {
+        method: ["GET"],
+        url: "/api/v1/admin/user-list",
+        preHandler: CheckAuthAdmin({ rules : Rules.VIEW_USER_LIST }),
+        handler: AdminController.GetUserList,
+        schema: {
+            response: Schema.BaseResponse({
+                type: 'Array of Object',
+                message: {
+                    id: {type: 'number'},
+                    email: {type: 'string'},
+                    name: {type: 'string'},
+                    created_at: {type: 'number'}
+                }
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/user-detail",
+        preHandler: CheckAuthAdmin({ rules : Rules.VIEW_USER_PROFILE_DETAIL }),
+        handler: AdminController.GetUserDetailProfile,
+        schema: {
+            body: Schema.BaseRequestSchema('Raihan',{
+                email: {type: 'string'}
+            }),
+            response: Schema.BaseResponse({
+                type: 'Object',
+                message: {
+                    id: {type: 'number'},
+                    email: {type: 'string'},
+                    name: {type: 'string'},
+                    created_at: {type: 'number'}
+                }
+            })
+        }
     }
 ]
 

@@ -18,3 +18,7 @@ export type UpdateProfileRequest = {
 export type DeleteUserRequest = {
     email: string;
 }
+
+export type GetUserDetailProfileRequest = {
+    email: string;
+}

@@ -63,3 +63,13 @@ export const DeleteUser = Joi.object({
         'string.email': 'Email must be a valid email',
     })
 }).options({ abortEarly: false });
+
+export const GetUserDetailProfile = Joi.object({
+    id: Joi.number().required().messages({
+        'any.required': 'Id is required',
+    }),
+    email: Joi.string().email().required().messages({
+        'any.required': 'Email is required',
+        'string.email': 'Email must be a valid email',
+    })
+}).options({ abortEarly: false });

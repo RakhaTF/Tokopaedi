@@ -90,4 +90,29 @@ export default class AdminController {
             throw error
         }
     }
+
+    static async GetUserList(){
+        try {
+            const getUserList = await AdminAppService.GetUserListService()
+
+            const result = {message : getUserList}
+
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async GetUserDetailProfile(request: FastifyRequest){
+        try {
+            const jwt = request.user
+            const {email} = request.body as AdminRequestDto.GetUserDetailProfileRequest
+            const getUserDetailProfile = await AdminAppService.GetUserDetailProfileService({id: jwt.id, email})
+
+            const result = {message: getUserDetailProfile}
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
 }

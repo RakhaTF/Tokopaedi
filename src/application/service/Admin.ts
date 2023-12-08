@@ -143,4 +143,22 @@ export default class AdminAppService {
 
         return deleteUser
     }
+
+    static async GetUserListService(){
+        const getUserList = await AdminDomainService.GetUserListDomain()
+
+        return getUserList
+    }
+
+    static async GetUserDetailProfileService(params: AdminParamsDto.GetUserDetailProfileParams){
+        await AdminSchema.GetUserDetailProfile.validateAsync(params)
+
+        if (params.id < 1){
+            throw new Error ("User not found")
+        }
+
+        const getUserDetailProfile = await AdminDomainService.GetUserDetailProfileDomain(params.email)
+
+        return getUserDetailProfile
+    }
 }
