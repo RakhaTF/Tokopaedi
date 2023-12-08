@@ -16,8 +16,9 @@ export default class ShippingAddressController {
 
     static async GetShippingAddressDetail(request: FastifyRequest) {
         try {
+            const user = request.user
             const { id } = request.body as { id: number }
-            const result = await ShippingAddressAppService.GetShippingAddressDetail(id)
+            const result = await ShippingAddressAppService.GetShippingAddressDetail(id, user.id)
             return { message: result }
         } catch (error) {
             throw error
@@ -36,8 +37,9 @@ export default class ShippingAddressController {
 
     static async DeleteShippingAddress(request: FastifyRequest) {
         try {
+            const user = request.user
             const { id } = request.body as { id: number }
-            const result = await ShippingAddressAppService.DeleteShippingAddress(id)
+            const result = await ShippingAddressAppService.DeleteShippingAddress(id, user.id)
             return { message: result }
         } catch (error) {
             throw error

@@ -10,9 +10,15 @@ export default class ShippingAddressAppService {
         return true;
     }
 
-    static async GetShippingAddressDetail(id: number) {
+    static async GetShippingAddressDetail(id: number, user_id: number) {
         await ShippingAddressSchema.ShippingAddressId.validateAsync(id)
-        return await ShippingAddressDomainService.GetShippingAddressDetailDomain(id)
+        
+        const shippingAddressDetail = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id)
+        
+        if (user_id !== shippingAddressDetail.user_id) {
+            throw new Error("This Shipping Address Doesn't Belong To You!")
+        }
+        return shippingAddressDetail
     }
 
     static async GetShippingAddressList(user_id: number) {
@@ -20,8 +26,14 @@ export default class ShippingAddressAppService {
         return await ShippingAddressDomainService.GetShippingAddressListDomain(user_id)
     }
 
-    static async DeleteShippingAddress(id: number) {
+    static async DeleteShippingAddress(id: number, user_id: number) {
         await ShippingAddressSchema.ShippingAddressId.validateAsync(id)
+        const shippingAddressDetail = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id)
+
+        if (user_id !== shippingAddressDetail.user_id) {
+            throw new Error("This Shipping Address Doesn't Belong To You!")
+        }
+
         await ShippingAddressDomainService.DeleteShippingAddressDomain(id)
         return true;
     }
@@ -29,11 +41,15 @@ export default class ShippingAddressAppService {
     static async UpdateShippingAddress(params: ShippingAddressParamsDto.UpdateShippingAddressParams) {
         await ShippingAddressSchema.UpdateShippingAddress.validateAsync(params)
         const { id, address, city, country, postal_code, province, user_id } = params
-        
+
         const existingAddress = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id)
 
+        if (user_id !== existingAddress.user_id) {
+            throw new Error("This Shipping Address Doesn't Belong To You!")
+        }
+
         const updateAddressData: Partial<ShippingAddress> = existingAddress
-        
+
         if (address || postal_code || city || country || province) {
             if (address) updateAddressData.address = address;
             if (postal_code) updateAddressData.postal_code = postal_code;
@@ -42,7 +58,7 @@ export default class ShippingAddressAppService {
             if (province) updateAddressData.province = province;
         }
 
-        await ShippingAddressDomainService.UpdateShippingAddressDomain({...updateAddressData, id, user_id})
+        await ShippingAddressDomainService.UpdateShippingAddressDomain({ ...updateAddressData, id, user_id })
         return true;
     }
 }
