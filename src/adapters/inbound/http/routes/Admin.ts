@@ -3,6 +3,7 @@ import ProductController from "@adapters/inbound/controller/ProductController";
 import { AuthValidate, CheckAuthAdmin } from "helpers/prehandler/AuthValidate";
 import { Rules } from "@domain/model/Rules";
 import * as Schema from "helpers/ApiSchema/ApiSchema"
+import AdminController from "@adapters/inbound/controller/AdminController";
 
 const routes: RouteOptions[] = [
     {
@@ -44,6 +45,103 @@ const routes: RouteOptions[] = [
                 stock: { type: "integer" },
             }),
             response: Schema.BaseResponse({ type: 'Boolean' })
+        }
+    },
+    {
+        method: ["GET"],
+        url: "/api/v1/admin/profile",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_PROFILE_DETAIL }),
+        handler: AdminController.GetAdminProfile,
+        schema: {
+            response: Schema.BaseResponse({
+                type: 'Object',
+                message: {
+                    id: {type : "number"},
+                    name: {type: "string"},
+                    email: {type: "string"},
+                    level: {type: "number"},
+                    created_at: {type: "number"},
+                    group_rules: {type: "string"}
+                }
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/create-user",
+        preHandler: CheckAuthAdmin({ rules: Rules.CREATE_USER }),
+        handler: AdminController.CreateUser,
+        schema: {
+            body: Schema.BaseRequestSchema('Raihan',{
+                name: {type: 'string'},
+                email: {type: 'string'},
+                password: {type: 'string'}
+            }),
+            response: Schema.BaseResponse({
+                type: 'Object',
+                message: {
+                    id: {type : "number"},
+                    name: {type: "string"},
+                    email: {type: "string"},
+                    level: {type: "number"},
+                    created_at: {type: "number"},
+                }
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/update-user",
+        preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_USER_PROFILE }),
+        handler: AdminController.UpdateProfileUser,
+        schema: {
+            body: Schema.BaseRequestSchema('Raihan',{
+                userid: {type: 'number'},
+                name: {type: 'string'},
+                email: {type: 'string'}
+            }),
+            response: Schema.BaseResponse({
+                type: 'Object',
+                message: {
+                    id: {type: 'number'},
+                    email: {type: 'string'},
+                    name: {type: 'string'}
+                }
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/update-profile",
+        preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_PROFILE }),
+        handler: AdminController.UpdateProfile,
+        schema: {
+            body: Schema.BaseRequestSchema('Raihan',{
+                name: {type: 'string'},
+                email: {type: 'string'}
+            }),
+            response: Schema.BaseResponse({
+                type: 'Object',
+                message: {
+                    id: {type: 'number'},
+                    email: {type: 'string'},
+                    name: {type: 'string'}
+                }
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/delete-user",
+        preHandler: CheckAuthAdmin({ rules: Rules.DELETE_USER }),
+        handler: AdminController.DeleteUser,
+        schema: {
+            body: Schema.BaseRequestSchema('Raihan',{
+                email: {type: 'string'}
+            }),
+            response: Schema.BaseResponse({
+                type: 'Boolean'
+            })
         }
     }
 ]
