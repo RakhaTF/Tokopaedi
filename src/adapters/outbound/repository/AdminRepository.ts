@@ -20,4 +20,17 @@ export default class AdminRepository {
         const result = await db.query(`DELETE FROM user WHERE email = ?`, [email])
         return result
     }
+
+    static async DBGetUserList(): Promise<AdminResponseDto.GetUserListResponse[]>{
+        const result = await db.query<AdminResponseDto.GetUserListResponse[]>(`
+        SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.level = 3`)
+        return result
+    }
+
+    static async DBGetUserDetailProfile(email: string): Promise<AdminResponseDto.GetUserDetailProfileResponse[]>{
+        const result = await db.query<AdminResponseDto.GetUserDetailProfileResponse[]>(`
+        SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.email = ?`, [email])
+
+        return result
+    }
 }

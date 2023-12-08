@@ -16,4 +16,17 @@ export default class AdminDomainService {
         }
         return true
     }
+
+    static async GetUserListDomain(){
+        const result = await AdminRepository.DBGetUserList()
+        if (result.length < 1){
+            throw new Error ("Empty User")
+        }
+        return result
+    }
+
+    static async GetUserDetailProfileDomain(email: string){
+        const result = await AdminRepository.DBGetUserDetailProfile(email)
+        return result[0]
+    }
 }
