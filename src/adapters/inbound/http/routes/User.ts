@@ -3,6 +3,7 @@ import { AuthValidate } from "helpers/prehandler/AuthValidate";
 import UserController from "@adapters/inbound/controller/UserController";
 import * as Schema from "helpers/ApiSchema/ApiSchema"
 import ShippingAddressController from "@adapters/inbound/controller/ShippingAddressController";
+import TransactionController from "@adapters/inbound/controller/TransactionController";
 
 const routes: RouteOptions[] = [
     {
@@ -120,6 +121,11 @@ const routes: RouteOptions[] = [
             body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
             response: Schema.BaseResponse({ type: "Boolean" })
         }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/user/transaction/create",
+        handler: TransactionController.CreateTransaction,
     }
 ]
 
