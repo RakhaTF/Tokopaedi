@@ -5,6 +5,7 @@ export class InsertDataIntoUserGroupsRules1701761921393 implements MigrationInte
     public async up(queryRunner: QueryRunner): Promise<void> {
         const rules = [
             'CREATE_RULES',
+            'VIEW_RULES_LIST',
             'UPDATE_RULES',
             'DELETE_RULES',
             'ASSIGN_RULES_TO_ADMIN',
@@ -28,6 +29,8 @@ export class InsertDataIntoUserGroupsRules1701761921393 implements MigrationInte
             'APPROVE_TRANSACTION',
             'VIEW_TRANSACTION_LIST',
             'VIEW_USER_TRANSACTION_LIST',
+            'VIEW_USER_DELETED_TRANSACTION_LIST',
+            'VIEW_DELETED_TRANSACTION_LIST',
             'VIEW_USER_SHIPPING_ADDRESS',
             'VIEW_USER_SHIPPING_ADDRESS_LIST',
         ];
