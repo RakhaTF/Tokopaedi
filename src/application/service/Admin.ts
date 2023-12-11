@@ -181,24 +181,28 @@ export default class AdminAppService {
 
     static async CreateRules(rule: string) {
         await AdminSchema.CreateRule.validateAsync(rule)
-        const existingRules = await AdminDomainService.GetRulesList()
 
+        //checking duplicate, cannot update rule to an existing rule 
+        const existingRules = await AdminDomainService.GetRulesList()
         const duplicate = existingRules.some((existingRule) => existingRule.rules === rule);
         if (duplicate) {
             throw new Error("Rule Already Exist!")
         }
+
         await AdminDomainService.CreateRule(rule)
         return true;
     }
 
     static async UpdateRule(params: AdminParamsDto.UpdateRuleParams) {
         await AdminSchema.UpdateRule.validateAsync(params)
-        const existingRules = await AdminDomainService.GetRulesList()
 
+        //checking duplicate, can't update rule to an existing rule 
+        const existingRules = await AdminDomainService.GetRulesList()
         const duplicate = existingRules.some((existingRule) => existingRule.rules === params.rule);
         if (duplicate) {
             throw new Error("Rule Already Exist!")
         }
+
         await AdminDomainService.UpdateRule(params)
         return true;
     }
@@ -211,6 +215,16 @@ export default class AdminAppService {
 
     static async AssignRule(params: AdminParamsDto.AssignRuleParams) {
         await AdminSchema.AssignRule.validateAsync(params)
+
+        //Checking for duplicate, can't reassign existing rule to a group_id.
+        const existingRulesOfGroups = await AdminDomainService.UserGroupRulesList(params.group_id)
+        const rulesArray = existingRulesOfGroups.list_of_rules.split(",").map(Number)
+        const duplicate = rulesArray.some((rule) => rule === params.rules_id)
+
+        if(duplicate){
+            throw new Error("Can't Reassign Existing Rule!")
+        }
+
         await AdminDomainService.AssignRule(params)
         return true;
     }

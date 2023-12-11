@@ -74,6 +74,7 @@ export const GetUserDetailProfile = Joi.object({
     })
 }).options({ abortEarly: false });
 
+//default existing rules starting from 100
 export const RulesId = Joi.number().integer().greater(100).required().messages({
     'number.base': 'rules_id must be a number',
     'number.integer': 'rules_id must be an integer',
@@ -81,6 +82,7 @@ export const RulesId = Joi.number().integer().greater(100).required().messages({
     'any.required': 'rules_id is required',
 });
 
+//Rules can only be alphabets, upppercase and separated by underscore.
 export const Rules = Joi.string().pattern(new RegExp('^[A-Z_]*$')).required().messages({
     'string.base': 'rule must be a string',
     'string.pattern.base': 'rule must be uppercased and separated with underscore',

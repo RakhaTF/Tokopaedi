@@ -6,7 +6,7 @@ import { ResultSetHeader } from "mysql2";
 const db = AppDataSource;
 
 export default class AdminRepository {
-    static async DBGetAdminData (id: number): Promise<AdminResponseDto.GetAdminDataResult[]>{
+    static async DBGetAdminData(id: number): Promise<AdminResponseDto.GetAdminDataResult[]> {
         const result = await db.query<AdminResponseDto.GetAdminDataResult[]>(`SELECT 
         u.id, u.name, u.email, u.level, u.created_at,
         GROUP_CONCAT(DISTINCT d.rules_id separator ',') as group_rules
@@ -18,18 +18,18 @@ export default class AdminRepository {
         return result
     }
 
-    static async DBDeleteUser(email: string){
+    static async DBDeleteUser(email: string) {
         const result = await db.query(`DELETE FROM user WHERE email = ?`, [email])
         return result
     }
 
-    static async DBGetUserList(): Promise<AdminResponseDto.GetUserListResponse[]>{
+    static async DBGetUserList(): Promise<AdminResponseDto.GetUserListResponse[]> {
         const result = await db.query<AdminResponseDto.GetUserListResponse[]>(`
         SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.level = 3`)
         return result
     }
 
-    static async DBGetUserDetailProfile(email: string): Promise<AdminResponseDto.GetUserDetailProfileResponse[]>{
+    static async DBGetUserDetailProfile(email: string): Promise<AdminResponseDto.GetUserDetailProfileResponse[]> {
         const result = await db.query<AdminResponseDto.GetUserDetailProfileResponse[]>(`
         SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.email = ?`, [email])
 
@@ -75,5 +75,13 @@ export default class AdminRepository {
 
     static async DBRevokeRule({ group_id, rules_id }: AdminParamsDto.RevokeRuleParams) {
         return await db.query<ResultSetHeader>(`DELETE FROM user_group_rules WHERE group_id = ? AND rules_id = ?`, [group_id, rules_id])
+    }
+
+    static async DBGetUserGroupRulesList(group_id: number) {
+        return db.query<AdminResponseDto.GetUserGroupRulesResponse[]>(`
+        SELECT group_id, GROUP_CONCAT(rules_id SEPARATOR ",") AS list_of_rules 
+        FROM user_group_rules
+        WHERE group_id = ?
+        GROUP BY 1`, [group_id])
     }
 }

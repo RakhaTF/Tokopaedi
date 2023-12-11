@@ -34,3 +34,8 @@ export type GetRulesListResponse = {
     rules_id: number;
     rules: string;
 }
+
+export type GetUserGroupRulesResponse = {
+    group_id: number;
+    list_of_rules: string;
+}

@@ -81,4 +81,12 @@ export default class AdminDomainService {
             throw new Error("Failed to Revoke Rule From Admin")
         }
     }
+
+    static async UserGroupRulesList(group_id:number) {
+        const listOfRules = await AdminRepository.DBGetUserGroupRulesList(group_id)
+        if(listOfRules.length < 1 ){
+            throw new Error("No Group Found!")
+        }
+        return listOfRules[0]
+    }
 }
