@@ -1,4 +1,5 @@
 import AdminRepository from "@adapters/outbound/repository/AdminRepository"
+import { AdminParamsDto } from "@domain/model/params"
 
 export default class AdminDomainService {
     static async GetAdminDataDomain(id: number){
@@ -28,5 +29,56 @@ export default class AdminDomainService {
     static async GetUserDetailProfileDomain(email: string){
         const result = await AdminRepository.DBGetUserDetailProfile(email)
         return result[0]
+    }
+
+    static async GetAdminList() {
+        const adminList = await AdminRepository.DBGetAdminList();
+        if (adminList.length < 1) {
+            throw new Error("No Admin Found!")
+        }
+        return adminList
+    }
+
+    static async GetRulesList() {
+        const rulesList = await AdminRepository.DBGetRulesList();
+        if (rulesList.length < 1) {
+            throw new Error("No Rules Found!")
+        }
+        return rulesList
+    }
+
+    static async CreateRule(rule: string) {
+        const newRule = await AdminRepository.DBCreateRules(rule);
+        if (newRule.affectedRows < 1) {
+            throw new Error("Failed to Create New Rule")
+        }
+    }
+
+    static async UpdateRule(params: AdminParamsDto.UpdateRuleParams) {
+        const newRule = await AdminRepository.DBUpdateRule(params);
+        if (newRule.affectedRows < 1) {
+            throw new Error("Failed to Create New Rule")
+        }
+    }
+
+    static async DeleteRule(rules_id: number) {
+        const deleteRule = await AdminRepository.DBDeleteRule(rules_id);
+        if (deleteRule.affectedRows < 1) {
+            throw new Error("Failed to Delete Rule")
+        }
+    }
+
+    static async AssignRule(params: AdminParamsDto.AssignRuleParams) {
+        const assignRule = await AdminRepository.DBAssignRule(params);
+        if (assignRule.affectedRows < 1) {
+            throw new Error("Failed to Assign Rule to Admin")
+        }
+    }
+
+    static async RevokeRule(params: AdminParamsDto.RevokeRuleParams) {
+        const revokeRule = await AdminRepository.DBRevokeRule(params);
+        if (revokeRule.affectedRows < 1) {
+            throw new Error("Failed to Revoke Rule From Admin")
+        }
     }
 }

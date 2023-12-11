@@ -22,3 +22,18 @@ export type DeleteUserRequest = {
 export type GetUserDetailProfileRequest = {
     email: string;
 }
+
+export type UpdateRuleRequest = {
+    rule: string;
+    rules_id: number;
+}
+
+export type AssignRuleRequest = {
+    group_id: number;
+    rules_id: number;
+}
+
+export type RevokeRuleRequest = {
+    group_id: number;
+    rules_id: number;
+}

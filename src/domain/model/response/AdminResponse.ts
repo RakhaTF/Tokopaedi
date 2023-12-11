@@ -18,3 +18,19 @@ export type GetUserDetailProfileResponse = {
     email: string;
     created_at: number;
 }
+export type GetAdminListQueryResult = {
+    name: string;
+    rights: string;
+    rules_id: string;
+}
+
+export type GetAdminListResponse = {
+    name: string;
+    rights: string[];
+    rules_id: number[];
+}
+
+export type GetRulesListResponse = {
+    rules_id: number;
+    rules: string;
+}

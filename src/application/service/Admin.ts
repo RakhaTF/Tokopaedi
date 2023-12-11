@@ -5,6 +5,7 @@ import { hashPassword } from "helpers/Password/Password"
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import moment from 'moment'
 import { AdminParamsDto, UserParamsDto } from "@domain/model/params";
+import { AdminResponseDto } from "@domain/model/response";
 
 const prohibitedWords = require("indonesian-badwords")
 
@@ -160,5 +161,63 @@ export default class AdminAppService {
         const getUserDetailProfile = await AdminDomainService.GetUserDetailProfileDomain(params.email)
 
         return getUserDetailProfile
+    }
+
+    static async GetAdminListService(): Promise<AdminResponseDto.GetAdminListResponse[]> {
+        const rules = await AdminDomainService.GetAdminList()
+
+        return rules.map(element => {
+            return {
+                name: element.name,
+                rights: element.rights.split(","),
+                rules_id: element.rules_id.split(",").map(Number)
+            }
+        });
+    }
+
+    static async GetRulesListService() {
+        return await AdminDomainService.GetRulesList()
+    }
+
+    static async CreateRules(rule: string) {
+        await AdminSchema.CreateRule.validateAsync(rule)
+        const existingRules = await AdminDomainService.GetRulesList()
+
+        const duplicate = existingRules.some((existingRule) => existingRule.rules === rule);
+        if (duplicate) {
+            throw new Error("Rule Already Exist!")
+        }
+        await AdminDomainService.CreateRule(rule)
+        return true;
+    }
+
+    static async UpdateRule(params: AdminParamsDto.UpdateRuleParams) {
+        await AdminSchema.UpdateRule.validateAsync(params)
+        const existingRules = await AdminDomainService.GetRulesList()
+
+        const duplicate = existingRules.some((existingRule) => existingRule.rules === params.rule);
+        if (duplicate) {
+            throw new Error("Rule Already Exist!")
+        }
+        await AdminDomainService.UpdateRule(params)
+        return true;
+    }
+
+    static async DeleteRule(rules_id: number) {
+        await AdminSchema.RulesId.validateAsync(rules_id)
+        await AdminDomainService.DeleteRule(rules_id)
+        return true;
+    }
+
+    static async AssignRule(params: AdminParamsDto.AssignRuleParams) {
+        await AdminSchema.AssignRule.validateAsync(params)
+        await AdminDomainService.AssignRule(params)
+        return true;
+    }
+
+    static async RevokeRule(params: AdminParamsDto.RevokeRuleParams) {
+        await AdminSchema.RevokeRule.validateAsync(params)
+        await AdminDomainService.RevokeRule(params)
+        return true;
     }
 }

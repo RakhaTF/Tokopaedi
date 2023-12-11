@@ -178,7 +178,100 @@ const routes: RouteOptions[] = [
                 }
             })
         }
-    }
+    },
+    {
+        method: ["GET"],
+        url: "/api/v1/admin/admin-list",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_RULES_LIST }),
+        handler: AdminController.GetAdminList,
+        schema: {
+            response: Schema.BaseResponse({
+                type: "Array of Object",
+                message: {
+                    name: { type: "string" },
+                    rights: { type: "array", items: { type: "string" } },
+                    rules_id: { type: "array", items: { type: "integer" } },
+                }
+            })
+        }
+    },
+    {
+        method: ["GET"],
+        url: "/api/v1/admin/rules/list",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_RULES_LIST }),
+        handler: AdminController.GetRulesList,
+        schema: {
+            response: Schema.BaseResponse({
+                type: "Array of Object",
+                message: {
+                    rules_id: { type: "integer" },
+                    rules: { type: "string" },
+                }
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/rules/create",
+        preHandler: CheckAuthAdmin({ rules: Rules.CREATE_RULES }),
+        handler: AdminController.CreateRule,
+        schema: {
+            body: Schema.BaseRequestSchema("Rakha", { rule: { type: "string" } }),
+            response: Schema.BaseResponse({ type: "Boolean" })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/rules/update",
+        preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_RULES }),
+        handler: AdminController.UpdateRule,
+        schema: {
+            body: Schema.BaseRequestSchema("Rakha", {
+                rule: { type: "string" },
+                rules_id: { type: "integer" },
+            }),
+            response: Schema.BaseResponse({ type: "Boolean" })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/rules/delete",
+        preHandler: CheckAuthAdmin({ rules: Rules.DELETE_RULES }),
+        handler: AdminController.DeleteRule,
+        schema: {
+            body: Schema.BaseRequestSchema("Rakha", {
+                rules_id: { type: "integer" },
+            }),
+            response: Schema.BaseResponse({ type: "Boolean" })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/rules/assign",
+        preHandler: CheckAuthAdmin({ rules: Rules.ASSIGN_RULES_TO_ADMIN }),
+        handler: AdminController.AssignRule,
+        schema: {
+            body: Schema.BaseRequestSchema("Rakha", {
+                group_id: { type: "integer" },
+                rules_id: { type: "integer" },
+            }),
+            response: Schema.BaseResponse({ type: "Boolean" })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/rules/revoke",
+        preHandler: CheckAuthAdmin({ rules: Rules.REVOKE_RULES_FROM_ADMIN }),
+        handler: AdminController.RevokeRule,
+        schema: {
+            body: Schema.BaseRequestSchema("Rakha", {
+                group_id: { type: "integer" },
+                rules_id: { type: "integer" },
+            }),
+            response: Schema.BaseResponse({ type: "Boolean" })
+        }
+    },
+
 ]
 
 export default async function AdminRoute(
