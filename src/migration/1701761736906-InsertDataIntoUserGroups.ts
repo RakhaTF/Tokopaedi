@@ -5,7 +5,7 @@ export class InsertDataIntoUserGroups1701761736906 implements MigrationInterface
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
         INSERT INTO user_groups (level_id, group_name) VALUES (1, 'Super Admin'), (2, 'Admin'), (3, 'User'),
-        (4, 'Product Management Staff'), (5, 'User Management Staff'), (6, 'Shipping and Transaction Management Staff')
+        (4, 'User Manager'), (5, 'Product Manager'), (6, 'Transaction Manager')
     `);
     }
 
