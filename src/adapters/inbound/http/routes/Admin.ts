@@ -50,7 +50,6 @@ const routes: RouteOptions[] = [
     {
         method: ["GET"],
         url: "/api/v1/admin/profile",
-        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_PROFILE_DETAIL }),
         handler: AdminController.GetAdminProfile,
         schema: {
             response: Schema.BaseResponse({
@@ -113,7 +112,6 @@ const routes: RouteOptions[] = [
     {
         method: ["POST"],
         url: "/api/v1/admin/update-profile",
-        preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_PROFILE }),
         handler: AdminController.UpdateProfile,
         schema: {
             body: Schema.BaseRequestSchema('Raihan',{
@@ -164,7 +162,7 @@ const routes: RouteOptions[] = [
     {
         method: ["POST"],
         url: "/api/v1/admin/user-detail",
-        preHandler: CheckAuthAdmin({ rules : Rules.VIEW_USER_PROFILE_DETAIL }),
+        preHandler: CheckAuthAdmin({ rules : Rules.VIEW_USER_PROFILE }),
         handler: AdminController.GetUserDetailProfile,
         schema: {
             body: Schema.BaseRequestSchema('Raihan',{

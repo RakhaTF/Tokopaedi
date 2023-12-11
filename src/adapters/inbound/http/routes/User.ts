@@ -1,6 +1,5 @@
-import { Rules } from "@domain/model/Rules";
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify";
-import { AuthValidate, CheckAuthAdmin } from "helpers/prehandler/AuthValidate";
+import { AuthValidate } from "helpers/prehandler/AuthValidate";
 import UserController from "@adapters/inbound/controller/UserController";
 import * as Schema from "helpers/ApiSchema/ApiSchema"
 import ShippingAddressController from "@adapters/inbound/controller/ShippingAddressController";
@@ -9,7 +8,6 @@ const routes: RouteOptions[] = [
     {
         method: ["GET"],
         url: "/api/v1/user/profile",
-        preHandler: CheckAuthAdmin({rules: Rules.VIEW_PROFILE_DETAIL}),
         handler: UserController.GetUserProfile,
         schema: {
             response: Schema.BaseResponse({
