@@ -115,4 +115,69 @@ export default class AdminController {
             throw error
         }
     }
+
+    static async GetAdminList() {
+        try {
+            const admin = await AdminAppService.GetAdminListService()
+            return { message: admin }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async GetRulesList() {
+        try {
+            const rules = await AdminAppService.GetRulesListService()
+            return { message: rules }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async CreateRule(request: FastifyRequest) {
+        try {
+            const { rule } = request.body as { rule: string }
+            const createRule = await AdminAppService.CreateRules(rule)
+            return { message: createRule }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async UpdateRule(request: FastifyRequest) {
+        try {
+            const updateRule = await AdminAppService.UpdateRule(request.body as AdminRequestDto.UpdateRuleRequest)
+            return { message: updateRule }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async DeleteRule(request: FastifyRequest) {
+        try {
+            const { rules_id } = request.body as { rules_id: number }
+            const deleteRule = await AdminAppService.DeleteRule(rules_id)
+            return { message: deleteRule }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async AssignRule(request: FastifyRequest) {
+        try {
+            const assignRule = await AdminAppService.AssignRule(request.body as AdminRequestDto.AssignRuleRequest)
+            return { message: assignRule }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async RevokeRule(request: FastifyRequest) {
+        try {
+            const RevokeRule = await AdminAppService.RevokeRule(request.body as AdminRequestDto.RevokeRuleRequest)
+            return { message: RevokeRule }
+        } catch (error) {
+            throw error
+        }
+    }
 }

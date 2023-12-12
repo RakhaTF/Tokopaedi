@@ -1,10 +1,12 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import { AdminResponseDto } from "@domain/model/response";
+import { AdminParamsDto } from "@domain/model/params";
+import { ResultSetHeader } from "mysql2";
 
 const db = AppDataSource;
 
 export default class AdminRepository {
-    static async DBGetAdminData (id: number): Promise<AdminResponseDto.GetAdminDataResult[]>{
+    static async DBGetAdminData(id: number): Promise<AdminResponseDto.GetAdminDataResult[]> {
         const result = await db.query<AdminResponseDto.GetAdminDataResult[]>(`SELECT 
         u.id, u.name, u.email, u.level, u.created_at,
         GROUP_CONCAT(DISTINCT d.rules_id separator ',') as group_rules
@@ -16,21 +18,70 @@ export default class AdminRepository {
         return result
     }
 
-    static async DBDeleteUser(email: string){
+    static async DBDeleteUser(email: string) {
         const result = await db.query(`DELETE FROM user WHERE email = ?`, [email])
         return result
     }
 
-    static async DBGetUserList(): Promise<AdminResponseDto.GetUserListResponse[]>{
+    static async DBGetUserList(): Promise<AdminResponseDto.GetUserListResponse[]> {
         const result = await db.query<AdminResponseDto.GetUserListResponse[]>(`
         SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.level = 3`)
         return result
     }
 
-    static async DBGetUserDetailProfile(email: string): Promise<AdminResponseDto.GetUserDetailProfileResponse[]>{
+    static async DBGetUserDetailProfile(email: string): Promise<AdminResponseDto.GetUserDetailProfileResponse[]> {
         const result = await db.query<AdminResponseDto.GetUserDetailProfileResponse[]>(`
         SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.email = ?`, [email])
 
         return result
+    }
+
+    static async DBGetAdminList() {
+        return await db.query<AdminResponseDto.GetAdminListQueryResult[]>(`
+        SELECT u.name, 
+            GROUP_CONCAT(ur.rules SEPARATOR ",") AS rights, 
+            GROUP_CONCAT(ur.rules_id SEPARATOR ",") AS rules_id 
+        FROM user u
+        JOIN user_groups ug
+            ON u.level = ug.level_id
+        JOIN user_group_rules ugr
+            ON ugr.group_id = ug.level_id
+        JOIN user_rules ur
+            ON ugr.rules_id = ur.rules_id
+        WHERE u.level <> 3
+        GROUP BY name;
+        `)
+    }
+
+    static async DBCreateRules(rules: string) {
+        return await db.query<ResultSetHeader>(`INSERT INTO user_rules(rules) VALUES(?)`, [rules])
+    }
+
+    static async DBGetRulesList() {
+        return await db.query<AdminResponseDto.GetRulesListResponse[]>(`SELECT rules_id, rules FROM user_rules;`)
+    }
+
+    static async DBUpdateRule({ rule, rules_id }: AdminParamsDto.UpdateRuleParams) {
+        return await db.query<ResultSetHeader>(`UPDATE user_rules SET rules = ? WHERE rules_id = ?`, [rule, rules_id])
+    }
+
+    static async DBDeleteRule(rules_id: number) {
+        return await db.query<ResultSetHeader>(`DELETE FROM user_rules WHERE rules_id = ?`, [rules_id])
+    }
+
+    static async DBAssignRule({ group_id, rules_id }: AdminParamsDto.AssignRuleParams) {
+        return await db.query<ResultSetHeader>(`INSERT INTO user_group_rules(group_id, rules_id) VALUES(?, ?)`, [group_id, rules_id])
+    }
+
+    static async DBRevokeRule({ group_id, rules_id }: AdminParamsDto.RevokeRuleParams) {
+        return await db.query<ResultSetHeader>(`DELETE FROM user_group_rules WHERE group_id = ? AND rules_id = ?`, [group_id, rules_id])
+    }
+
+    static async DBGetUserGroupRulesList(group_id: number) {
+        return db.query<AdminResponseDto.GetUserGroupRulesResponse[]>(`
+        SELECT group_id, GROUP_CONCAT(rules_id SEPARATOR ",") AS list_of_rules 
+        FROM user_group_rules
+        WHERE group_id = ?
+        GROUP BY 1`, [group_id])
     }
 }

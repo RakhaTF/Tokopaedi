@@ -1,3 +1,5 @@
+import { AssignRuleRequest, RevokeRuleRequest, UpdateRuleRequest } from "../request/AdminRequest";
+
 export type UpdateProfileUserParams = {
     id: number;
     userid: number
@@ -20,3 +22,9 @@ export type GetUserDetailProfileParams = {
     id: number;
     email: string;
 }
+
+export type UpdateRuleParams = UpdateRuleRequest
+
+export type AssignRuleParams = AssignRuleRequest
+
+export type RevokeRuleParams = RevokeRuleRequest

@@ -5,6 +5,7 @@ import { hashPassword } from "helpers/Password/Password"
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import moment from 'moment'
 import { AdminParamsDto, UserParamsDto } from "@domain/model/params";
+import { AdminResponseDto } from "@domain/model/response";
 
 const prohibitedWords = require("indonesian-badwords")
 
@@ -160,5 +161,77 @@ export default class AdminAppService {
         const getUserDetailProfile = await AdminDomainService.GetUserDetailProfileDomain(params.email)
 
         return getUserDetailProfile
+    }
+
+    static async GetAdminListService(): Promise<AdminResponseDto.GetAdminListResponse[]> {
+        const rules = await AdminDomainService.GetAdminList()
+
+        return rules.map(element => {
+            return {
+                name: element.name,
+                rights: element.rights.split(","),
+                rules_id: element.rules_id.split(",").map(Number)
+            }
+        });
+    }
+
+    static async GetRulesListService() {
+        return await AdminDomainService.GetRulesList()
+    }
+
+    static async CreateRules(rule: string) {
+        await AdminSchema.CreateRule.validateAsync(rule)
+
+        //checking duplicate, cannot update rule to an existing rule 
+        const existingRules = await AdminDomainService.GetRulesList()
+        const duplicate = existingRules.some((existingRule) => existingRule.rules === rule);
+        if (duplicate) {
+            throw new Error("Rule Already Exist!")
+        }
+
+        await AdminDomainService.CreateRule(rule)
+        return true;
+    }
+
+    static async UpdateRule(params: AdminParamsDto.UpdateRuleParams) {
+        await AdminSchema.UpdateRule.validateAsync(params)
+
+        //checking duplicate, can't update rule to an existing rule 
+        const existingRules = await AdminDomainService.GetRulesList()
+        const duplicate = existingRules.some((existingRule) => existingRule.rules === params.rule);
+        if (duplicate) {
+            throw new Error("Rule Already Exist!")
+        }
+
+        await AdminDomainService.UpdateRule(params)
+        return true;
+    }
+
+    static async DeleteRule(rules_id: number) {
+        await AdminSchema.RulesId.validateAsync(rules_id)
+        await AdminDomainService.DeleteRule(rules_id)
+        return true;
+    }
+
+    static async AssignRule(params: AdminParamsDto.AssignRuleParams) {
+        await AdminSchema.AssignRule.validateAsync(params)
+
+        //Checking for duplicate, can't reassign existing rule to a group_id.
+        const existingRulesOfGroups = await AdminDomainService.UserGroupRulesList(params.group_id)
+        const rulesArray = existingRulesOfGroups.list_of_rules.split(",").map(Number)
+        const duplicate = rulesArray.some((rule) => rule === params.rules_id)
+
+        if(duplicate){
+            throw new Error("Can't Reassign Existing Rule!")
+        }
+
+        await AdminDomainService.AssignRule(params)
+        return true;
+    }
+
+    static async RevokeRule(params: AdminParamsDto.RevokeRuleParams) {
+        await AdminSchema.RevokeRule.validateAsync(params)
+        await AdminDomainService.RevokeRule(params)
+        return true;
     }
 }
