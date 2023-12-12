@@ -129,8 +129,8 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/transaction/update",
-        handler: TransactionController.UpdateTransaction,
+        url: "/api/v1/user/transaction/update-product-quantity",
+        handler: TransactionController.UpdateTransactionProductQty,
     }
 ]
 

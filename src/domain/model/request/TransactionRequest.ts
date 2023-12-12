@@ -6,6 +6,6 @@ export type CreateTransactionRequest = {
 
 export type UpdateTransactionRequest = {
     order_id: number;
-    product_id: number[];
-    qty: number[];
+    product_id: number;
+    qty: number;
 }

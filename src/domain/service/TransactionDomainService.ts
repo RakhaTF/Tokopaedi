@@ -10,7 +10,14 @@ export default class TransactionDomainService {
     }
 
     static async InsertOrderItemDomain(params: TransactionParamsDto.InsertOrderItemParams, query_runner?: QueryRunner){
-        const result = await TransactionRepository.DBInsertOrderItem(params, query_runner)
+
+        //mapping product_id to handle multiple products.
+        const products = params.product_id.map((id, index) => {
+            return { product_id: id, qty: params.qty[index] };
+        });
+        const valueProduct = products.map(product => `(${params.insertId}, ${product.product_id}, ${product.qty})`).join(', ')
+        const result = await TransactionRepository.DBInsertOrderItem(valueProduct, query_runner)
+        
         if (result.affectedRows < 1){
             throw new Error ("Failed insert order")
         }
@@ -31,13 +38,34 @@ export default class TransactionDomainService {
         return true 
     }
 
-    static async UpdateUpdatedAtTransactionDomain(params: TransactionParamsDto.UpdateUpdatedAtTransactionParams){
-        const result = await TransactionRepository.DBUpdateUpdatedAtTransaction(params)
+    static async CreateTransactionStatusDomain(params: { transaction_id: number, update_time: number }, query_runner: QueryRunner) {
+        return await TransactionRepository.DBCreateTransactionStatus(params, query_runner)
+    }
+
+    static async GetTransactionDetailDomain(id: number) {
+        const test =  await TransactionRepository.DBGetTransactionDetail(id)
+        console.log({test})
+        return test
+    }
+
+    static async UpdateTransactionProductQtyDomain(params: TransactionParamsDto.UpdateTransactionProductQty){
+        const result = await TransactionRepository.DBUpdateTransactionProductQty(params)
 
         if (result.affectedRows < 1){
             throw Error ("Failed update updated_at in transaction")
         }
 
         return true
+    }
+
+    static async PayTransactionDomain(params: TransactionParamsDto.PayTransactionParams) {
+        const paymentResult = await TransactionRepository.DBPayTransaction(params)
+        if(paymentResult.affectedRows < 1) {
+            throw Error("Failed to Pay Transaction")
+        }
+    }
+
+    static async GetPendingTransactionDomain(user_id: number) {
+        return await TransactionRepository.DBGetPendingTransaction(user_id)
     }
 }

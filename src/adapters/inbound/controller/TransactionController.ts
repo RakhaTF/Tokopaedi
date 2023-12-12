@@ -24,11 +24,11 @@ export default class TransactionController {
         }
     }
 
-    static async UpdateTransaction(request: FastifyRequest){
+    static async UpdateTransactionProductQty(request: FastifyRequest){
         try {
             const jwt = request.user
             const { product_id, order_id, qty } = request.body as TransactionRequestDto.UpdateTransactionRequest
-            const updateTransaction = await TransactionAppService.UpdateTransactionService({
+            const updateTransaction = await TransactionAppService.UpdateTransactionProductQtyService({
                 id: jwt.id,
                 order_id,
                 product_id,

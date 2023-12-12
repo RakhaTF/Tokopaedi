@@ -38,4 +38,18 @@ export default class ProductDomainService {
             throw new Error("Update Product Failed!")
         }
     }
+
+    static async GetProductsPricesDomain(ids: number[]) {
+        const products = [];
+        for (const id of ids) {
+            const product = await ProductRepository.DBGetProductDetail(id);
+            if (product.length > 0) {
+                products.push({ id: product[0].id, price: product[0].price });
+            }
+        }
+        if(products.length < 1) {
+            throw new Error(`Product not found`);
+        }
+        return products;
+    }
 }

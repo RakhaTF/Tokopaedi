@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class CreateTransactionTable1701752168949 implements MigrationInterface {
+export class CreateTransactionTable1701752161871 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -8,18 +8,16 @@ export class CreateTransactionTable1701752168949 implements MigrationInterface {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
                 payment_method VARCHAR(255) NOT NULL,
-                transaction_status_id INT UNIQUE DEFAULT NULL,
                 items_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 shipping_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 total_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
+                shipping_address_id INT,
                 is_paid TINYINT(1) NOT NULL DEFAULT 0,
                 paid_at INT(11),
-                is_delivered TINYINT(1) NOT NULL DEFAULT 0,
-                delivered_at INT(11),
                 created_at INT(11) NOT NULL,
                 updated_at INT(11) NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-                FOREIGN KEY (transaction_status_id) REFERENCES transaction_status(id) ON DELETE SET NULL
+                FOREIGN KEY (shipping_address_id) REFERENCES shipping_address(id) ON DELETE SET NULL
             )
         `);
     }
