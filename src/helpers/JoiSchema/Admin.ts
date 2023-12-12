@@ -102,14 +102,14 @@ export const CreateRule = Rules
 export const UpdateRule = Joi.object({
     rules_id: RulesId,
     rule: Rules
-});
+}).options({ abortEarly: false });
 
 export const AssignRule = Joi.object({
     rules_id: RulesId,
     group_id: GroupId
-})
+}).options({ abortEarly: false });
 
 export const RevokeRule = Joi.object({
     rules_id: RulesId,
     group_id: GroupId
-})
+}).options({ abortEarly: false });
