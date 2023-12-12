@@ -1,5 +1,6 @@
 import TransactionRepository from "@adapters/outbound/repository/TransactionRepository"
 import { QueryRunner } from "typeorm"
+import { TransactionParamsDto } from "@domain/model/params";
 
 export default class TransactionDomainService {
     static async CreateTransactionIdDomain(id: number, query_runner?: QueryRunner){
@@ -8,16 +9,25 @@ export default class TransactionDomainService {
         return result
     }
 
-    static async InsertOrderItemDomain(insertId: number, product_id: number, qty: number, query_runner?: QueryRunner){
-        const result = await TransactionRepository.DBInsertOrderItem(insertId, product_id, qty, query_runner)
+    static async InsertOrderItemDomain(params: TransactionParamsDto.InsertOrderItemParams, query_runner?: QueryRunner){
+        const result = await TransactionRepository.DBInsertOrderItem(params, query_runner)
         if (result.affectedRows < 1){
             throw new Error ("Failed insert order")
         }
         return result
     }
 
-    static async GetUserOrderDomain(insertId: number, query_runner?: QueryRunner) {
-        const result = await TransactionRepository.DBGetUserOrderDomain(insertId, query_runner)
-        return result
+    static async GetOrderItemByOrderIdDomain(insertId: number, query_runner?: QueryRunner){
+        return await TransactionRepository.DBGetOrderItemByOrderId(insertId, query_runner)
+    }
+
+    static async UpdateOrderDomain(params: TransactionParamsDto.UpdateOrderParams){
+        const result = await TransactionRepository.DBUpdateOrder(params)
+
+        if (result.affectedRows < 1){
+            throw Error ("Failed update product qty")
+        }
+
+        return true 
     }
 }

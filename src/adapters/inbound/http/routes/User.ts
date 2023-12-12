@@ -126,6 +126,11 @@ const routes: RouteOptions[] = [
         method: ["POST"],
         url: "/api/v1/user/transaction/create",
         handler: TransactionController.CreateTransaction,
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/user/transaction/update",
+        handler: TransactionController.UpdateTransaction,
     }
 ]
 

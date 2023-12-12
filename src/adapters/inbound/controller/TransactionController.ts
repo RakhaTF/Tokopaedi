@@ -20,4 +20,23 @@ export default class TransactionController {
             throw error
         }
     }
+
+    static async UpdateTransaction(request: FastifyRequest){
+        try {
+            const jwt = request.user
+            const { product_id, order_id, qty } = request.body as TransactionRequestDto.UpdateTransactionRequest
+            const updateTransaction = await TransactionAppService.UpdateTransactionService({
+                id: jwt.id,
+                order_id,
+                product_id,
+                qty
+            })
+
+            const result = {message: updateTransaction}
+
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
 }
