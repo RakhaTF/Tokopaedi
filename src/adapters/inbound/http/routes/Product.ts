@@ -9,7 +9,7 @@ const routes: RouteOptions[] = [
         handler: ProductController.GetProductList,
         schema: {
             response: Schema.BaseResponse({
-                type: "Object",
+                type: "Array of Object",
                 message: {
                     id: { type: "integer" },
                     name: { type: "string" },
