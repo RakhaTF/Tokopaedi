@@ -10,6 +10,12 @@ export const CreateTransaction = Joi.object({
     qty: Joi.array().required().items(Joi.number()).messages({
         'any.required': 'Order_id is required',
     }),
+    created_at: Joi.number().required().messages({
+        'any.required': 'Created_at is required',
+    }),
+    updated_at: Joi.number().required().messages({
+        'any.required': 'Updated_at is required',
+    }),
 }).options({ abortEarly: false });
 
 export const UpdateTransactionService = Joi.object({
@@ -24,5 +30,8 @@ export const UpdateTransactionService = Joi.object({
     }),
     qty: Joi.number().required().messages({
         'any.required': 'Order_id is required',
+    }),
+    updated_at: Joi.number().required().messages({
+        'any.required': 'Updated_at is required',
     }),
 }).options({ abortEarly: false });

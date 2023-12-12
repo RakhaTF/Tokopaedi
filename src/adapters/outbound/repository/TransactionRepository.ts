@@ -6,12 +6,12 @@ import { QueryRunner } from "typeorm";
 const db = AppDataSource
 
 export default class TransactionRepository {
-    static async DBCreateTransactionId(id: number, query_runner?: QueryRunner){
+    static async DBCreateTransactionId(params: TransactionParamsDto.CreateTransactionIdParams, query_runner?: QueryRunner){
         if(query_runner && !query_runner.isTransactionActive){
             throw new Error("Must in Transaction")
         }
 
-        const result = await db.query(`INSERT INTO transaction (user_id) VALUES (?)`, [id], query_runner)
+        const result = await db.query(`INSERT INTO transaction (user_id, created_at, updated_at) VALUES (?,?,?)`, [params.id, params.created_at, params.updated_at], query_runner)
         return result
     }
 
@@ -45,6 +45,11 @@ export default class TransactionRepository {
 
     static async DBUpdateOrder(params: TransactionParamsDto.UpdateOrderParams){
         const result = await db.query(`UPDATE order_item SET qty = ? WHERE order_id = ? AND product_id = ?`, [params.qty, params.order_id, params.product_id])
+        return result
+    }
+
+    static async DBUpdateUpdatedAtTransaction(params: TransactionParamsDto.UpdateUpdatedAtTransactionParams){
+        const result = await db.query(`UPDATE transaction SET updated_at = ? WHERE id = ?`, [params.updated_at, params.order_id])
         return result
     }
 }

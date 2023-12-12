@@ -3,8 +3,8 @@ import { QueryRunner } from "typeorm"
 import { TransactionParamsDto } from "@domain/model/params";
 
 export default class TransactionDomainService {
-    static async CreateTransactionIdDomain(id: number, query_runner?: QueryRunner){
-        const result = await TransactionRepository.DBCreateTransactionId(id, query_runner)
+    static async CreateTransactionIdDomain(params: TransactionParamsDto.CreateTransactionIdParams, query_runner?: QueryRunner){
+        const result = await TransactionRepository.DBCreateTransactionId(params, query_runner)
 
         return result
     }
@@ -29,5 +29,15 @@ export default class TransactionDomainService {
         }
 
         return true 
+    }
+
+    static async UpdateUpdatedAtTransactionDomain(params: TransactionParamsDto.UpdateUpdatedAtTransactionParams){
+        const result = await TransactionRepository.DBUpdateUpdatedAtTransaction(params)
+
+        if (result.affectedRows < 1){
+            throw Error ("Failed update updated_at in transaction")
+        }
+
+        return true
     }
 }

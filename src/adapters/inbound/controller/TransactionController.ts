@@ -1,6 +1,7 @@
 import { FastifyRequest } from "fastify";
 import TransactionAppService from "@application/service/Transaction";
 import { TransactionRequestDto } from "@domain/model/request";
+import moment from "moment";
 
 export default class TransactionController {
     static async CreateTransaction(request: FastifyRequest){
@@ -10,7 +11,9 @@ export default class TransactionController {
             const createTransaction = await TransactionAppService.CreateTransactionService({
                 id: jwt.id,
                 product_id,
-                qty
+                qty,
+                created_at: moment().unix(),
+                updated_at: moment().unix()
             })
 
             const result = {message: createTransaction}
@@ -29,7 +32,8 @@ export default class TransactionController {
                 id: jwt.id,
                 order_id,
                 product_id,
-                qty
+                qty,
+                updated_at: moment().unix()
             })
 
             const result = {message: updateTransaction}
