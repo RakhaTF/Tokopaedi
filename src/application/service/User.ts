@@ -1,6 +1,7 @@
 import { UserParamsDto } from "@domain/model/params";
 import UserDomainService from "@domain/service/UserDomainService";
 import * as UserSchema from "helpers/JoiSchema/User";
+import { checkPassword, hashPassword } from "helpers/Password/Password"
 
 const prohibitedWords = require("indonesian-badwords")
 
@@ -53,5 +54,27 @@ export default class UserAppService {
         await UserDomainService.UpdateUserEditProfileDomainService(obj)
 
         return obj
+    }
+
+    static async ChangePasswordService(params: UserParamsDto.ChangePasswordParams){
+        await UserSchema.ChangePassword.validateAsync(params)
+
+        if (params.id < 1){
+            throw new Error ("User not found")
+        }
+
+        const passEncrypt = await hashPassword(params.newPassword)
+
+        const getUserById = await UserDomainService.GetUserPasswordByIdDomain(params.id)
+
+        if (getUserById.id > 1){
+            const sama = await checkPassword(params.oldPassword, getUserById.password)
+            if (!sama){
+                throw new Error ("Invalid old password")
+            }
+
+            const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id)
+            return result
+        }
     }
 }

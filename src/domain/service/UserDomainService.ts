@@ -55,4 +55,21 @@ export default class UserDomainService {
         }
         return result
     }
+
+    static async GetUserPasswordByIdDomain(id: number){
+        const result =  await UserRepository.DBGetUserPasswordById(id)
+        if (result.length < 1){
+            throw new Error ("User not found")
+        }
+
+        return result[0]
+    }
+
+    static async UpdatePasswordDomain(passEncrypt: string, id: number){
+        const result = await UserRepository.DBUpdatePassword(passEncrypt, id)
+        if (result.affectedRows < 1){
+            throw new Error ("Failed change password")
+        }
+        return true
+    }
 }

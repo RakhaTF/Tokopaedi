@@ -89,4 +89,12 @@ export default class AdminDomainService {
         }
         return listOfRules[0]
     }
+
+    static async ChangeUserPassDomain(userid: number, encryptPass: string){
+        const result = await AdminRepository.DBChangeUserPass(userid, encryptPass)
+        if (result.affectedRows < 1){
+            throw Error ("Failed change user password")
+        }
+        return true
+    }
 }

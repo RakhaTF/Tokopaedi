@@ -289,7 +289,36 @@ const routes: RouteOptions[] = [
             response: Schema.BaseResponse({ type: "Boolean" })
         }
     },
-    
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/change-user-pass",
+        preHandler: CheckAuthAdmin({ rules: Rules.CHANGE_USER_PASSWORD }),
+        handler: AdminController.ChangeUserPass,
+        schema: {
+            body: Schema.BaseRequestSchema("Raihan", {
+                userid: {type: "number"},
+                password: {type: "string"},
+                confirmPassword: {type: "string"}
+            }),
+            response: Schema.BaseResponse({
+                type: "Boolean"
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/change-pass",
+        handler: AdminController.ChangePass,
+        schema: {
+            body: Schema.BaseRequestSchema("Raihan", {
+                oldPassword: {type: "string"},
+                newPassword: {type: "string"}
+            }),
+            response: Schema.BaseResponse({
+                type: "Boolean"
+            })
+        }
+    }
 ]
 
 export default async function AdminRoute(

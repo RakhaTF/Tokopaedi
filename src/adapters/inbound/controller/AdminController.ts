@@ -180,4 +180,39 @@ export default class AdminController {
             throw error
         }
     }
+
+    static async ChangeUserPass(request: FastifyRequest){
+        try {
+            const { userid, password, confirmPassword } = request.body as AdminRequestDto.ChangeUserPassRequest 
+            const changeUserPass = await AdminAppService.ChangeUserPass({
+                userid,
+                password,
+                confirmPassword
+            })
+
+            const result = {message: changeUserPass}
+
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async ChangePass(request: FastifyRequest){
+        try {
+            const jwt = request.user
+            const {oldPassword, newPassword} = request.body as AdminRequestDto.ChangePasswordRequest
+            const changePassword = await AdminAppService.ChangePasswordService({
+                id: jwt.id,
+                oldPassword,
+                newPassword
+            })
+
+            const result = {message: changePassword}
+
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
 }

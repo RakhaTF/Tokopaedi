@@ -34,4 +34,22 @@ export default class UserController {
             throw error
         }
     }
+
+    static async ChangePassword(request: FastifyRequest){
+        try {
+            const jwt = request.user
+            const {oldPassword, newPassword} = request.body as UserRequestDto.ChangePasswordRequest
+            const changePassword = await UserAppService.ChangePasswordService({
+                id: jwt.id,
+                oldPassword,
+                newPassword
+            })
+
+            const result = {message: changePassword}
+
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
 }

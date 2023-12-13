@@ -138,7 +138,21 @@ const routes: RouteOptions[] = [
         method: ["POST"],
         url: "/api/v1/user/transaction/update",
         handler: TransactionController.UpdateTransaction,
-    }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/user/change-pass",
+        handler: UserController.ChangePassword,
+        schema: {
+            body: Schema.BaseRequestSchema("Raihan", {
+                oldPassword: {type: "string"},
+                newPassword: {type: "string"}
+            }),
+            response: Schema.BaseResponse({
+                type: "Boolean"
+            })
+        }
+    },
 ]
 
 export default async function UserRoute(
