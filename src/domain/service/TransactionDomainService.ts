@@ -43,7 +43,7 @@ export default class TransactionDomainService {
     }
 
     static async GetTransactionDetailDomain(id: number) {
-        const transactionDetail = await TransactionRepository.DBGetTransactionDetail(id)
+        const transactionDetail = await TransactionRepository.DBGetCurrentTransactionDetail(id)
         if (transactionDetail.length < 1) {
             throw new Error("Transaction not found!")
         }

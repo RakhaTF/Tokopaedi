@@ -40,7 +40,7 @@ export default class TransactionRepository {
         return result
     }
 
-    static async DBGetTransactionDetail(id: number, query_runner?: QueryRunner): Promise<TransactionResponseDto.GetTransactionDetailQueryResult[]> {
+    static async DBGetCurrentTransactionDetail(id: number, query_runner?: QueryRunner): Promise<TransactionResponseDto.GetTransactionDetailQueryResult[]> {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
