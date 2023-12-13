@@ -43,4 +43,15 @@ export default class TransactionController {
             throw error
         }
     }
+
+    static async PayTransaction(request: FastifyRequest) {
+        try {
+            const { id } = request.user
+            const requestBody = request.body as TransactionRequestDto.PayTransactionRequest
+            const payTransaction = await TransactionAppService.PayTransaction({ ...requestBody, user_id: id })
+            return { message: payTransaction }
+        } catch (error) {
+            throw error
+        }
+    }
 }

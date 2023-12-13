@@ -1,5 +1,6 @@
 import ProductRepository from "@adapters/outbound/repository/ProductRepository";
 import { ProductRequestDto } from "@domain/model/request";
+import { QueryRunner } from "typeorm";
 
 export default class ProductDomainService {
     static async GetProductListDomain(){
@@ -32,11 +33,12 @@ export default class ProductDomainService {
         }
     }
 
-    static async UpdateProductDomain(product: ProductRequestDto.UpdateProductRequest) {
-        const newProduct = await ProductRepository.DBUpdateProduct(product)
+    static async UpdateProductDomain(product: ProductRequestDto.UpdateProductRequest, query_runner?: QueryRunner) {
+        const newProduct = await ProductRepository.DBUpdateProduct(product, query_runner)
         if(newProduct.affectedRows<1){
             throw new Error("Update Product Failed!")
         }
+        return newProduct
     }
 
     static async GetProductsPricesDomain(ids: number[]) {

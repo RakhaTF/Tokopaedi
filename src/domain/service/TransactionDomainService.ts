@@ -28,8 +28,8 @@ export default class TransactionDomainService {
         return await TransactionRepository.DBGetOrderItemByOrderId(insertId, query_runner)
     }
 
-    static async UpdateOrderDomain(params: TransactionParamsDto.UpdateOrderParams){
-        const result = await TransactionRepository.DBUpdateOrder(params)
+    static async UpdateOrderDomain(params: TransactionParamsDto.UpdateOrderParams, query_runner: QueryRunner){
+        const result = await TransactionRepository.DBUpdateOrder(params, query_runner)
 
         if (result.affectedRows < 1){
             throw Error ("Failed update product qty")
@@ -43,13 +43,15 @@ export default class TransactionDomainService {
     }
 
     static async GetTransactionDetailDomain(id: number) {
-        const test =  await TransactionRepository.DBGetTransactionDetail(id)
-        console.log({test})
-        return test
+        const transactionDetail = await TransactionRepository.DBGetTransactionDetail(id)
+        if (transactionDetail.length < 1) {
+            throw new Error("Transaction not found!")
+        }
+        return transactionDetail
     }
 
-    static async UpdateTransactionProductQtyDomain(params: TransactionParamsDto.UpdateTransactionProductQty){
-        const result = await TransactionRepository.DBUpdateTransactionProductQty(params)
+    static async UpdateTransactionProductQtyDomain(params: TransactionParamsDto.UpdateTransactionProductQty, query_runner: QueryRunner){
+        const result = await TransactionRepository.DBUpdateTransactionProductQty(params, query_runner)
 
         if (result.affectedRows < 1){
             throw Error ("Failed update updated_at in transaction")
@@ -58,8 +60,8 @@ export default class TransactionDomainService {
         return true
     }
 
-    static async PayTransactionDomain(params: TransactionParamsDto.PayTransactionParams) {
-        const paymentResult = await TransactionRepository.DBPayTransaction(params)
+    static async PayTransactionDomain(params: TransactionParamsDto.PayTransactionRepositoryParams, query_runner: QueryRunner) {
+        const paymentResult = await TransactionRepository.DBPayTransaction(params, query_runner)
         if(paymentResult.affectedRows < 1) {
             throw Error("Failed to Pay Transaction")
         }
@@ -67,5 +69,12 @@ export default class TransactionDomainService {
 
     static async GetPendingTransactionDomain(user_id: number) {
         return await TransactionRepository.DBGetPendingTransaction(user_id)
+    }
+
+    static async CreateDeliveryStatusDomain(params: TransactionParamsDto.CreateDeliveryStatusParams, query_runner: QueryRunner) {
+        const deliveryStatus = await TransactionRepository.DBCreateDeliveryStatus(params, query_runner)
+        if (deliveryStatus.affectedRows < 1) {
+            throw new Error("Failed to create delivery_status")
+        }
     }
 }

@@ -19,9 +19,7 @@ export type InsertOrderItemParams = {
     qty: number[];
 }
 
-export type InsertOrderItemRepositoryParams = string // contoh `(5, 1, 1)` (transaction_id, product_id, qty)
-
-export type UpdateTransactionParams = {
+export type UpdateTransactionProductQtyParams = {
     id: number;
     order_id: number;
     product_id: number;
@@ -42,14 +40,24 @@ export type UpdateTransactionProductQty = {
 }
 
 //Allowed payment method.
-type PaymentMethod = "Cash" | "Credit Card" | "Debit Card"
+export type PaymentMethod = "Cash" | "Credit Card" | "Debit Card"
 
-export type PayTransactionParams = {
-    payment_method: PaymentMethod;
-    is_paid: 0 | 1;
-    paid_at: number;
-    shipping_price: number;
-    total_price: number;
-    updated_at: number;
+export type PayTransactionRepositoryParams = {
+    transaction_id: number;
     user_id: number;
+    payment_method: PaymentMethod;
+    is_paid: number; // 0 = pending, 1 = paid
+    paid_at: number;
+    shipping_address_id: number;
+    shipping_price: number;
+    updated_at: number;
+}
+
+export type CreateDeliveryStatusParams = {
+    transaction_id: number;
+    expedition_name: string;
+    status: number;
+    is_delivered: number;
+    delivered_at: number;
+    updated_at: number;
 }

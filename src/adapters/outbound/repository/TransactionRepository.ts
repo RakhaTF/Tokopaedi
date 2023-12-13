@@ -6,8 +6,8 @@ import { ResultSetHeader } from "mysql2"
 const db = AppDataSource
 
 export default class TransactionRepository {
-    static async DBCreateTransactionId(params: TransactionParamsDto.CreateTransactionIdParams, query_runner?: QueryRunner){
-        if(query_runner && !query_runner.isTransactionActive){
+    static async DBCreateTransactionId(params: TransactionParamsDto.CreateTransactionIdParams, query_runner?: QueryRunner) {
+        if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
 
@@ -15,8 +15,8 @@ export default class TransactionRepository {
         return result
     }
 
-    static async DBInsertOrderItem(valueProduct: TransactionParamsDto.InsertOrderItemRepositoryParams, query_runner?: QueryRunner){
-        if(query_runner && !query_runner.isTransactionActive){
+    static async DBInsertOrderItem(valueProduct: string, query_runner?: QueryRunner) {
+        if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
 
@@ -25,24 +25,28 @@ export default class TransactionRepository {
         return result
     }
 
-    static async DBGetOrderItemByOrderId(insertId: number, query_runner?: QueryRunner): Promise<TransactionResponseDto.GetOrderItemByOrderIdResponse[]>{
-        if(query_runner && !query_runner.isTransactionActive){
-            throw new Error("Must in Transaction")
-        }
-
-        const result = await db.query<TransactionResponseDto.GetOrderItemByOrderIdResponse[]>(`
-        SELECT a.order_id, a.product_id, a.qty FROM order_item a WHERE a.order_id = ?`,
-        [insertId], query_runner)
-
-        return result
-    }
-
-    static async DBGetTransactionDetail(id: number, query_runner?: QueryRunner) {
+    static async DBGetOrderItemByOrderId(insertId: number, query_runner?: QueryRunner): Promise<TransactionResponseDto.GetOrderItemByOrderIdResponse[]> {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
 
-        return await db.query(`
+        const result = await db.query<TransactionResponseDto.GetOrderItemByOrderIdResponse[]>(
+            `
+        SELECT a.order_id, a.product_id, a.qty FROM order_item a WHERE a.order_id = ?`,
+            [insertId],
+            query_runner
+        )
+
+        return result
+    }
+
+    static async DBGetTransactionDetail(id: number, query_runner?: QueryRunner): Promise<TransactionResponseDto.GetTransactionDetailQueryResult[]> {
+        if (query_runner && !query_runner.isTransactionActive) {
+            throw new Error("Must in Transaction")
+        }
+
+        return await db.query(
+            `
         SELECT 
             t.id,
 	        t.user_id,
@@ -59,38 +63,45 @@ export default class TransactionRepository {
         JOIN order_item o
             ON t.id = o.order_id
         WHERE t.id = ?
-        `, [id])
-
+        `,
+            [id]
+        )
     }
 
-    static async DBUpdateOrder(params: TransactionParamsDto.UpdateOrderParams){
-        const result = await db.query(`UPDATE order_item SET qty = ? WHERE order_id = ? AND product_id = ?`, [params.qty, params.order_id, params.product_id])
+    static async DBUpdateOrder(params: TransactionParamsDto.UpdateOrderParams, query_runner: QueryRunner) {
+        if (query_runner && !query_runner.isTransactionActive) {
+            throw new Error("Must in Transaction")
+        }
+        const result = await db.query(`UPDATE order_item SET qty = ? WHERE order_id = ? AND product_id = ?`, [params.qty, params.order_id, params.product_id], query_runner)
         return result
     }
 
-    static async DBUpdateTransactionProductQty(params: TransactionParamsDto.UpdateTransactionProductQty){
-        const result = await db.query(`UPDATE transaction SET updated_at = ? WHERE id = ?`, [params.updated_at, params.order_id])
+    static async DBUpdateTransactionProductQty(params: TransactionParamsDto.UpdateTransactionProductQty, query_runner: QueryRunner) {
+        if (query_runner && !query_runner.isTransactionActive) {
+            throw new Error("Must in Transaction")
+        }
+        const result = await db.query(`UPDATE transaction SET items_price = ?, updated_at = ? WHERE id = ?`, [params.items_price, params.updated_at, params.order_id], query_runner)
         return result
     }
 
-    static async DBCreateTransactionStatus({ transaction_id, update_time }: { transaction_id: number, update_time: number }, query_runner: QueryRunner) {
+    static async DBCreateTransactionStatus({ transaction_id, update_time }: { transaction_id: number; update_time: number }, query_runner: QueryRunner) {
         await db.query<ResultSetHeader>(`INSERT INTO transaction_status(transaction_id, update_time) VALUES(?, ?)`, [transaction_id, update_time], query_runner)
     }
 
-    static async DBPayTransaction(params: TransactionParamsDto.PayTransactionParams) {
-        const { is_paid, paid_at, payment_method, shipping_price, total_price, updated_at, user_id } = params
+    static async DBPayTransaction(params: TransactionParamsDto.PayTransactionRepositoryParams, query_runner: QueryRunner) {
+        const { is_paid, paid_at, payment_method, shipping_price, updated_at, user_id, shipping_address_id, transaction_id } = params
 
         const query = `
         UPDATE TRANSACTION SET 
         payment_method = ?, 
         is_paid = ?, 
         paid_at = ?, 
+        shipping_address_id = ?, 
         shipping_price = ?, 
-        total_price = ?, 
-        updated_at = ?  
-        WHERE user_id = ?`
+        updated_at = ?
+        WHERE user_id = ? AND id = ?`
 
-        return await db.query<ResultSetHeader>(query, [payment_method, is_paid, paid_at, shipping_price, total_price, updated_at, user_id])
+        return await db.query<ResultSetHeader>(query, [payment_method, is_paid, paid_at, shipping_address_id, shipping_price, updated_at, user_id, transaction_id], query_runner)
     }
 
     static async DBGetPendingTransaction(user_id: number) {
@@ -101,5 +112,16 @@ export default class TransactionRepository {
         `
 
         return await db.query(query, [user_id])
+    }
+
+    static async DBCreateDeliveryStatus(params: TransactionParamsDto.CreateDeliveryStatusParams, query_runner: QueryRunner) {
+        const { transaction_id, status, expedition_name, is_delivered, delivered_at, updated_at } = params
+
+        const query = `
+        INSERT INTO delivery_status
+        (transaction_id, status, expedition_name, is_delivered, delivered_at, updated_at)
+        VALUES(?, ?, ?, ?, ?, ?)`
+
+        return await db.query<ResultSetHeader>(query, [transaction_id, status, expedition_name, is_delivered, delivered_at, updated_at], query_runner)
     }
 }

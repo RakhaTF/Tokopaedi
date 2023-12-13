@@ -131,7 +131,13 @@ const routes: RouteOptions[] = [
         method: ["POST"],
         url: "/api/v1/user/transaction/update-product-quantity",
         handler: TransactionController.UpdateTransactionProductQty,
-    }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/user/transaction/pay",
+        handler: TransactionController.PayTransaction,
+    },
+
 ]
 
 export default async function UserRoute(
