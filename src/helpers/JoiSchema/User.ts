@@ -44,3 +44,15 @@ export const UpdateUserProfile = Joi.object({
         'any.required': 'name is required',
     })
 }).options({ abortEarly: false });
+
+export const ChangePassword = Joi.object({
+    id: Joi.number().required().messages({
+        'any.required': 'Id is required',
+    }),
+    oldPassword: Joi.string().required().messages({
+        'any.required': 'Old Password is required',
+    }),
+    newPassword: Joi.string().alphanum().min(8).max(12).required().messages({
+        'any.required': 'New Password is required',
+    })
+}).options({ abortEarly: false });

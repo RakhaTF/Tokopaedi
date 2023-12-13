@@ -113,3 +113,27 @@ export const RevokeRule = Joi.object({
     rules_id: RulesId,
     group_id: GroupId
 }).options({ abortEarly: false });
+
+export const ChangeUserPass = Joi.object({
+    userid: Joi.number().required().messages({
+        'any.required': 'User Id is required',
+    }),
+    password: Joi.string().alphanum().min(8).required().messages({
+        'any.required': 'Password is required',
+    }),
+    confirmPassword: Joi.string().alphanum().min(8).required().messages({
+        'any.required': 'Confirmation Password is required',
+    }),
+})
+
+export const ChangePassword = Joi.object({
+    id: Joi.number().required().messages({
+        'any.required': 'Id is required',
+    }),
+    oldPassword: Joi.string().required().messages({
+        'any.required': 'Old Password is required',
+    }),
+    newPassword: Joi.string().alphanum().min(8).max(12).required().messages({
+        'any.required': 'New Password is required',
+    })
+}).options({ abortEarly: false });

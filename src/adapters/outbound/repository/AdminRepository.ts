@@ -84,4 +84,8 @@ export default class AdminRepository {
         WHERE group_id = ?
         GROUP BY 1`, [group_id])
     }
+
+    static async DBChangeUserPass(userid: number, encryptPass: string){
+        return db.query(`UPDATE user SET password = ? WHERE id = ?`, [encryptPass, userid])
+    }
 }

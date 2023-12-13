@@ -73,4 +73,15 @@ export default class UserRepository {
 
         return result
     }
+
+    static async DBGetUserPasswordById(id: number): Promise<UserResponseDto.GetUserPasswordByIdResult[]>{
+        const result = await db.query<UserResponseDto.GetUserPasswordByIdResult[]>(`SELECT a.id, a.password FROM user a WHERE id = ?`, [id])
+
+        return result
+    }
+
+    static async DBUpdatePassword(passEncrypt: string, id: number){
+        const result = await db.query(`UPDATE user SET password = ? WHERE id = ?`, [passEncrypt, id])
+        return result
+    }
 }

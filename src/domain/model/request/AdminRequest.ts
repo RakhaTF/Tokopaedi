@@ -37,3 +37,14 @@ export type RevokeRuleRequest = {
     group_id: number;
     rules_id: number;
 }
+
+export type ChangeUserPassRequest = {
+    userid: number;
+    password: string;
+    confirmPassword: string;
+}
+
+export type ChangePasswordRequest = {
+    oldPassword: string;
+    newPassword: string;
+}
