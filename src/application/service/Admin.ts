@@ -1,7 +1,7 @@
 import * as AdminSchema from "helpers/JoiSchema/Admin";
 import AdminDomainService from "@domain/service/AdminDomainService";
 import UserDomainService from "@domain/service/UserDomainService";
-import { hashPassword } from "helpers/Password/Password"
+import { checkPassword, hashPassword } from "helpers/Password/Password"
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import moment from 'moment'
 import { AdminParamsDto, UserParamsDto } from "@domain/model/params";
@@ -233,5 +233,42 @@ export default class AdminAppService {
         await AdminSchema.RevokeRule.validateAsync(params)
         await AdminDomainService.RevokeRule(params)
         return true;
+    }
+
+    static async ChangeUserPass(params: AdminParamsDto.ChangeUserPassParams) {
+        await AdminSchema.ChangeUserPass.validateAsync(params)
+
+        const encryptPass = await hashPassword(params.password)
+
+        const sama = await checkPassword(params.confirmPassword, encryptPass)
+        if (!sama){
+            throw new Error ("Invalid Confirm Password")
+        }
+
+        const result = await AdminDomainService.ChangeUserPassDomain(params.userid, encryptPass)
+
+        return result
+    }
+
+    static async ChangePasswordService(params: AdminParamsDto.ChangePasswordParams){
+        await AdminSchema.ChangePassword.validateAsync(params)
+
+        if (params.id < 1){
+            throw new Error ("User not found")
+        }
+
+        const passEncrypt = await hashPassword(params.newPassword)
+
+        const getUserById = await UserDomainService.GetUserPasswordByIdDomain(params.id)
+
+        if (getUserById.id > 1){
+            const sama = await checkPassword(params.oldPassword, getUserById.password)
+            if (!sama){
+                throw new Error ("Invalid old password")
+            }
+
+            const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id)
+            return result
+        }
     }
 }

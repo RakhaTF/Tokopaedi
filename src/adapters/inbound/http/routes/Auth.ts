@@ -8,7 +8,8 @@ const routes: RouteOptions[] = [
         url: "/api/v1/auth/register",
         handler: AuthController.Register,
         schema: {
-            body: Schema.BaseRequestSchema("Raihan", {
+            tags: ["Auth"],
+            body: Schema.BaseRequestSchema('Raihan', {
                 name: { type: "string" },
                 email: { type: "string" },
                 password: { type: "string" },
@@ -30,6 +31,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/auth/login",
         handler: AuthController.Login,
         schema: {
+            tags: ["Auth"],
             body: Schema.BaseRequestSchema('Raihan', {
                 email: { type: "string" },
                 password: { type: "string" }

@@ -28,3 +28,15 @@ export type UpdateRuleParams = UpdateRuleRequest
 export type AssignRuleParams = AssignRuleRequest
 
 export type RevokeRuleParams = RevokeRuleRequest
+
+export type ChangeUserPassParams = {
+    userid: number;
+    password: string;
+    confirmPassword: string;
+}
+
+export type ChangePasswordParams = {
+    id: number;
+    oldPassword: string;
+    newPassword: string;
+}

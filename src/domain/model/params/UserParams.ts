@@ -18,3 +18,9 @@ export type UpdateUserEditProfileParams = {
     email: string;
     name: string;
 }
+
+export type ChangePasswordParams = {
+    id: number;
+    oldPassword: string;
+    newPassword: string;
+}

@@ -28,3 +28,8 @@ export type UserClaimsResponse = {
 export type GetUserEmailExistResult = {
     email: string;
 }
+
+export type GetUserPasswordByIdResult = {
+    id: number;
+    password: string;
+}

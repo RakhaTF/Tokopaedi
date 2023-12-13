@@ -14,3 +14,8 @@ export type UpdateUserRequest = {
     email: string;
     name: string;
 }
+
+export type ChangePasswordRequest = {
+    oldPassword: string;
+    newPassword: string;
+}
