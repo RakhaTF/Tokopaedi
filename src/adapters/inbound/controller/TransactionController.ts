@@ -54,4 +54,14 @@ export default class TransactionController {
             throw error
         }
     }
+
+    static async TransactionDetail(request: FastifyRequest) {
+        try {
+            const { id } = request.body as { id: number }
+            const transactionDetail = await TransactionAppService.GetTransactionDetail(id)
+            return { message: transactionDetail }
+        } catch (error) {
+            throw error
+        }
+    }
 }

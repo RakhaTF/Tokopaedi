@@ -3,10 +3,10 @@ import * as TransactionSchema from "helpers/JoiSchema/Transaction"
 import TransactionDomainService from "@domain/service/TransactionDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import ProductDomainService from "@domain/service/ProductDomainService"
-import moment from "moment"
 import { TransactionRequestDto } from "@domain/model/request"
+import { TransactionResponseDto } from "@domain/model/response"
 import { Product } from "@domain/entity/Product"
-
+import moment from 'moment-timezone';
 export default class TransactionAppService {
     static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams) {
         const { product_id, qty, id } = params
@@ -71,7 +71,7 @@ export default class TransactionAppService {
         const product = await ProductDomainService.GetProductsPricesDomain([product_id])
 
         // Fetch the current order details
-        const currentOrder = await TransactionDomainService.GetTransactionDetailDomain(order_id)
+        const currentOrder = await TransactionDomainService.GetCurrentTransactionDetailDomain(order_id)
 
         // Find the current product in the order
         const currentProductOrder = currentOrder.find((order) => order.product_id === product_id)
@@ -123,7 +123,7 @@ export default class TransactionAppService {
         await TransactionSchema.PayTransaction.validateAsync(params)
         const { transaction_id, expedition_name, payment_method, shipping_address_id, user_id } = params
 
-        const transactionDetails = await TransactionDomainService.GetTransactionDetailDomain(transaction_id)
+        const transactionDetails = await TransactionDomainService.GetCurrentTransactionDetailDomain(transaction_id)
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
@@ -194,5 +194,44 @@ export default class TransactionAppService {
         } finally {
             await query_runner.release()
         }
+    }
+
+    static async GetTransactionDetail(id: number) {
+        await TransactionSchema.TransactionId.validateAsync(id)
+        const txnDetail = await TransactionDomainService.GetTransactionDetailDomain(id)
+
+        //extract product name & qty
+        const productName = txnDetail.product_bought.split(",")
+        const qty = txnDetail.qty.split(",")
+
+        const product_bought = productName.map((prod, index) => {
+            return {
+                product_name: prod,
+                qty: qty[index],
+            }
+        })
+
+        const transaction: TransactionResponseDto.TransactionDetailResult = {
+            user_id: txnDetail.user_id,
+            transaction_id: txnDetail.transaction_id,
+            name: txnDetail.name,
+            product_bought,
+            items_price: parseFloat(txnDetail.items_price),
+            shipping_price: parseFloat(txnDetail.shipping_price),
+            total_price: parseFloat(txnDetail.total_price),
+            is_paid: txnDetail.is_paid,
+            paid_at: moment.unix(txnDetail.paid_at).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
+            transaction_status: txnDetail.transaction_status,
+            delivery_status: txnDetail.delivery_status,
+            shipping_address: {
+                address: txnDetail.address,
+                postal_code: txnDetail.postal_code,
+                city: txnDetail.city,
+                province: txnDetail.province,
+                country: txnDetail.country,
+            },
+            created_at: moment.unix(txnDetail.created_at).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
+        }
+        return transaction
     }
 }

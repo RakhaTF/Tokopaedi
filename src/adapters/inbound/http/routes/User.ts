@@ -1,9 +1,9 @@
-import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify";
-import { AuthValidate } from "helpers/prehandler/AuthValidate";
-import UserController from "@adapters/inbound/controller/UserController";
+import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
+import { AuthValidate } from "helpers/prehandler/AuthValidate"
+import UserController from "@adapters/inbound/controller/UserController"
 import * as Schema from "helpers/ApiSchema/ApiSchema"
-import ShippingAddressController from "@adapters/inbound/controller/ShippingAddressController";
-import TransactionController from "@adapters/inbound/controller/TransactionController";
+import ShippingAddressController from "@adapters/inbound/controller/ShippingAddressController"
+import TransactionController from "@adapters/inbound/controller/TransactionController"
 
 const routes: RouteOptions[] = [
     {
@@ -31,11 +31,10 @@ const routes: RouteOptions[] = [
         handler: UserController.UpdateUserProfile,
         schema: {
             tags: ["User"],
-            body: Schema.BaseRequestSchema('Raihan', {
-                    email: {type : 'string'},
-                    name: {type: 'string'}
-                }
-            ),
+            body: Schema.BaseRequestSchema("Raihan", {
+                email: { type: "string" },
+                name: { type: "string" },
+            }),
             response: Schema.BaseResponse({
                 type: "Object",
                 message: {
@@ -136,11 +135,11 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["User"],
             body: Schema.BaseRequestSchema("Raihan", {
-                product_id: {type: "array", items: {type: "number"}},
-                qty: {type: "array", items: {type: "number"}}
+                product_id: { type: "array", items: { type: "number" } },
+                qty: { type: "array", items: { type: "number" } },
             }),
-            response: Schema.BaseResponse({type: "Boolean"})
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -150,10 +149,10 @@ const routes: RouteOptions[] = [
             body: Schema.BaseRequestSchema("Raihan", {
                 product_id: { type: "number" },
                 order_id: { type: "number" },
-                qty: { type: "number" }
+                qty: { type: "number" },
             }),
-            response: Schema.BaseResponse({type: "Boolean"})
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -166,20 +165,59 @@ const routes: RouteOptions[] = [
                 payment_method: { type: "string" },
                 shipping_address_id: { type: "number" },
                 expedition_name: { type: "string" },
-
             }),
             response: Schema.BaseResponse({ type: "Boolean" }),
         },
-
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/user/transaction/detail",
+        handler: TransactionController.TransactionDetail,
+        schema: {
+            body: Schema.BaseRequestSchema("Rakha", { id: { type: "number" } }),
+            response: Schema.BaseResponse({
+                type: "Object",
+                message: {
+                    user_id: { type: "number" },
+                    transaction_id: { type: "number" },
+                    name: { type: "string" },
+                    product_bought: {
+                        type: "array",
+                        items: {
+                            type: "object",
+                            properties: {
+                                product_name: { type: "string" },
+                                qty: { type: "string" },
+                            },
+                        },
+                    },
+                    items_price: { type: "number" },
+                    shipping_price: { type: "number" },
+                    total_price: { type: "number" },
+                    is_paid: { type: "string" },
+                    paid_at: { type: "string" },
+                    transaction_status: { type: "string" },
+                    delivery_status: { type: "string" },
+                    shipping_address: {
+                        type: "object",
+                        properties: {
+                            address: { type: "string" },
+                            postal_code: { type: "string" },
+                            city: { type: "string" },
+                            province: { type: "string" },
+                            country: { type: "string" },
+                        },
+                    },
+                    created_at: { type: "string" },
+                },
+            }),
+        },
     },
 ]
 
-export default async function UserRoute(
-    fastify: FastifyInstance,
-    options: FastifyPluginOptions
-) {
+export default async function UserRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
     fastify.addHook("preValidation", AuthValidate)
     for (const route of routes) {
-        fastify.route({ ...route, config: options });
+        fastify.route({ ...route, config: options })
     }
 }
