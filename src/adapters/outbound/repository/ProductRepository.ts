@@ -2,6 +2,7 @@ import { ProductRequestDto } from "@domain/model/request";
 import { ProductResponseDto } from "@domain/model/response";
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import { ResultSetHeader } from "mysql2";
+import { QueryRunner } from "typeorm";
 
 const db = AppDataSource;
 
@@ -23,8 +24,8 @@ export default class ProductRepository {
         return await db.query<ResultSetHeader>(`INSERT INTO product(name, description, price, stock) VALUES(?, ?, ?, ?)`, [name, description, price, stock])
     }
 
-    static async DBUpdateProduct(product: ProductRequestDto.UpdateProductRequest) {
+    static async DBUpdateProduct(product: ProductRequestDto.UpdateProductRequest, query_runner?: QueryRunner) {
         const { id, name, description, price, stock } = product
-        return await db.query<ResultSetHeader>(`UPDATE product SET name = ?, description = ?, price = ?, stock = ? WHERE id = ?`, [name, description, price, stock, id])
+        return await db.query<ResultSetHeader>(`UPDATE product SET name = ?, description = ?, price = ?, stock = ? WHERE id = ?`, [name, description, price, stock, id], query_runner)
     }
 }

@@ -13,17 +13,17 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["User"],
             response: Schema.BaseResponse({
-                type: 'Object',
+                type: "Object",
                 message: {
-                    id: {type : "number"},
-                    name: {type: "string"},
-                    email: {type: "string"},
-                    level: {type: "number"},
-                    created_at: {type: "number"},
-                    group_rules: {type: "string"}
-                }
-            })
-        }
+                    id: { type: "number" },
+                    name: { type: "string" },
+                    email: { type: "string" },
+                    level: { type: "number" },
+                    created_at: { type: "number" },
+                    group_rules: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -37,14 +37,14 @@ const routes: RouteOptions[] = [
                 }
             ),
             response: Schema.BaseResponse({
-                type: 'Object',
+                type: "Object",
                 message: {
-                    id: {type: 'number'},
-                    email: {type: 'string'},
-                    name: {type: 'string'}
-                }
-            })
-        }
+                    id: { type: "number" },
+                    email: { type: "string" },
+                    name: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -57,10 +57,10 @@ const routes: RouteOptions[] = [
                 postal_code: { type: "string" },
                 city: { type: "string" },
                 province: { type: "string" },
-                country: { type: "string" }
+                country: { type: "string" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -78,10 +78,10 @@ const routes: RouteOptions[] = [
                     postal_code: { type: "string" },
                     city: { type: "string" },
                     province: { type: "string" },
-                    country: { type: "string" }
-                }
-            })
-        }
+                    country: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["GET"],
@@ -98,10 +98,10 @@ const routes: RouteOptions[] = [
                     postal_code: { type: "string" },
                     city: { type: "string" },
                     province: { type: "string" },
-                    country: { type: "string" }
-                }
-            })
-        }
+                    country: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -114,10 +114,10 @@ const routes: RouteOptions[] = [
                 postal_code: { type: "string" },
                 city: { type: "string" },
                 province: { type: "string" },
-                country: { type: "string" }
+                country: { type: "string" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -126,32 +126,51 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["User"],
             body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
         url: "/api/v1/user/transaction/create",
         handler: TransactionController.CreateTransaction,
+        schema: {
+            tags: ["User"],
+            body: Schema.BaseRequestSchema("Raihan", {
+                product_id: {type: "array", items: {type: "number"}},
+                qty: {type: "array", items: {type: "number"}}
+            }),
+            response: Schema.BaseResponse({type: "Boolean"})
+        }
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/transaction/update",
-        handler: TransactionController.UpdateTransaction,
-    },
-    {
-        method: ["POST"],
-        url: "/api/v1/user/change-pass",
-        handler: UserController.ChangePassword,
+        url: "/api/v1/user/transaction/update-product-quantity",
+        handler: TransactionController.UpdateTransactionProductQty,
         schema: {
             body: Schema.BaseRequestSchema("Raihan", {
-                oldPassword: {type: "string"},
-                newPassword: {type: "string"}
+                product_id: { type: "number" },
+                order_id: { type: "number" },
+                qty: { type: "number" }
             }),
-            response: Schema.BaseResponse({
-                type: "Boolean"
-            })
+            response: Schema.BaseResponse({type: "Boolean"})
         }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/user/transaction/pay",
+        handler: TransactionController.PayTransaction,
+        schema: {
+            tags: ["User"],
+            body: Schema.BaseRequestSchema("Rakha", {
+                transaction_id: { type: "number" },
+                payment_method: { type: "string" },
+                shipping_address_id: { type: "number" },
+                expedition_name: { type: "string" },
+
+            }),
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
+
     },
 ]
 
