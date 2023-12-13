@@ -11,6 +11,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/profile",
         handler: UserController.GetUserProfile,
         schema: {
+            tags: ["User"],
             response: Schema.BaseResponse({
                 type: 'Object',
                 message: {
@@ -29,6 +30,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/profile/update",
         handler: UserController.UpdateUserProfile,
         schema: {
+            tags: ["User"],
             body: Schema.BaseRequestSchema('Raihan', {
                     email: {type : 'string'},
                     name: {type: 'string'}
@@ -49,6 +51,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/shipping-address/create",
         handler: ShippingAddressController.CreateShippingAddress,
         schema: {
+            tags: ["User"],
             body: Schema.BaseRequestSchema("Rakha", {
                 address: { type: "string" },
                 postal_code: { type: "string" },
@@ -64,6 +67,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/shipping-address/detail",
         handler: ShippingAddressController.GetShippingAddressDetail,
         schema: {
+            tags: ["User"],
             body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
             response: Schema.BaseResponse({
                 type: "Object",
@@ -84,6 +88,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/shipping-address/list",
         handler: ShippingAddressController.GetShippingAddressList,
         schema: {
+            tags: ["User"],
             response: Schema.BaseResponse({
                 type: "Array of Object",
                 message: {
@@ -103,6 +108,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/shipping-address/update",
         handler: ShippingAddressController.UpdateShippingAddress,
         schema: {
+            tags: ["User"],
             body: Schema.BaseRequestSchema("Rakha", {
                 address: { type: "string" },
                 postal_code: { type: "string" },
@@ -118,6 +124,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/shipping-address/delete",
         handler: ShippingAddressController.DeleteShippingAddress,
         schema: {
+            tags: ["User"],
             body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
             response: Schema.BaseResponse({ type: "Boolean" })
         }

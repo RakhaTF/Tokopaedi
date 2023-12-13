@@ -8,6 +8,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/product/list",
         handler: ProductController.GetProductList,
         schema: {
+            tags: ["Product"],
             response: Schema.BaseResponse({
                 type: "Array of Object",
                 message: {
@@ -25,6 +26,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/product/detail",
         handler: ProductController.GetProductDetail,
         schema: {
+            tags: ["Product"],
             body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
             response: Schema.BaseResponse({
                 type: "Object",
