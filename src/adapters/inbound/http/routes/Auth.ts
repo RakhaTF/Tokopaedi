@@ -8,26 +8,19 @@ const routes: RouteOptions[] = [
         url: "/api/v1/auth/register",
         handler: AuthController.Register,
         schema: {
-            body: Schema.BaseRequestSchema('Raihan', {
+            body: Schema.BaseRequestSchema("Raihan", {
                 name: { type: "string" },
                 email: { type: "string" },
                 password: { type: "string" },
-                level: { type: "number" },
             }),
             response: Schema.BaseResponse({
                 type: 'Object',
                 message: {
-                    user: {
-                        type: "object",
-                        properties: {
-                            name: { type: "string" },
-                            email: { type: "string" },
-                            password: { type: "string" },
-                            level: { type: "number" },
-                            created_at: { type: "number" },
-                            id: { type: "number" }
-                        }
-                    }
+                    id: { type: "number" },
+                    name: { type: "string" },
+                    email: { type: "string" },
+                    level: { type: "number" },
+                    created_at: { type: "number" },
                 }
             })
         }

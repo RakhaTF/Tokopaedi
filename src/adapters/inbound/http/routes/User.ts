@@ -125,11 +125,27 @@ const routes: RouteOptions[] = [
         method: ["POST"],
         url: "/api/v1/user/transaction/create",
         handler: TransactionController.CreateTransaction,
+        schema: {
+            tags: ["User"],
+            body: Schema.BaseRequestSchema("Raihan", {
+                product_id: {type: "array", items: {type: "number"}},
+                qty: {type: "array", items: {type: "number"}}
+            }),
+            response: Schema.BaseResponse({type: "Boolean"})
+        }
     },
     {
         method: ["POST"],
         url: "/api/v1/user/transaction/update-product-quantity",
         handler: TransactionController.UpdateTransactionProductQty,
+        schema: {
+            body: Schema.BaseRequestSchema("Raihan", {
+                product_id: { type: "number" },
+                order_id: { type: "number" },
+                qty: { type: "number" }
+            }),
+            response: Schema.BaseResponse({type: "Boolean"})
+        }
     },
     {
         method: ["POST"],
@@ -138,7 +154,7 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["User"],
             body: Schema.BaseRequestSchema("Rakha", {
-                transaction_id: { type: "array" },
+                transaction_id: { type: "number" },
                 payment_method: { type: "string" },
                 shipping_address_id: { type: "number" },
                 expedition_name: { type: "string" },
