@@ -12,6 +12,7 @@ type BaseObjectSchema = {
 type BaseParamsSchema = {
     type: string
     default?: string
+    items?: { type: string }
 }
 
 type BodySchema = {

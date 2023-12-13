@@ -12,37 +12,36 @@ const routes: RouteOptions[] = [
         handler: UserController.GetUserProfile,
         schema: {
             response: Schema.BaseResponse({
-                type: 'Object',
+                type: "Object",
                 message: {
-                    id: {type : "number"},
-                    name: {type: "string"},
-                    email: {type: "string"},
-                    level: {type: "number"},
-                    created_at: {type: "number"},
-                    group_rules: {type: "string"}
-                }
-            })
-        }
+                    id: { type: "number" },
+                    name: { type: "string" },
+                    email: { type: "string" },
+                    level: { type: "number" },
+                    created_at: { type: "number" },
+                    group_rules: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
         url: "/api/v1/user/profile/update",
         handler: UserController.UpdateUserProfile,
         schema: {
-            body: Schema.BaseRequestSchema('Raihan', {
-                    email: {type : 'string'},
-                    name: {type: 'string'}
-                }
-            ),
+            body: Schema.BaseRequestSchema("Raihan", {
+                email: { type: "string" },
+                name: { type: "string" },
+            }),
             response: Schema.BaseResponse({
-                type: 'Object',
+                type: "Object",
                 message: {
-                    id: {type: 'number'},
-                    email: {type: 'string'},
-                    name: {type: 'string'}
-                }
-            })
-        }
+                    id: { type: "number" },
+                    email: { type: "string" },
+                    name: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -54,10 +53,10 @@ const routes: RouteOptions[] = [
                 postal_code: { type: "string" },
                 city: { type: "string" },
                 province: { type: "string" },
-                country: { type: "string" }
+                country: { type: "string" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -74,10 +73,10 @@ const routes: RouteOptions[] = [
                     postal_code: { type: "string" },
                     city: { type: "string" },
                     province: { type: "string" },
-                    country: { type: "string" }
-                }
-            })
-        }
+                    country: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["GET"],
@@ -93,10 +92,10 @@ const routes: RouteOptions[] = [
                     postal_code: { type: "string" },
                     city: { type: "string" },
                     province: { type: "string" },
-                    country: { type: "string" }
-                }
-            })
-        }
+                    country: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -108,10 +107,10 @@ const routes: RouteOptions[] = [
                 postal_code: { type: "string" },
                 city: { type: "string" },
                 province: { type: "string" },
-                country: { type: "string" }
+                country: { type: "string" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -119,8 +118,8 @@ const routes: RouteOptions[] = [
         handler: ShippingAddressController.DeleteShippingAddress,
         schema: {
             body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -136,8 +135,18 @@ const routes: RouteOptions[] = [
         method: ["POST"],
         url: "/api/v1/user/transaction/pay",
         handler: TransactionController.PayTransaction,
-    },
+        schema: {
+            tags: ["User"],
+            body: Schema.BaseRequestSchema("Rakha", {
+                transaction_id: { type: "array" },
+                payment_method: { type: "string" },
+                shipping_address_id: { type: "number" },
+                expedition_name: { type: "string" },
 
+            }),
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
+    },
 ]
 
 export default async function UserRoute(
