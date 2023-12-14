@@ -33,4 +33,10 @@ export class ShippingAddressRepository {
         UPDATE shipping_address SET address = ?, city = ?, country = ?, postal_code = ?, province = ? WHERE id = ?`, 
         [address, city, country, postal_code, province, id])
     }
+
+    static async DBGetUserShippingAddressById(user_id: number): Promise<ShippingAddressResponseDto.GetUserShippingAddressById[]>{
+        return await db.query<ShippingAddressResponseDto.GetUserShippingAddressById[]>(
+            `SELECT sa.address, sa.postal_code, sa.city, sa.province, sa.country
+            FROM shipping_address sa WHERE user_id = ?`, [user_id])
+    }
 }

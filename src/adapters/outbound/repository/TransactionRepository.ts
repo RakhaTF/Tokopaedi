@@ -180,8 +180,8 @@ export default class TransactionRepository {
             GROUP BY t.id
     `,[id])
     }
-    static async DBGetUserTransactionListById(userid: number): Promise<TransactionResponseDto.GetTransactionListResponse[]>{
-        return db.query<TransactionResponseDto.GetTransactionListResponse[]>(
+    static async DBGetUserTransactionListById(userid: number): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]>{
+        return db.query<TransactionResponseDto.GetTransactionListByIdResponse[]>(
             `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,
                 t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
                 t.updated_at FROM transaction t WHERE user_id = ?`, [userid])

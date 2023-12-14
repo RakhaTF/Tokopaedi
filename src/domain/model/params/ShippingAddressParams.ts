@@ -6,3 +6,7 @@ export type CreateShippingAddressParams = CreateShippingAddressRequest & {
 export type UpdateShippingAddressParams = UpdateShippingAddressRequest & {
     user_id: number
 }
+
+export type GetUserShippingAddressByIdParams = {
+    user_id: number;
+}

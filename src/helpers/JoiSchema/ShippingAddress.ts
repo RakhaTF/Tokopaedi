@@ -53,3 +53,9 @@ export const UpdateShippingAddress = Joi.object({
         'string.base': 'country must be a string',
     })
 })
+
+export const GetUserShippingAddressById = Joi.object({
+    user_id: Joi.number().required().messages({
+        'any.required': 'user_id is required',
+    })
+})

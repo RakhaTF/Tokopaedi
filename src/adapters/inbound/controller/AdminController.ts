@@ -1,7 +1,8 @@
 import { FastifyRequest } from "fastify";
 import AdminAppService from "@application/service/Admin";
 import TransactionAppService from "@application/service/Transaction";
-import { AdminRequestDto, TransactionRequestDto } from "@domain/model/request";
+import { AdminRequestDto, ShippingAddressRequestDto, TransactionRequestDto } from "@domain/model/request";
+import ShippingAddressAppService from "@application/service/ShippingAddress";
 
 export default class AdminController {
     static async GetAdminProfile(request: FastifyRequest){
@@ -237,6 +238,39 @@ export default class AdminController {
 
             const result = {message: getUserTransactionListById}
             return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async GetUserShippingAddress(){
+        try {
+            const getUserShippingAddress = await AdminAppService.GetUserShippingAddressService()
+            const result = {message: getUserShippingAddress}
+
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async GetUserShippingAddressById(request: FastifyRequest){
+        try {
+            const {user_id} = request.body as ShippingAddressRequestDto.GetUserShippingAddressByIdRequest
+            const getUserShippingAddressById = await ShippingAddressAppService.GetUserShippingAddressByIdService({user_id})
+
+            const result = {message: getUserShippingAddressById}
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async GetUserTransactionDetail(request: FastifyRequest){
+        try {
+            const { id } = request.body as { id: number }
+            const transactionDetail = await TransactionAppService.GetTransactionDetail(id)
+            return { message: transactionDetail }
         } catch (error) {
             throw error
         }

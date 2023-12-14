@@ -25,7 +25,8 @@ export class InsertAdminRules1701765215665 implements MigrationInterface {
             , 125
             , 126
             , 127
-            , 128];
+            , 128
+            , 129];
         const values = rules.map(rule => `(2, ${rule})`).join(', ');
         const query = `INSERT INTO user_group_rules (group_id, rules_id) VALUES ${values}`;
         await queryRunner.query(query);

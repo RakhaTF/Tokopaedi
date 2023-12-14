@@ -74,8 +74,9 @@ export type TransactionDetailResult = {
     delivery_status: string
     shipping_address: ShippingAddress
     created_at: string
+}
 
-export type GetTransactionListResponse = {
+export type GetTransactionListByIdResponse = {
     id: number;
     user_id: number;
     payment_method: string;
