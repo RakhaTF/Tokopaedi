@@ -243,7 +243,7 @@ export default class TransactionAppService {
             created_at: moment.unix(txnDetail.created_at).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
         }
         return transaction
-      
+    }
     static async GetUserTransactionListByIdService(params: TransactionParamsDto.GetUserTransactionListByIdParams){
         const result = await TransactionDomainService.GetUserTransactionListByIdDomain(params.userid)
         if (result.length < 1){
