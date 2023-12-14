@@ -23,3 +23,13 @@ export type PayTransactionRequest = {
 export type GetUserTransactionListByIdRequest = {
     userid: number;
 }
+
+export type UpdateDeliveryStatusRequest = {
+    transaction_id: number;
+    status: number;
+    is_delivered: number;
+}
+
+export type UpdateTransactionStatusRequest = {
+    transaction_id: number;
+}

@@ -243,6 +243,34 @@ export default class AdminController {
         }
     }
 
+    static async UpdateDeliveryStatus(request: FastifyRequest) {
+        try {
+            const { is_delivered, status, transaction_id } = request.body as TransactionRequestDto.UpdateDeliveryStatusRequest
+            const updateDeliveryStatus = await TransactionAppService.UpdateDeliveryStatus({ is_delivered, status, transaction_id })     
+            return { message: updateDeliveryStatus }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async ApproveTransaction(request: FastifyRequest) {
+        try {
+            const { transaction_id } = request.body as TransactionRequestDto.UpdateTransactionStatusRequest
+            const approveTransaction = await TransactionAppService.ApproveTransaction({ transaction_id })     
+            return { message: approveTransaction }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async RejectTransaction(request: FastifyRequest) {
+        try {
+            const { transaction_id } = request.body as TransactionRequestDto.UpdateTransactionStatusRequest
+            const rejectTransaction = await TransactionAppService.RejectTransaction({ transaction_id })     
+            return { message: rejectTransaction }
+        } catch (error) {
+            throw error;
+    }
     static async GetUserShippingAddress(){
         try {
             const getUserShippingAddress = await AdminAppService.GetUserShippingAddressService()

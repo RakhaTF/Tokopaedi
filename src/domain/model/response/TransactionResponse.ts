@@ -89,3 +89,7 @@ export type GetTransactionListByIdResponse = {
     created_at: number;
     updated_at: number;
 }
+
+export type GetTransactionStatusResponse = {
+    status: number;
+}

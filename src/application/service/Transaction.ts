@@ -211,15 +211,8 @@ export default class TransactionAppService {
             }
         })
 
-        let paid_at: string
-        if (typeof txnDetail.paid_at === "string") { //If it's unpaid, it will return string "Not Available" from DB.
-            paid_at = txnDetail.paid_at
-        } else if (typeof txnDetail.paid_at === "number") { //If it's paid, it will return unix timestamp number from DB.
-            paid_at = moment.unix(txnDetail.paid_at).tz('Asia/Jakarta').format("YYYY-MM-DD HH:mm:ss")
-        } else {
-            //Additional error checking layer.
-            throw new Error(`Unexpected type for txnDetail.paid_at: ${typeof txnDetail.paid_at}`)
-        }
+        const paid_at = moment.unix(txnDetail.paid_at).tz('Asia/Jakarta').format("YYYY-MM-DD HH:mm:ss")
+        const created_at = moment.unix(txnDetail.created_at).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss')
 
         const transaction: TransactionResponseDto.TransactionDetailResult = {
             user_id: txnDetail.user_id,
@@ -240,7 +233,7 @@ export default class TransactionAppService {
                 province: txnDetail.province,
                 country: txnDetail.country,
             },
-            created_at: moment.unix(txnDetail.created_at).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
+            created_at
         }
         return transaction
     }
@@ -253,6 +246,60 @@ export default class TransactionAppService {
         return result
     }
 
+    static async ApproveTransaction(params: TransactionRequestDto.UpdateTransactionStatusRequest) {
+        await TransactionSchema.UpdateTransactionStatus.validateAsync(params)
+        const {  transaction_id } = params
+
+        const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
+            status: 1, //0 = pending (default), 1 = approved, 2 = rejected
+            transaction_id,  
+            updated_at: moment().unix()
+        }
+        await TransactionDomainService.UpdateTransactionStatusDomain(updateTransactionStatus)
+        return true;
+    }
+
+    static async RejectTransaction(params: TransactionRequestDto.UpdateTransactionStatusRequest) {
+        await TransactionSchema.UpdateTransactionStatus.validateAsync(params)
+        const {  transaction_id } = params
+
+        const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
+            status: 2, //0 = pending (default), 1 = approved, 2 = rejected
+            transaction_id,  
+            updated_at: moment().unix()
+        }
+        await TransactionDomainService.UpdateTransactionStatusDomain(updateTransactionStatus)
+        return true;
+    }
+
+    static async UpdateDeliveryStatus(params: TransactionRequestDto.UpdateDeliveryStatusRequest) {
+        await TransactionSchema.UpdateDeliveryStatus.validateAsync(params)
+        const { is_delivered, status, transaction_id } = params
+
+        //get transaction status if transaction hasn't been approved / rejected, can not update delivery status
+        const transactionStatus = await TransactionDomainService.GetTransactionStatusDomain(transaction_id)
+
+        if (transactionStatus.status !== 1) {
+            switch (transactionStatus.status) {
+                case 0:
+                    throw new Error("Please approve the transaction first!");
+                case 2:
+                    throw new Error("This transaction is rejected!");
+                default:
+                    throw new Error("Invalid transaction status!");
+            }
+        }
+
+        const updateDeliveryStatus: TransactionParamsDto.UpdateDeliveryStatusParams = {
+            transaction_id,
+            is_delivered, // 0 = pending, 1 = delivered
+            status, //0 = Pending, 1 = On Delivery, 2 = Delivered, 3 = Rejected
+            updated_at: moment().unix()
+        }
+        await TransactionDomainService.UpdateDeliveryStatusDomain(updateDeliveryStatus)
+        return true;
+    }    
+  
     static async DeleteTransaction(transaction_id: number) {
         await TransactionSchema.TransactionId.validateAsync(transaction_id)
         await TransactionDomainService.DeleteTransactionDomain(transaction_id)

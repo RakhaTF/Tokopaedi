@@ -1,3 +1,5 @@
+import { UpdateDeliveryStatusRequest, UpdateTransactionStatusRequest } from "../request/TransactionRequest";
+
 export type CreateTransactionParams = {
     id: number;
     product_id: number[];
@@ -64,4 +66,13 @@ export type CreateDeliveryStatusParams = {
 
 export type GetUserTransactionListByIdParams = {
     userid: number;
+}
+
+export type UpdateDeliveryStatusParams = UpdateDeliveryStatusRequest & {
+    updated_at: number;
+}
+
+export type UpdateTransactionStatusParams = UpdateTransactionStatusRequest & {
+    status: number;
+    updated_at: number;
 }
