@@ -23,3 +23,17 @@ export type GetTransactionDetailQueryResult = {
     product_id: number;
     qty: number;
 }
+
+export type GetTransactionListResponse = {
+    id: number;
+    user_id: number;
+    payment_method: string;
+    items_price: number;
+    shipping_price: number;
+    total_price: number;
+    shipping_address_id: number;
+    is_paid: number;
+    paid_at: number;
+    created_at: number;
+    updated_at: number;
+}

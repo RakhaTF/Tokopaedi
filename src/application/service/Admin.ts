@@ -275,8 +275,4 @@ export default class AdminAppService {
     static async TransactionListService(){
         return await AdminDomainService.GetTransactionListDomain()
     }
-
-    static async GetUserTransactionListByIdService(params: AdminParamsDto.GetUserTransactionListByIdParams){
-        return await AdminDomainService.GetUserTransactionListByIdDomain(params.userid)
-    }
 }

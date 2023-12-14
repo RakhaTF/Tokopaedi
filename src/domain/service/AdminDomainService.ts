@@ -101,8 +101,4 @@ export default class AdminDomainService {
     static async GetTransactionListDomain(){
         return await AdminRepository.DBGetTransactionList()
     }
-
-    static async GetUserTransactionListByIdDomain(userid: number){
-        return await AdminRepository.DBGetUserTransactionListById(userid)
-    }
 }

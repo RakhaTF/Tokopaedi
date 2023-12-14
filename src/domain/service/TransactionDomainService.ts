@@ -77,4 +77,8 @@ export default class TransactionDomainService {
             throw new Error("Failed to create delivery_status")
         }
     }
+
+    static async GetUserTransactionListByIdDomain(userid: number){
+        return await TransactionRepository.DBGetUserTransactionListById(userid)
+    }
 }

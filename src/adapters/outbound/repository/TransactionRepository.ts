@@ -124,4 +124,11 @@ export default class TransactionRepository {
 
         return await db.query<ResultSetHeader>(query, [transaction_id, status, expedition_name, is_delivered, delivered_at, updated_at], query_runner)
     }
+
+    static async DBGetUserTransactionListById(userid: number): Promise<TransactionResponseDto.GetTransactionListResponse[]>{
+        return db.query<TransactionResponseDto.GetTransactionListResponse[]>(
+            `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,
+                t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
+                t.updated_at FROM transaction t WHERE user_id = ?`, [userid])
+    }
 }

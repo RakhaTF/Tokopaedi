@@ -195,4 +195,12 @@ export default class TransactionAppService {
             await query_runner.release()
         }
     }
+
+    static async GetUserTransactionListByIdService(params: TransactionParamsDto.GetUserTransactionListByIdParams){
+        const result = await TransactionDomainService.GetUserTransactionListByIdDomain(params.userid)
+        if (result.length < 1){
+            throw new Error("Data not found")
+        }
+        return result
+    }
 }
