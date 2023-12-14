@@ -271,4 +271,8 @@ export default class AdminAppService {
             return result
         }
     }
+
+    static async TransactionListService(){
+        return await AdminDomainService.GetTransactionListDomain()
+    }
 }

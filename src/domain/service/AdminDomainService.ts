@@ -97,4 +97,8 @@ export default class AdminDomainService {
         }
         return true
     }
+
+    static async GetTransactionListDomain(){
+        return await AdminRepository.DBGetTransactionList()
+    }
 }

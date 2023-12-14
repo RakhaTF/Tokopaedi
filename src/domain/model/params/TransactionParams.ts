@@ -61,3 +61,7 @@ export type CreateDeliveryStatusParams = {
     delivered_at: number;
     updated_at: number;
 }
+
+export type GetUserTransactionListByIdParams = {
+    userid: number;
+}

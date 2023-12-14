@@ -146,6 +146,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/transaction/update-product-quantity",
         handler: TransactionController.UpdateTransactionProductQty,
         schema: {
+            tags: ["User"],
             body: Schema.BaseRequestSchema("Raihan", {
                 product_id: { type: "number" },
                 order_id: { type: "number" },

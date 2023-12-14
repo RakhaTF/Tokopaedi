@@ -1,5 +1,5 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
-import { AdminResponseDto } from "@domain/model/response";
+import { AdminResponseDto, TransactionResponseDto } from "@domain/model/response";
 import { AdminParamsDto } from "@domain/model/params";
 import { ResultSetHeader } from "mysql2";
 
@@ -87,5 +87,12 @@ export default class AdminRepository {
 
     static async DBChangeUserPass(userid: number, encryptPass: string){
         return db.query(`UPDATE user SET password = ? WHERE id = ?`, [encryptPass, userid])
+    }
+
+    static async DBGetTransactionList(): Promise<TransactionResponseDto.GetTransactionListResponse[]>{
+        return db.query<TransactionResponseDto.GetTransactionListResponse[]>(
+        `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,
+		    t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
+		    t.updated_at FROM transaction t`)
     }
 }

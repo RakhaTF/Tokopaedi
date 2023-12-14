@@ -78,11 +78,19 @@ export default class TransactionDomainService {
         }
     }
 
+
     static async GetTransactionDetailDomain(id: number) {
         const transactionDetail = await TransactionRepository.DBGetTransactionDetail(id)
         if (transactionDetail.length < 1) {
             throw new Error("Transaction not found!")
         }
         return transactionDetail[0]
+
+    static async GetUserTransactionListByIdDomain(userid: number){
+        const transactionList = await TransactionRepository.DBGetUserTransactionListById(userid)
+        if (transactionList.length < 1) {
+            throw new Error("No Transaction Found")
+        }
+        return transactionList
     }
 }

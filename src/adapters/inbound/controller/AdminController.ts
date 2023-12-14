@@ -1,6 +1,7 @@
 import { FastifyRequest } from "fastify";
 import AdminAppService from "@application/service/Admin";
-import { AdminRequestDto } from "@domain/model/request";
+import TransactionAppService from "@application/service/Transaction";
+import { AdminRequestDto, TransactionRequestDto } from "@domain/model/request";
 
 export default class AdminController {
     static async GetAdminProfile(request: FastifyRequest){
@@ -210,6 +211,31 @@ export default class AdminController {
 
             const result = {message: changePassword}
 
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async GetTransactionList(){
+        try {
+            const getTransactionList = await AdminAppService.TransactionListService()
+
+            const result = {message: getTransactionList}
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async GetUserTransactionListById(request: FastifyRequest){
+        try {
+            const {userid} = request.body as TransactionRequestDto.GetUserTransactionListByIdRequest
+            const getUserTransactionListById = await TransactionAppService.GetUserTransactionListByIdService({
+                userid
+            })
+
+            const result = {message: getUserTransactionListById}
             return result
         } catch (error) {
             throw error

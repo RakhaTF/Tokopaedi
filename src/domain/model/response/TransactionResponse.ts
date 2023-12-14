@@ -24,6 +24,7 @@ export type GetTransactionDetailQueryResult = {
     qty: number;
 }
 
+
 export type TransactionDetailQueryResult = {
     user_id: number
     transaction_id: number
@@ -73,4 +74,17 @@ export type TransactionDetailResult = {
     delivery_status: string
     shipping_address: ShippingAddress
     created_at: string
+
+export type GetTransactionListResponse = {
+    id: number;
+    user_id: number;
+    payment_method: string;
+    items_price: number;
+    shipping_price: number;
+    total_price: number;
+    shipping_address_id: number;
+    is_paid: number;
+    paid_at: number;
+    created_at: number;
+    updated_at: number;
 }

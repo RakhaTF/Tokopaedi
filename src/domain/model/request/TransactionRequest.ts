@@ -19,3 +19,7 @@ export type PayTransactionRequest = {
     shipping_address_id: number;
     expedition_name: string;
 }
+
+export type GetUserTransactionListByIdRequest = {
+    userid: number;
+}

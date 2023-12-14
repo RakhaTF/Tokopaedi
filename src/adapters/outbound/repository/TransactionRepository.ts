@@ -179,5 +179,11 @@ export default class TransactionRepository {
             WHERE t.id = ?
             GROUP BY t.id
     `,[id])
+      
+    static async DBGetUserTransactionListById(userid: number): Promise<TransactionResponseDto.GetTransactionListResponse[]>{
+        return db.query<TransactionResponseDto.GetTransactionListResponse[]>(
+            `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,
+                t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
+                t.updated_at FROM transaction t WHERE user_id = ?`, [userid])
     }
 }
