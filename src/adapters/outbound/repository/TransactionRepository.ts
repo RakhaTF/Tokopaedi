@@ -180,10 +180,25 @@ export default class TransactionRepository {
             GROUP BY t.id
     `,[id])
     }
+    
     static async DBGetUserTransactionListById(userid: number): Promise<TransactionResponseDto.GetTransactionListResponse[]>{
-        return db.query<TransactionResponseDto.GetTransactionListResponse[]>(
-            `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,
-                t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
-                t.updated_at FROM transaction t WHERE user_id = ?`, [userid])
+        return db.query<TransactionResponseDto.GetTransactionListResponse[]>(`
+        SELECT t.id,
+            t.user_id,
+            t.payment_method,
+            t.items_price,
+            t.shipping_price,
+            t.total_price,
+            t.shipping_address_id,
+            t.is_paid,
+            t.paid_at,
+            t.created_at,
+            t.updated_at
+        FROM TRANSACTION t
+        WHERE user_id = ?`, [userid])
+    }
+
+    static async DBDeleteTransaction(transaction_id: number) {
+        return await db.query<ResultSetHeader>(`DELETE FROM transaction WHERE id = ?`, [transaction_id])
     }
 }

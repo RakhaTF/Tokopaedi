@@ -78,7 +78,6 @@ export default class TransactionDomainService {
         }
     }
 
-
     static async GetTransactionDetailDomain(id: number) {
         const transactionDetail = await TransactionRepository.DBGetTransactionDetail(id)
         if (transactionDetail.length < 1) {
@@ -86,11 +85,19 @@ export default class TransactionDomainService {
         }
         return transactionDetail[0]
     }
+
     static async GetUserTransactionListByIdDomain(userid: number){
         const transactionList = await TransactionRepository.DBGetUserTransactionListById(userid)
         if (transactionList.length < 1) {
             throw new Error("No Transaction Found")
         }
         return transactionList
+    }
+
+    static async DeleteTransactionDomain(transaction_id: number) {
+        const deleteTransaction = await TransactionRepository.DBDeleteTransaction(transaction_id)
+        if (deleteTransaction.affectedRows < 1) {
+            throw new Error("Failed to delete transaction!")
+        }
     }
 }
