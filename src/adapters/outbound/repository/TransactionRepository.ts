@@ -125,6 +125,61 @@ export default class TransactionRepository {
         return await db.query<ResultSetHeader>(query, [transaction_id, status, expedition_name, is_delivered, delivered_at, updated_at], query_runner)
     }
 
+    static async DBGetTransactionDetail(id: number): Promise<TransactionResponseDto.TransactionDetailQueryResult[]> {
+        return await db.query(`
+        SELECT u.id AS user_id,
+                t.id AS transaction_id,
+                COALESCE(u.name, 'Not Available') AS name,
+                COALESCE(t.items_price, 0) AS items_price,
+                COALESCE(t.shipping_price, 0) AS shipping_price,
+                COALESCE(t.total_price, 0) AS total_price,
+                COALESCE(GROUP_CONCAT(p.name SEPARATOR ","), 'No Products') AS product_bought,
+                COALESCE(GROUP_CONCAT(o.qty SEPARATOR ","), 'No Products') AS qty,
+                CASE 
+                    WHEN t.is_paid = 0
+                        THEN 'Unpaid'
+                    WHEN t.is_paid = 1
+                        THEN 'Paid'
+                    ELSE 'Payment Status Not Available'
+                END AS is_paid,
+                COALESCE(t.paid_at, 'Not Available') AS paid_at,
+                CASE 
+                    WHEN ts.STATUS = 0
+                        THEN 'Pending'
+                    WHEN ts.STATUS = 1
+                        THEN 'Approved'
+                    WHEN ts.STATUS = 2
+                        THEN 'Rejected'
+                    ELSE 'Transaction Status Not Available'
+                END AS transaction_status,
+                CASE 
+                    WHEN ds.STATUS = 0
+                        THEN 'Pending'
+                    WHEN ds.STATUS = 1
+                        THEN 'On Delivery'
+                    WHEN ds.STATUS = 2
+                        THEN 'Delivered'
+                    WHEN ds.STATUS = 3
+                        THEN 'Rejected'
+                    ELSE 'Delivery Status Not Available'
+                END AS delivery_status,
+                COALESCE(t.created_at, 'Not Available') AS created_at,
+                COALESCE(sa.address, 'Not Available') AS address, 
+                COALESCE(sa.postal_code, 'Not Available') AS postal_code, 
+                COALESCE(sa.city, 'Not Available') AS city, 
+                COALESCE(sa.province, 'Not Available') AS province, 
+                COALESCE(sa.country, 'Not Available') AS country
+            FROM USER u
+            LEFT JOIN TRANSACTION t ON u.id = t.user_id
+            LEFT JOIN transaction_status ts ON t.id = ts.transaction_id
+            LEFT JOIN delivery_status ds ON t.id = ds.transaction_id
+            LEFT JOIN order_item o ON t.id = o.order_id
+            LEFT JOIN product p ON o.product_id = p.id
+            LEFT JOIN shipping_address sa  ON t.shipping_address_id = sa.id
+            WHERE t.id = ?
+            GROUP BY t.id
+    `,[id])
+      
     static async DBGetUserTransactionListById(userid: number): Promise<TransactionResponseDto.GetTransactionListResponse[]>{
         return db.query<TransactionResponseDto.GetTransactionListResponse[]>(
             `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,

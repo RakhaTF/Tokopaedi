@@ -42,7 +42,7 @@ export default class TransactionDomainService {
         return await TransactionRepository.DBCreateTransactionStatus(params, query_runner)
     }
 
-    static async GetTransactionDetailDomain(id: number) {
+    static async GetCurrentTransactionDetailDomain(id: number) {
         const transactionDetail = await TransactionRepository.DBGetCurrentTransactionDetail(id)
         if (transactionDetail.length < 1) {
             throw new Error("Transaction not found!")
@@ -77,6 +77,14 @@ export default class TransactionDomainService {
             throw new Error("Failed to create delivery_status")
         }
     }
+
+
+    static async GetTransactionDetailDomain(id: number) {
+        const transactionDetail = await TransactionRepository.DBGetTransactionDetail(id)
+        if (transactionDetail.length < 1) {
+            throw new Error("Transaction not found!")
+        }
+        return transactionDetail[0]
 
     static async GetUserTransactionListByIdDomain(userid: number){
         const transactionList = await TransactionRepository.DBGetUserTransactionListById(userid)

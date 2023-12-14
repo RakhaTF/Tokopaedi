@@ -21,6 +21,7 @@
     "joi": "17.11.0",
     "jsonwebtoken": "9.0.2",
     "moment": "2.29.4",
+    "moment-timezone": "^0.5.43",
     "mysql2": "^3.4.5",
     "pino-pretty": "^10.2.3",
     "typeorm": "0.3.17"
