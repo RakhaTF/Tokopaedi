@@ -1,6 +1,7 @@
 import { FastifyRequest } from "fastify";
 import UserAppService from "@application/service/User";
 import { UserRequestDto } from "@domain/model/request";
+import TransactionAppService from "@application/service/Transaction";
 
 export default class UserController {
     static async GetUserProfile(request: FastifyRequest){
@@ -50,6 +51,26 @@ export default class UserController {
             return result
         } catch (error) {
             throw error
+        }
+    }
+
+    static async TransactionList(request: FastifyRequest) {
+        try {
+            const { id } = request.user
+            const transactionList = await TransactionAppService.GetUserTransactionListByIdService({userid: id})
+            return { message: transactionList }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async DeleteTransaction(request: FastifyRequest) {
+        try {
+            const { id } = request.body as {id: number}
+            const deleteTransaction = await TransactionAppService.DeleteTransaction(id)
+            return { message: deleteTransaction }
+        } catch (error) {
+            throw error;
         }
     }
 }
