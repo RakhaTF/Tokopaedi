@@ -295,6 +295,7 @@ const routes: RouteOptions[] = [
         preHandler: CheckAuthAdmin({ rules: Rules.CHANGE_USER_PASSWORD }),
         handler: AdminController.ChangeUserPass,
         schema: {
+            tags: ["Admin"],
             body: Schema.BaseRequestSchema("Raihan", {
                 userid: {type: "number"},
                 password: {type: "string"},
@@ -310,12 +311,66 @@ const routes: RouteOptions[] = [
         url: "/api/v1/admin/change-pass",
         handler: AdminController.ChangePass,
         schema: {
+            tags: ["Admin"],
             body: Schema.BaseRequestSchema("Raihan", {
                 oldPassword: {type: "string"},
                 newPassword: {type: "string"}
             }),
             response: Schema.BaseResponse({
                 type: "Boolean"
+            })
+        }
+    },
+    {
+        method: ["GET"],
+        url: "/api/v1/admin/transaction/list",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_TRANSACTION_LIST }),
+        handler: AdminController.GetTransactionList,
+        schema: {
+            tags: ["Admin"],
+            response: Schema.BaseResponse({
+                type: "Array of Object",
+                message: {
+                    id: {type: "number"},
+                    user_id: {type: "number"},
+                    payment_method: {type: "string"},
+                    items_price: {type: "number"},
+                    shipping_price: {type: "number"},
+                    total_price: {type: "number"},
+                    shipping_address_id: {type: "number"},
+                    is_paid: {type: "number"},
+                    paid_at: {type: "number"},
+                    created_at: {type: "number"},
+                    updated_at: {type: "number"},
+                }
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/user/transaction/list",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_TRANSACTION_LIST }),
+        handler: AdminController.GetUserTransactionListById,
+        schema: {
+            tags: ["Admin"],
+            body: Schema.BaseRequestSchema("Raihan", {
+                userid: {type: 'number'}
+            }),
+            response: Schema.BaseResponse({
+                type: "Array of Object",
+                message: {
+                    id: {type: "number"},
+                    user_id: {type: "number"},
+                    payment_method: {type: "string"},
+                    items_price: {type: "string"},
+                    shipping_price: {type: "string"},
+                    total_price: {type: "string"},
+                    shipping_address_id: {type: "number"},
+                    is_paid: {type: "number"},
+                    paid_at: {type: "number"},
+                    created_at: {type: "number"},
+                    updated_at: {type: "number"},
+                }
             })
         }
     }

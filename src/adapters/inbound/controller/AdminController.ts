@@ -215,4 +215,29 @@ export default class AdminController {
             throw error
         }
     }
+
+    static async GetTransactionList(){
+        try {
+            const getTransactionList = await AdminAppService.TransactionListService()
+
+            const result = {message: getTransactionList}
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async GetUserTransactionListById(request: FastifyRequest){
+        try {
+            const {userid} = request.body as AdminRequestDto.GetUserTransactionListByIdRequest
+            const getUserTransactionListById = await AdminAppService.GetUserTransactionListByIdService({
+                userid
+            })
+
+            const result = {message: getUserTransactionListById}
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
 }

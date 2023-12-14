@@ -88,4 +88,18 @@ export default class AdminRepository {
     static async DBChangeUserPass(userid: number, encryptPass: string){
         return db.query(`UPDATE user SET password = ? WHERE id = ?`, [encryptPass, userid])
     }
+
+    static async DBGetTransactionList(): Promise<AdminResponseDto.GetTransactionListResponse[]>{
+        return db.query<AdminResponseDto.GetTransactionListResponse[]>(
+        `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,
+		    t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
+		    t.updated_at FROM transaction t`)
+    }
+
+    static async DBGetUserTransactionListById(userid: number): Promise<AdminResponseDto.GetTransactionListResponse[]>{
+        return db.query<AdminResponseDto.GetTransactionListResponse[]>(
+            `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,
+                t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
+                t.updated_at FROM transaction t WHERE user_id = ?`, [userid])
+    }
 }
