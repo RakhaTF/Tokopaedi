@@ -93,4 +93,26 @@ export default class TransactionDomainService {
         }
         return transactionList
     }
+
+    static async UpdateDeliveryStatusDomain(params: TransactionParamsDto.UpdateDeliveryStatusParams) {
+        const updateDeliveryStatusDomain = await TransactionRepository.DBUpdateDeliveryStatus(params)
+        if (updateDeliveryStatusDomain.affectedRows < 1) {
+            throw new Error("Failed to update delivery status")
+        }
+    }
+
+    static async UpdateTransactionStatusDomain(params: TransactionParamsDto.UpdateTransactionStatusParams) {
+        const updateTransactionStatus = await TransactionRepository.DBUpateTransactionStatus(params)
+        if (updateTransactionStatus.affectedRows < 1) {
+            throw new Error("Failed to update transaction status")
+        }
+    }
+
+    static async GetTransactionStatusDomain(transaction_id: number) {
+        const transactionStatus = await TransactionRepository.DBGetTransactionStatus(transaction_id)
+        if (transactionStatus.length < 1) {
+            throw new Error("Transaction not found")
+        }
+        return transactionStatus[0]
+    }
 }

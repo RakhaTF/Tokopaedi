@@ -186,4 +186,26 @@ export default class TransactionRepository {
                 t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
                 t.updated_at FROM transaction t WHERE user_id = ?`, [userid])
     }
+
+    static async DBUpdateDeliveryStatus(params: TransactionParamsDto.UpdateDeliveryStatusParams) {
+        const { is_delivered, status, transaction_id, updated_at } = params
+        
+        const query = `UPDATE delivery_status SET status = ?, is_delivered = ?, updated_at = ? WHERE transaction_id = ?`
+        return await db.query<ResultSetHeader>(query, [status, is_delivered, updated_at, transaction_id])
+    }
+
+    static async DBUpateTransactionStatus(params: TransactionParamsDto.UpdateTransactionStatusParams) {
+        const { status, transaction_id, updated_at } = params
+        return await db.query<ResultSetHeader>(`
+        UPDATE transaction_status SET status = ?, update_time = ? WHERE transaction_id = ?`, [status, updated_at, transaction_id])
+    }
+
+    static async DBGetTransactionStatus(transaction_id: number): Promise<TransactionResponseDto.GetTransactionStatusResponse[]> { 
+        return await db.query(`
+        SELECT ts.status FROM transaction_status ts
+        RIGHT JOIN transaction t
+            ON ts.transaction_id = t.id
+        WHERE t.id = ?
+        `, [transaction_id])
+    }
 }

@@ -63,3 +63,19 @@ export const PayTransaction = Joi.object({
         'any.only': 'Expedition name must be one of [JNE, J&T, Tiki, Wahana, Gojek, Lion Parcel, Ninja Express, Shopee Express]'
     })
 }).options({ abortEarly: false });
+
+export const UpdateDeliveryStatus = Joi.object({
+    transaction_id: TransactionId,
+    status: Joi.number().valid(0, 1, 2, 3).required().messages({
+        'number.base': 'Status must be a number',
+        'any.only': 'Status must be one of [0, 1 , 2, 3]'
+    }),
+    is_delivered: Joi.number().valid(0, 1).required().messages({
+        'number.base': 'is_delivered must be a number',
+        'any.only': 'is_delivered must be one of [0, 1]'
+    }),
+})
+
+export const UpdateTransactionStatus = Joi.object({
+    transaction_id: TransactionId
+})

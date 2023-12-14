@@ -373,6 +373,47 @@ const routes: RouteOptions[] = [
                 }
             })
         }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/transaction/update-delivery-status",
+        preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_TRANSACTION_DELIVERY_STATUS }),
+        handler: AdminController.UpdateDeliveryStatus,
+        schema: {
+            tags: ["Admin"],
+            body: Schema.BaseRequestSchema("Rakha", {
+                transaction_id: { type: 'number' },
+                is_delivered: { type: 'number' },
+                status: { type: 'number' },
+            }),
+            response: Schema.BaseResponse({ type: "Boolean" })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/user/transaction/approve",
+        preHandler: CheckAuthAdmin({ rules: Rules.APPROVE_TRANSACTION }),
+        handler: AdminController.ApproveTransaction,
+        schema: {
+            tags: ["Admin"],
+            body: Schema.BaseRequestSchema("Rakha", {
+                transaction_id: { type: 'number' }
+            }),
+            response: Schema.BaseResponse({ type: "Boolean" })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/user/transaction/reject",
+        preHandler: CheckAuthAdmin({ rules: Rules.REJECT_TRANSACTION }),
+        handler: AdminController.RejectTransaction,
+        schema: {
+            tags: ["Admin"],
+            body: Schema.BaseRequestSchema("Rakha", {
+                transaction_id: { type: 'number' }
+            }),
+            response: Schema.BaseResponse({ type: "Boolean" })
+        }
     }
 ]
 
