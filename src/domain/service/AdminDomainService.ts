@@ -101,4 +101,8 @@ export default class AdminDomainService {
     static async GetTransactionListDomain(){
         return await AdminRepository.DBGetTransactionList()
     }
+
+    static async GetUserShippingAddressDomain(){
+        return await AdminRepository.DBGetUserShippingAddress()
+    }
 }

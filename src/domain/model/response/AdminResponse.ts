@@ -39,3 +39,27 @@ export type GetUserGroupRulesResponse = {
     group_id: number;
     list_of_rules: string;
 }
+
+export type GetTransactionListResponse = {
+    id: number;
+    user_id: number;
+    payment_method: string;
+    items_price: number;
+    shipping_price: number;
+    total_price: number;
+    shipping_address_id: number;
+    is_paid: number;
+    paid_at: number;
+    created_at: number;
+    updated_at: number;
+}
+
+export type GetUserShippingAddressResponse = {
+    id: number;
+    user_id: number;
+    address: string;
+    postal_code: string;
+    city: string;
+    province: string;
+    country: string;
+}

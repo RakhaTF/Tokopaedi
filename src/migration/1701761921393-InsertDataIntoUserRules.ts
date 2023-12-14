@@ -33,6 +33,7 @@ export class InsertDataIntoUserGroupsRules1701761921393 implements MigrationInte
             'VIEW_DELETED_TRANSACTION_LIST',
             'VIEW_USER_SHIPPING_ADDRESS',
             'VIEW_USER_SHIPPING_ADDRESS_LIST',
+            'VIEW_USER_TRANSACTION_DETAIL'
         ];
 
 

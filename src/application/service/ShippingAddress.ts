@@ -61,4 +61,11 @@ export default class ShippingAddressAppService {
         await ShippingAddressDomainService.UpdateShippingAddressDomain({ ...updateAddressData, id, user_id })
         return true;
     }
+
+    static async GetUserShippingAddressByIdService(params: ShippingAddressParamsDto.GetUserShippingAddressByIdParams){
+        await ShippingAddressSchema.GetUserShippingAddressById.validateAsync(params)
+
+        const result = await ShippingAddressDomainService.GetUserShippingAddressByIdDomain(params.user_id)
+        return result
+    }
 }

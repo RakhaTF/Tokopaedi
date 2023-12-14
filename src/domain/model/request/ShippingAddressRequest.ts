@@ -14,3 +14,7 @@ export type UpdateShippingAddressRequest = {
     postal_code?: string;
     country?: string;
 }
+
+export type GetUserShippingAddressByIdRequest = {
+    user_id: number;
+}
