@@ -20,7 +20,7 @@ if (!process.env.SUPER_ADMIN_LEVEL || process.env.SUPER_ADMIN_LEVEL == "") {
     throw new Error("Please set Super Admin Level");
 }
 
-let superadmin_level = parseInt(process.env.MMB_SUPER_ADMIN_LEVEL || "0");
+let superadmin_level = parseInt(process.env.SUPER_ADMIN_LEVEL || "0");
 
 function authorize(data: AuthorizeParams): number {
     try {
