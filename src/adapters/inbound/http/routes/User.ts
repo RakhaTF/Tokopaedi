@@ -174,6 +174,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/transaction/detail",
         handler: TransactionController.TransactionDetail,
         schema: {
+            tags: ["User"],
             body: Schema.BaseRequestSchema("Rakha", { id: { type: "number" } }),
             response: Schema.BaseResponse({
                 type: "Object",
