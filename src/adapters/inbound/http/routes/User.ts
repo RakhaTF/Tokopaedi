@@ -215,6 +215,54 @@ const routes: RouteOptions[] = [
             }),
         },
     },
+    {
+        method: ["POST"],
+        url: "/api/v1/user/transaction/delete",
+        handler: UserController.DeleteTransaction,
+        schema: {
+            tags: ["User"],
+            body: Schema.BaseRequestSchema("Rakha", { id: { type: "number" } }),
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
+    },
+    {
+        method: ["GET"],
+        url: "/api/v1/user/transaction/list",
+        handler: UserController.TransactionList,
+        schema: {
+            tags: ["User"],
+            response: Schema.BaseResponse({
+                type: "Array of Object",
+                message: {
+                    id: { type: "number" },
+                    user_id: { type: "number" },
+                    payment_method: { type: "string" },
+                    items_price: { type: "string" },
+                    shipping_price: { type: "string" },
+                    total_price: { type: "string" },
+                    shipping_address_id: { type: "number" },
+                    is_paid: { type: "number" },
+                    paid_at: { type: "number" },
+                    created_at: { type: "number" },
+                    updated_at: { type: "number" },
+                },
+            }),
+        },
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/user/change-pass",
+        handler: UserController.ChangePassword,
+        schema: {
+            body: Schema.BaseRequestSchema("Raihan", {
+                oldPassword: {type: "string"},
+                newPassword: {type: "string"}
+            }),
+            response: Schema.BaseResponse({
+                type: "Boolean"
+            })
+        }
+    },
 ]
 
 export default async function UserRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {

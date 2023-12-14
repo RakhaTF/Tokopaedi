@@ -76,7 +76,7 @@ export type TransactionDetailResult = {
     created_at: string
 }
 
-export type GetTransactionListResponse = {
+export type GetTransactionListByIdResponse = {
     id: number;
     user_id: number;
     payment_method: string;

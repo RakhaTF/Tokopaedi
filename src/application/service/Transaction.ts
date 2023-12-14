@@ -237,9 +237,10 @@ export default class TransactionAppService {
         }
         return transaction
     }
-    static async GetUserTransactionListByIdService(params: TransactionParamsDto.GetUserTransactionListByIdParams){
+
+    static async GetUserTransactionListByIdService(params: TransactionParamsDto.GetUserTransactionListByIdParams) {
         const result = await TransactionDomainService.GetUserTransactionListByIdDomain(params.userid)
-        if (result.length < 1){
+        if (result.length < 1) {
             throw new Error("Data not found")
         }
         return result
@@ -298,4 +299,10 @@ export default class TransactionAppService {
         await TransactionDomainService.UpdateDeliveryStatusDomain(updateDeliveryStatus)
         return true;
     }    
+  
+    static async DeleteTransaction(transaction_id: number) {
+        await TransactionSchema.TransactionId.validateAsync(transaction_id)
+        await TransactionDomainService.DeleteTransactionDomain(transaction_id)
+        return true;
+    }
 }

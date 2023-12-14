@@ -387,6 +387,26 @@ const routes: RouteOptions[] = [
                 status: { type: 'number' },
             }),
             response: Schema.BaseResponse({ type: "Boolean" })
+    },
+    {
+        method: ["GET"],
+        url: "/api/v1/admin/user/shipping-address",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_SHIPPING_ADDRESS }),
+        handler: AdminController.GetUserShippingAddress,
+        schema: {
+            tags: ["Admin"],
+            response: Schema.BaseResponse({
+                type: "Array of Object",
+                message: {
+                    id: {type: 'number'},
+                    user_id: {type: 'number'},
+                    address: {type: 'string'},
+                    postal_code: {type: 'string'},
+                    city: {type: 'string'},
+                    province: {type: 'string'},
+                    country: {type: 'string'},
+                }
+            })
         }
     },
     {
@@ -400,6 +420,27 @@ const routes: RouteOptions[] = [
                 transaction_id: { type: 'number' }
             }),
             response: Schema.BaseResponse({ type: "Boolean" })
+     },
+     {
+        method: ["POST"]
+        url: "/api/v1/admin/user/shipping-address/list",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_SHIPPING_ADDRESS_LIST }),
+        handler: AdminController.GetUserShippingAddressById,
+        schema: {
+            tags: ["Admin"],
+            body: Schema.BaseRequestSchema("Raihan", {
+                user_id: {type: 'number'}
+            }),
+            response: Schema.BaseResponse({
+                type: 'Array of Object',
+                message: {
+                    address: {type: 'string'},
+                    postal_code: {type: 'string'},
+                    city: {type: 'string'},
+                    province: {type: 'string'},
+                    country: {type: 'string'},
+                }
+            })
         }
     },
     {
@@ -413,6 +454,51 @@ const routes: RouteOptions[] = [
                 transaction_id: { type: 'number' }
             }),
             response: Schema.BaseResponse({ type: "Boolean" })
+     },
+     {
+        method: ["POST"]
+        url: "/api/v1/admin/user/transaction/detail",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_TRANSACTION_DETAIL }),
+        handler: AdminController.GetUserTransactionDetail,
+        schema: {
+            tags: ["Admin"],
+            body: Schema.BaseRequestSchema("Raihan", { id: { type: "number" } }),
+            response: Schema.BaseResponse({
+                type: "Object",
+                message: {
+                    user_id: { type: "number" },
+                    transaction_id: { type: "number" },
+                    name: { type: "string" },
+                    product_bought: {
+                        type: "array",
+                        items: {
+                            type: "object",
+                            properties: {
+                                product_name: { type: "string" },
+                                qty: { type: "string" },
+                            },
+                        },
+                    },
+                    items_price: { type: "number" },
+                    shipping_price: { type: "number" },
+                    total_price: { type: "number" },
+                    is_paid: { type: "string" },
+                    paid_at: { type: "string" },
+                    transaction_status: { type: "string" },
+                    delivery_status: { type: "string" },
+                    shipping_address: {
+                        type: "object",
+                        properties: {
+                            address: { type: "string" },
+                            postal_code: { type: "string" },
+                            city: { type: "string" },
+                            province: { type: "string" },
+                            country: { type: "string" },
+                        },
+                    },
+                    created_at: { type: "string" },
+                },
+            }),
         }
     }
 ]

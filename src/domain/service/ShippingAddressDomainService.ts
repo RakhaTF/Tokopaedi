@@ -39,4 +39,12 @@ export default class ShippingAddressDomainService {
             throw new Error("Failed to Update Shipping Address")
         }
     }
+
+    static async GetUserShippingAddressByIdDomain(user_id: number){
+        const result = await ShippingAddressRepository.DBGetUserShippingAddressById(user_id)
+        if (result.length < 1){
+            throw new Error("Shipping address not found")
+        }
+        return result
+    }
 }

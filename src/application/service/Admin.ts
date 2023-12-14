@@ -275,4 +275,8 @@ export default class AdminAppService {
     static async TransactionListService(){
         return await AdminDomainService.GetTransactionListDomain()
     }
+
+    static async GetUserShippingAddressService(){
+        return await AdminDomainService.GetUserShippingAddressDomain()
+    }
 }
