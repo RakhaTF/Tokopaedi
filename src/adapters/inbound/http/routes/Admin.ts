@@ -387,6 +387,7 @@ const routes: RouteOptions[] = [
                 status: { type: 'number' },
             }),
             response: Schema.BaseResponse({ type: "Boolean" })
+        }
     },
     {
         method: ["GET"],
@@ -420,9 +421,10 @@ const routes: RouteOptions[] = [
                 transaction_id: { type: 'number' }
             }),
             response: Schema.BaseResponse({ type: "Boolean" })
-     },
-     {
-        method: ["POST"]
+        },
+    },
+    {
+        method: ["POST"],
         url: "/api/v1/admin/user/shipping-address/list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_SHIPPING_ADDRESS_LIST }),
         handler: AdminController.GetUserShippingAddressById,
@@ -454,9 +456,10 @@ const routes: RouteOptions[] = [
                 transaction_id: { type: 'number' }
             }),
             response: Schema.BaseResponse({ type: "Boolean" })
-     },
-     {
-        method: ["POST"]
+        }
+    },
+    {
+        method: ["POST"],
         url: "/api/v1/admin/user/transaction/detail",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_TRANSACTION_DETAIL }),
         handler: AdminController.GetUserTransactionDetail,

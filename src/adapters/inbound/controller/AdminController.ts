@@ -270,7 +270,9 @@ export default class AdminController {
             return { message: rejectTransaction }
         } catch (error) {
             throw error;
+        }
     }
+
     static async GetUserShippingAddress(){
         try {
             const getUserShippingAddress = await AdminAppService.GetUserShippingAddressService()
