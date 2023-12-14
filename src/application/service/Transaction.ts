@@ -6,7 +6,7 @@ import ProductDomainService from "@domain/service/ProductDomainService"
 import { TransactionRequestDto } from "@domain/model/request"
 import { TransactionResponseDto } from "@domain/model/response"
 import { Product } from "@domain/entity/Product"
-import moment from 'moment-timezone';
+import moment from "moment-timezone"
 export default class TransactionAppService {
     static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams) {
         const { product_id, qty, id } = params
@@ -211,6 +211,16 @@ export default class TransactionAppService {
             }
         })
 
+        let paid_at: string
+        if (typeof txnDetail.paid_at === "string") { //If it's unpaid, it will return string "Not Available" from DB.
+            paid_at = txnDetail.paid_at
+        } else if (typeof txnDetail.paid_at === "number") { //If it's paid, it will return unix timestamp number from DB.
+            paid_at = moment.unix(txnDetail.paid_at).tz('Asia/Jakarta').format("YYYY-MM-DD HH:mm:ss")
+        } else {
+            //Additional error checking layer.
+            throw new Error(`Unexpected type for txnDetail.paid_at: ${typeof txnDetail.paid_at}`)
+        }
+
         const transaction: TransactionResponseDto.TransactionDetailResult = {
             user_id: txnDetail.user_id,
             transaction_id: txnDetail.transaction_id,
@@ -220,7 +230,7 @@ export default class TransactionAppService {
             shipping_price: parseFloat(txnDetail.shipping_price),
             total_price: parseFloat(txnDetail.total_price),
             is_paid: txnDetail.is_paid,
-            paid_at: moment.unix(txnDetail.paid_at).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
+            paid_at,
             transaction_status: txnDetail.transaction_status,
             delivery_status: txnDetail.delivery_status,
             shipping_address: {
