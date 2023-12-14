@@ -201,4 +201,11 @@ export default class TransactionRepository {
     static async DBDeleteTransaction(transaction_id: number) {
         return await db.query<ResultSetHeader>(`DELETE FROM transaction WHERE id = ?`, [transaction_id])
     }
+    static async DBGetUserTransactionListById(userid: number): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]>{
+        return db.query<TransactionResponseDto.GetTransactionListByIdResponse[]>(
+            `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,
+                t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
+                t.updated_at FROM transaction t WHERE user_id = ?`, [userid])
+
+    }
 }

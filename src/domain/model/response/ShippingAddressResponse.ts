@@ -7,3 +7,11 @@ export type ShippingAddressResponse = {
     province: string;
     country: string;
 }
+
+export type GetUserShippingAddressById = {
+    address: string;
+    postal_code: string;
+    city: string;
+    province: string;
+    country: string;
+}
