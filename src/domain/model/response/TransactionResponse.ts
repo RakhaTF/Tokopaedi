@@ -93,3 +93,8 @@ export type GetTransactionListByIdResponse = {
 export type GetTransactionStatusResponse = {
     status: number;
 }
+
+export type GetProductDetailResult = {
+    product_id: number;
+    stock: number;
+}

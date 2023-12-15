@@ -42,6 +42,15 @@ export default class TransactionDomainService {
         return await TransactionRepository.DBCreateTransactionStatus(params, query_runner)
     }
 
+    // static async GetProductDetailDomain(product_id: number, query_runner?: QueryRunner){
+    //     const result = await TransactionRepository.DBGetProductDetail(product_id, query_runner)
+    //     if (result.length < 1){
+    //         throw new Error ("Product detail not found")
+    //     }
+
+    //     return result
+    // }
+
     static async GetCurrentTransactionDetailDomain(id: number) {
         const transactionDetail = await TransactionRepository.DBGetCurrentTransactionDetail(id)
         if (transactionDetail.length < 1) {
