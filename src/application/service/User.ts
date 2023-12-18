@@ -30,14 +30,14 @@ export default class UserAppService {
                 throw new Error ("User not found")
             }
     
-            const user = await UserDomainService.GetUserDataByIdDomain(params.id)
+            const user = await UserDomainService.GetUserDataByIdDomain(params.id, query_runner)
     
             if (user.id < 1){
                 throw new Error ("User not found")
             }
     
             if (user.email != params.email){
-                let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email)
+                let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email, query_runner)
                 if (userEmailExist.length > 0) {
                     throw new Error ("Email is not available")
                 }
@@ -60,7 +60,7 @@ export default class UserAppService {
                 name: params.name
             }
     
-            await UserDomainService.UpdateUserEditProfileDomainService(obj)
+            await UserDomainService.UpdateUserEditProfileDomainService(obj, query_runner)
     
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
@@ -92,7 +92,7 @@ export default class UserAppService {
 
             const passEncrypt = await hashPassword(params.newPassword)
 
-            const getUserById = await UserDomainService.GetUserPasswordByIdDomain(params.id)
+            const getUserById = await UserDomainService.GetUserPasswordByIdDomain(params.id, query_runner)
 
             if (getUserById.id > 1){
                 const sama = await checkPassword(params.oldPassword, getUserById.password)
@@ -100,7 +100,7 @@ export default class UserAppService {
                     throw new Error ("Invalid old password")
                 }
 
-                const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id)
+                const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id, query_runner)
 
                 //Insert into log, to track user action.
                 await LogDomainService.CreateLogDomain(logData, query_runner)

@@ -39,14 +39,14 @@ export default class UserRepository {
         )
     }
 
-    static async DBGetUserDataById(id: number): Promise<UserResponseDto.GetUserDataByIdResult[]>{
+    static async DBGetUserDataById(id: number, query_runner?: QueryRunner): Promise<UserResponseDto.GetUserDataByIdResult[]>{
         const result = await db.query<UserResponseDto.GetUserDataByIdResult[]>(`SELECT 
         u.id, u.name, u.email, u.level, u.created_at,
         GROUP_CONCAT(DISTINCT d.rules_id separator ',') as group_rules
         FROM user u
         LEFT JOIN user_group_rules d ON u.level = d.group_id
         WHERE u.id = ?
-        GROUP BY u.id`, [id])
+        GROUP BY u.id`, [id], query_runner)
         return result
     }
 
@@ -61,27 +61,27 @@ export default class UserRepository {
         return result
     }
 
-    static async DBGetUserEmailExist(email: string): Promise<UserResponseDto.GetUserEmailExistResult[]> {
+    static async DBGetUserEmailExist(email: string, query_runner?: QueryRunner): Promise<UserResponseDto.GetUserEmailExistResult[]> {
         const result = await db.query<UserResponseDto.GetUserEmailExistResult[]>(`
-        SELECT u.email FROM user u WHERE u.email = ?`, [email])
+        SELECT u.email FROM user u WHERE u.email = ?`, [email], query_runner)
 
         return result
     }
 
-    static async DBUpdateUserEditProfile(params: UserParamsDto.UpdateUserEditProfileParams){
-        const result = await db.query<ResultSetHeader>(`UPDATE user SET NAME = ?, email = ? WHERE id = ? `, [params.name, params.email, params.id])
+    static async DBUpdateUserEditProfile(params: UserParamsDto.UpdateUserEditProfileParams, query_runner?: QueryRunner){
+        const result = await db.query<ResultSetHeader>(`UPDATE user SET NAME = ?, email = ? WHERE id = ? `, [params.name, params.email, params.id], query_runner)
 
         return result
     }
 
-    static async DBGetUserPasswordById(id: number): Promise<UserResponseDto.GetUserPasswordByIdResult[]>{
-        const result = await db.query<UserResponseDto.GetUserPasswordByIdResult[]>(`SELECT a.id, a.password FROM user a WHERE id = ?`, [id])
+    static async DBGetUserPasswordById(id: number, query_runner?: QueryRunner): Promise<UserResponseDto.GetUserPasswordByIdResult[]>{
+        const result = await db.query<UserResponseDto.GetUserPasswordByIdResult[]>(`SELECT a.id, a.password FROM user a WHERE id = ?`, [id], query_runner)
 
         return result
     }
 
-    static async DBUpdatePassword(passEncrypt: string, id: number){
-        const result = await db.query(`UPDATE user SET password = ? WHERE id = ?`, [passEncrypt, id])
+    static async DBUpdatePassword(passEncrypt: string, id: number, query_runner?: QueryRunner){
+        const result = await db.query(`UPDATE user SET password = ? WHERE id = ?`, [passEncrypt, id], query_runner)
         return result
     }
 }

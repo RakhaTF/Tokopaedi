@@ -20,7 +20,7 @@ export default class ShippingAddressAppService {
         try {
             await query_runner.startTransaction()
 
-            await ShippingAddressDomainService.CreateShippingAddressDomain(params)
+            await ShippingAddressDomainService.CreateShippingAddressDomain(params, query_runner)
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
 
@@ -82,13 +82,13 @@ export default class ShippingAddressAppService {
         try {
             await query_runner.startTransaction()
 
-            const shippingAddressDetail = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id)
+            const shippingAddressDetail = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id, query_runner)
 
             if (user_id !== shippingAddressDetail.user_id) {
                 throw new Error("This Shipping Address Doesn't Belong To You!")
             }
 
-            await ShippingAddressDomainService.DeleteShippingAddressDomain(id)
+            await ShippingAddressDomainService.DeleteShippingAddressDomain(id, query_runner)
             
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
@@ -131,7 +131,7 @@ export default class ShippingAddressAppService {
         try {
             await query_runner.startTransaction()
 
-            await ShippingAddressDomainService.UpdateShippingAddressDomain({ ...updateAddressData, id, user_id })
+            await ShippingAddressDomainService.UpdateShippingAddressDomain({ ...updateAddressData, id, user_id }, query_runner)
 
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)

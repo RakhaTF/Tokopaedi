@@ -181,8 +181,8 @@ export default class TransactionRepository {
     `,[id])
     }
 
-    static async DBDeleteTransaction(transaction_id: number) {
-        return await db.query<ResultSetHeader>(`DELETE FROM transaction WHERE id = ?`, [transaction_id])
+    static async DBDeleteTransaction(transaction_id: number, query_runner?: QueryRunner) {
+        return await db.query<ResultSetHeader>(`DELETE FROM transaction WHERE id = ?`, [transaction_id], query_runner)
     }
 
     static async DBGetUserTransactionListById(userid: number, paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]>{
