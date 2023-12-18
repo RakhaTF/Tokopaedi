@@ -26,8 +26,8 @@ export default class UserDomainService {
         return user[0];
     }
 
-    static async GetUserDataByIdDomain(id: number) {
-        const result = await UserRepository.DBGetUserDataById(id)
+    static async GetUserDataByIdDomain(id: number, query_runner?: QueryRunner) {
+        const result = await UserRepository.DBGetUserDataById(id, query_runner)
         if (result.length < 1) {
             throw new Error("User not found")
         }
@@ -44,20 +44,20 @@ export default class UserDomainService {
         return result[0]
     }
 
-    static async GetUserEmailExistDomainService(email: string) {
-        return await UserRepository.DBGetUserEmailExist(email)
+    static async GetUserEmailExistDomainService(email: string, query_runner?: QueryRunner) {
+        return await UserRepository.DBGetUserEmailExist(email, query_runner)
     }
 
-    static async UpdateUserEditProfileDomainService(params: UserParamsDto.UpdateUserEditProfileParams){
-        const result = await UserRepository.DBUpdateUserEditProfile(params)
+    static async UpdateUserEditProfileDomainService(params: UserParamsDto.UpdateUserEditProfileParams, query_runner?: QueryRunner){
+        const result = await UserRepository.DBUpdateUserEditProfile(params, query_runner)
         if (result.affectedRows < 1){
             throw new Error ("Failed update data")
         }
         return result
     }
 
-    static async GetUserPasswordByIdDomain(id: number){
-        const result =  await UserRepository.DBGetUserPasswordById(id)
+    static async GetUserPasswordByIdDomain(id: number, query_runner?: QueryRunner){
+        const result =  await UserRepository.DBGetUserPasswordById(id,query_runner)
         if (result.length < 1){
             throw new Error ("User not found")
         }
@@ -65,8 +65,8 @@ export default class UserDomainService {
         return result[0]
     }
 
-    static async UpdatePasswordDomain(passEncrypt: string, id: number){
-        const result = await UserRepository.DBUpdatePassword(passEncrypt, id)
+    static async UpdatePasswordDomain(passEncrypt: string, id: number, query_runner?: QueryRunner){
+        const result = await UserRepository.DBUpdatePassword(passEncrypt, id, query_runner)
         if (result.affectedRows < 1){
             throw new Error ("Failed change password")
         }

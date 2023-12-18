@@ -364,7 +364,7 @@ export default class AdminController {
     static async DeleteUserTransaction(request: FastifyRequest){
         try {
             const { transaction_id } = request.body as { transaction_id: number }
-            const deleteTransaction = await TransactionAppService.DeleteTransaction(transaction_id)
+            const deleteTransaction = await TransactionAppService.DeleteUserTransaction(transaction_id)
 
             const result = {message: deleteTransaction}
             return result

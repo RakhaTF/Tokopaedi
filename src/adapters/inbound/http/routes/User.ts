@@ -83,23 +83,20 @@ const routes: RouteOptions[] = [
         },
     },
     {
-        method: ["GET"],
+        method: ["POST"],
         url: "/api/v1/user/shipping-address/list",
         handler: ShippingAddressController.GetShippingAddressList,
         schema: {
             tags: ["User"],
-            response: Schema.BaseResponse({
-                type: "Array of Object",
-                message: {
-                    id: { type: "integer" },
-                    user_id: { type: "integer" },
-                    address: { type: "string" },
-                    postal_code: { type: "string" },
-                    city: { type: "string" },
-                    province: { type: "string" },
-                    country: { type: "string" },
-                },
+            body: Schema.BasePaginationRequestSchema({
+                pic: "Raihan",
+                search: {
+                    id: "number",
+                    user_id: "number",
+                    city: "string"
+                }
             }),
+            response: Schema.BasePaginationResultSchema,
         },
     },
     {

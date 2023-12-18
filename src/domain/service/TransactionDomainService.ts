@@ -116,8 +116,8 @@ export default class TransactionDomainService {
         return transactionStatus[0]
     }
 
-    static async DeleteTransactionDomain(transaction_id: number) {
-        const deleteTransaction = await TransactionRepository.DBDeleteTransaction(transaction_id)
+    static async DeleteTransactionDomain(transaction_id: number, query_runner?: QueryRunner) {
+        const deleteTransaction = await TransactionRepository.DBDeleteTransaction(transaction_id, query_runner)
         if (deleteTransaction.affectedRows < 1) {
             throw new Error("Failed to delete transaction!")
         }

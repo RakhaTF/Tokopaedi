@@ -1,13 +1,38 @@
 import { ShippingAddress } from "@domain/model/BaseClass/ShippingAddress";
-import { ShippingAddressParamsDto } from "@domain/model/params";
+import { ShippingAddressParamsDto, LogParamsDto } from "@domain/model/params";
 import ShippingAddressDomainService from "@domain/service/ShippingAddressDomainService";
 import * as ShippingAddressSchema from "helpers/JoiSchema/ShippingAddress"
+import LogDomainService from "@domain/service/LogDomainService"
+import { AppDataSource } from "@infrastructure/mysql/connection"
+import { CommonRequestDto } from "@domain/model/request";
+import * as CommonSchema from "helpers/JoiSchema/Common";
+import unicorn from "format-unicorn/safe";
+import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination"
 
 export default class ShippingAddressAppService {
-    static async CreateShippingAddress(params: ShippingAddressParamsDto.CreateShippingAddressParams) {
+    static async CreateShippingAddress(params: ShippingAddressParamsDto.CreateShippingAddressParams, logData: LogParamsDto.CreateLogParams) {
         await ShippingAddressSchema.CreateShippingAddress.validateAsync(params)
-        await ShippingAddressDomainService.CreateShippingAddressDomain(params)
-        return true;
+
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await ShippingAddressDomainService.CreateShippingAddressDomain(params, query_runner)
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
     }
 
     static async GetShippingAddressDetail(id: number, user_id: number) {
@@ -21,24 +46,65 @@ export default class ShippingAddressAppService {
         return shippingAddressDetail
     }
 
-    static async GetShippingAddressList(user_id: number) {
-        await ShippingAddressSchema.ShippingAddressId.validateAsync(user_id)
-        return await ShippingAddressDomainService.GetShippingAddressListDomain(user_id)
+    static async GetShippingAddressList(user_id: number, paginationParams: CommonRequestDto.PaginationRequest) {
+        await CommonSchema.Pagination.validateAsync(paginationParams)
+        const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
+        
+        
+        /*
+        search filter, to convert filter field into sql string
+        e.g: ({payment} = "Credit Card" AND {items_price} > 1000) will turn into ((t.payment_method = "Credit Card" AND t.items_price > 1000))
+        every field name need to be inside {}
+        */
+       let searchFilter = search || ""
+        searchFilter = unicorn(searchFilter, {
+            id: "s.id",
+            user_id: "s.user_id",
+            city: "s.city"
+        })
+
+        //Generate whereClause
+        const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "s", tablePK: "id" })
+        const shippingList =  await ShippingAddressDomainService.GetShippingAddressListDomain(user_id, { whereClause, limit: Number(limit), sort })
+
+        //Generate pagination
+        const result = Paginate({ data: shippingList, limit })
+        return result
     }
 
-    static async DeleteShippingAddress(id: number, user_id: number) {
+    static async DeleteShippingAddress(id: number, user_id: number, logData: LogParamsDto.CreateLogParams) {
         await ShippingAddressSchema.ShippingAddressId.validateAsync(id)
-        const shippingAddressDetail = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id)
 
-        if (user_id !== shippingAddressDetail.user_id) {
-            throw new Error("This Shipping Address Doesn't Belong To You!")
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            const shippingAddressDetail = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id, query_runner)
+
+            if (user_id !== shippingAddressDetail.user_id) {
+                throw new Error("This Shipping Address Doesn't Belong To You!")
+            }
+
+            await ShippingAddressDomainService.DeleteShippingAddressDomain(id, query_runner)
+            
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
         }
-
-        await ShippingAddressDomainService.DeleteShippingAddressDomain(id)
-        return true;
     }
 
-    static async UpdateShippingAddress(params: ShippingAddressParamsDto.UpdateShippingAddressParams) {
+    static async UpdateShippingAddress(params: ShippingAddressParamsDto.UpdateShippingAddressParams, logData: LogParamsDto.CreateLogParams) {
         await ShippingAddressSchema.UpdateShippingAddress.validateAsync(params)
         const { id, address, city, country, postal_code, province, user_id } = params
 
@@ -58,7 +124,30 @@ export default class ShippingAddressAppService {
             if (province) updateAddressData.province = province;
         }
 
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await ShippingAddressDomainService.UpdateShippingAddressDomain({ ...updateAddressData, id, user_id }, query_runner)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
+
         await ShippingAddressDomainService.UpdateShippingAddressDomain({ ...updateAddressData, id, user_id })
+
+        //Insert into log, to track user action.
+        await LogDomainService.CreateLogDomain(logData)
         return true;
     }
 
