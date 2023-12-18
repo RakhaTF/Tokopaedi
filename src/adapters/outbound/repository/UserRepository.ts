@@ -1,6 +1,5 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import { User } from "@domain/entity/User";
-import { error } from "console";
 import { QueryRunner } from 'typeorm';
 import { UserResponseDto } from "@domain/model/response";
 import { UserParamsDto } from "@domain/model/params";
@@ -11,7 +10,7 @@ const db = AppDataSource;
 export default class UserRepository {
     static async DBCreateUser(user: UserParamsDto.RegisterParams, query_runner?:QueryRunner){
         if(query_runner && !query_runner.isTransactionActive){
-            throw new error("Must in Transaction")
+            throw new Error("Must in Transaction")
         }
 
         const result = await db.query(`INSERT INTO user (NAME, email, PASSWORD, LEVEL, created_at) VALUES (?,?,?,?,?)`, 

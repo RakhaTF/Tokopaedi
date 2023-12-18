@@ -3,6 +3,7 @@ import AdminAppService from "@application/service/Admin";
 import TransactionAppService from "@application/service/Transaction";
 import { AdminRequestDto, CommonRequestDto, ShippingAddressRequestDto, TransactionRequestDto } from "@domain/model/request";
 import ShippingAddressAppService from "@application/service/ShippingAddress";
+import moment from "moment";
 
 export default class AdminController {
     static async GetAdminProfile(request: FastifyRequest){
@@ -138,8 +139,15 @@ export default class AdminController {
 
     static async CreateRule(request: FastifyRequest) {
         try {
+            const { id } = request.user
             const { rule } = request.body as { rule: string }
-            const createRule = await AdminAppService.CreateRules(rule)
+            const createRule = await AdminAppService.CreateRules(rule, {
+                user_id: id,
+                action: `Create Rule ${rule}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
+            })
             return { message: createRule }
         } catch (error) {
             throw error
@@ -148,7 +156,15 @@ export default class AdminController {
 
     static async UpdateRule(request: FastifyRequest) {
         try {
-            const updateRule = await AdminAppService.UpdateRule(request.body as AdminRequestDto.UpdateRuleRequest)
+            const { id } = request.user
+            const updateRuleParams = request.body as AdminRequestDto.UpdateRuleRequest
+            const updateRule = await AdminAppService.UpdateRule(updateRuleParams, {
+                user_id: id,
+                action: `Update Rule #${updateRuleParams.rules_id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
+            })
             return { message: updateRule }
         } catch (error) {
             throw error
@@ -157,17 +173,32 @@ export default class AdminController {
 
     static async DeleteRule(request: FastifyRequest) {
         try {
+            const { id } = request.user
             const { rules_id } = request.body as { rules_id: number }
-            const deleteRule = await AdminAppService.DeleteRule(rules_id)
+            const deleteRule = await AdminAppService.DeleteRule(rules_id, {
+                user_id: id,
+                action: `Delete Rule #${rules_id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
+            })
             return { message: deleteRule }
         } catch (error) {
             throw error
         }
     }
-
+    
     static async AssignRule(request: FastifyRequest) {
         try {
-            const assignRule = await AdminAppService.AssignRule(request.body as AdminRequestDto.AssignRuleRequest)
+            const { id } = request.user
+            const assignRuleParams = request.body as AdminRequestDto.AssignRuleRequest
+            const assignRule = await AdminAppService.AssignRule(assignRuleParams, {
+                user_id: id,
+                action: `Assign Rule #${assignRuleParams.rules_id} To User Group #${assignRuleParams.group_id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
+            })
             return { message: assignRule }
         } catch (error) {
             throw error
@@ -176,7 +207,15 @@ export default class AdminController {
 
     static async RevokeRule(request: FastifyRequest) {
         try {
-            const RevokeRule = await AdminAppService.RevokeRule(request.body as AdminRequestDto.RevokeRuleRequest)
+            const { id } = request.user
+            const revokeRuleParams = request.body as AdminRequestDto.RevokeRuleRequest
+            const RevokeRule = await AdminAppService.RevokeRule(revokeRuleParams, {
+                user_id: id,
+                action: `Revoke Rule #${revokeRuleParams.rules_id} From User Group #${revokeRuleParams.group_id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
+            })
             return { message: RevokeRule }
         } catch (error) {
             throw error

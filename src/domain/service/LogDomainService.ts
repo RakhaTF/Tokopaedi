@@ -1,5 +1,5 @@
 import LogRepository from "@adapters/outbound/repository/LogRepository";
-import { LogParamsDto } from "@domain/model/params";
+import { LogParamsDto, PaginationParamsDto } from "@domain/model/params";
 import { QueryRunner } from "typeorm";
 
 export default class LogDomainService {
@@ -10,8 +10,8 @@ export default class LogDomainService {
         }
     }
     
-    static async GetSystemLogDomain(limit: number, whereClause: string) {
-        const logList = await LogRepository.GetSystemLog(limit, whereClause)
+    static async GetSystemLogDomain(params: PaginationParamsDto.RepoPaginationParams) {
+        const logList = await LogRepository.GetSystemLog(params)
         if (logList.length < 1) {
             throw new Error("No log found!")
         }

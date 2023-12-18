@@ -2,6 +2,7 @@ import { AppDataSource } from "@infrastructure/mysql/connection";
 import { AdminResponseDto } from "@domain/model/response";
 import { AdminParamsDto } from "@domain/model/params";
 import { ResultSetHeader } from "mysql2";
+import { QueryRunner } from "typeorm";
 
 const db = AppDataSource;
 
@@ -53,28 +54,43 @@ export default class AdminRepository {
         `)
     }
 
-    static async DBCreateRules(rules: string) {
-        return await db.query<ResultSetHeader>(`INSERT INTO user_rules(rules) VALUES(?)`, [rules])
+    static async DBCreateRules(rules: string, query_runner: QueryRunner) {
+        if (query_runner && !query_runner.isTransactionActive) {
+            throw new Error("Must in Transaction")
+        }
+        return await db.query<ResultSetHeader>(`INSERT INTO user_rules(rules) VALUES(?)`, [rules], query_runner)
     }
 
     static async DBGetRulesList() {
         return await db.query<AdminResponseDto.GetRulesListResponse[]>(`SELECT rules_id, rules FROM user_rules;`)
     }
 
-    static async DBUpdateRule({ rule, rules_id }: AdminParamsDto.UpdateRuleParams) {
-        return await db.query<ResultSetHeader>(`UPDATE user_rules SET rules = ? WHERE rules_id = ?`, [rule, rules_id])
+    static async DBUpdateRule({ rule, rules_id }: AdminParamsDto.UpdateRuleParams, query_runner: QueryRunner) {
+        if (query_runner && !query_runner.isTransactionActive) {
+            throw new Error("Must in Transaction")
+        }
+        return await db.query<ResultSetHeader>(`UPDATE user_rules SET rules = ? WHERE rules_id = ?`, [rule, rules_id], query_runner)
     }
 
-    static async DBDeleteRule(rules_id: number) {
-        return await db.query<ResultSetHeader>(`DELETE FROM user_rules WHERE rules_id = ?`, [rules_id])
+    static async DBDeleteRule(rules_id: number, query_runner: QueryRunner) {
+        if (query_runner && !query_runner.isTransactionActive) {
+            throw new Error("Must in Transaction")
+        }
+        return await db.query<ResultSetHeader>(`DELETE FROM user_rules WHERE rules_id = ?`, [rules_id], query_runner)
     }
 
-    static async DBAssignRule({ group_id, rules_id }: AdminParamsDto.AssignRuleParams) {
-        return await db.query<ResultSetHeader>(`INSERT INTO user_group_rules(group_id, rules_id) VALUES(?, ?)`, [group_id, rules_id])
+    static async DBAssignRule({ group_id, rules_id }: AdminParamsDto.AssignRuleParams, query_runner: QueryRunner) {
+        if (query_runner && !query_runner.isTransactionActive) {
+            throw new Error("Must in Transaction")
+        }
+        return await db.query<ResultSetHeader>(`INSERT INTO user_group_rules(group_id, rules_id) VALUES(?, ?)`, [group_id, rules_id], query_runner)
     }
 
-    static async DBRevokeRule({ group_id, rules_id }: AdminParamsDto.RevokeRuleParams) {
-        return await db.query<ResultSetHeader>(`DELETE FROM user_group_rules WHERE group_id = ? AND rules_id = ?`, [group_id, rules_id])
+    static async DBRevokeRule({ group_id, rules_id }: AdminParamsDto.RevokeRuleParams, query_runner: QueryRunner) {
+        if (query_runner && !query_runner.isTransactionActive) {
+            throw new Error("Must in Transaction")
+        }
+        return await db.query<ResultSetHeader>(`DELETE FROM user_group_rules WHERE group_id = ? AND rules_id = ?`, [group_id, rules_id], query_runner)
     }
 
     static async DBGetUserGroupRulesList(group_id: number) {

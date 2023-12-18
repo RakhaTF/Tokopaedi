@@ -1,5 +1,6 @@
 import AdminRepository from "@adapters/outbound/repository/AdminRepository"
 import { AdminParamsDto } from "@domain/model/params"
+import { QueryRunner } from "typeorm"
 
 export default class AdminDomainService {
     static async GetAdminDataDomain(id: number){
@@ -47,36 +48,36 @@ export default class AdminDomainService {
         return rulesList
     }
 
-    static async CreateRule(rule: string) {
-        const newRule = await AdminRepository.DBCreateRules(rule);
+    static async CreateRule(rule: string, query_runner: QueryRunner) {
+        const newRule = await AdminRepository.DBCreateRules(rule, query_runner);
         if (newRule.affectedRows < 1) {
             throw new Error("Failed to Create New Rule")
         }
     }
 
-    static async UpdateRule(params: AdminParamsDto.UpdateRuleParams) {
-        const newRule = await AdminRepository.DBUpdateRule(params);
+    static async UpdateRule(params: AdminParamsDto.UpdateRuleParams, query_runner: QueryRunner) {
+        const newRule = await AdminRepository.DBUpdateRule(params, query_runner);
         if (newRule.affectedRows < 1) {
             throw new Error("Failed to Create New Rule")
         }
     }
 
-    static async DeleteRule(rules_id: number) {
-        const deleteRule = await AdminRepository.DBDeleteRule(rules_id);
+    static async DeleteRule(rules_id: number, query_runner: QueryRunner) {
+        const deleteRule = await AdminRepository.DBDeleteRule(rules_id, query_runner);
         if (deleteRule.affectedRows < 1) {
             throw new Error("Failed to Delete Rule")
         }
     }
 
-    static async AssignRule(params: AdminParamsDto.AssignRuleParams) {
-        const assignRule = await AdminRepository.DBAssignRule(params);
+    static async AssignRule(params: AdminParamsDto.AssignRuleParams, query_runner: QueryRunner) {
+        const assignRule = await AdminRepository.DBAssignRule(params, query_runner);
         if (assignRule.affectedRows < 1) {
             throw new Error("Failed to Assign Rule to Admin")
         }
     }
 
-    static async RevokeRule(params: AdminParamsDto.RevokeRuleParams) {
-        const revokeRule = await AdminRepository.DBRevokeRule(params);
+    static async RevokeRule(params: AdminParamsDto.RevokeRuleParams, query_runner: QueryRunner) {
+        const revokeRule = await AdminRepository.DBRevokeRule(params, query_runner);
         if (revokeRule.affectedRows < 1) {
             throw new Error("Failed to Revoke Rule From Admin")
         }
