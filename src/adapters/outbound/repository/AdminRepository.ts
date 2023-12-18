@@ -102,4 +102,8 @@ export default class AdminRepository {
             FROM shipping_address sa`
         )
     }
+
+    static async DBUpdateUserLevel(user_id: number, level: number){
+        return db.query(`UPDATE user SET LEVEL = ? WHERE id = ?`, [level, user_id])
+    }
 }
