@@ -87,7 +87,7 @@ export default class UserController {
             const deleteTransaction = await TransactionAppService.DeleteTransaction(id,
                 {
                     user_id: id,
-                    action: "Delete Transaction",
+                    action: `Delete Transaction ${id}`,
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
                     browser: request.headers["user-agent"] as string,
                     time: moment().unix(),
