@@ -1,6 +1,6 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import { TransactionResponseDto } from "@domain/model/response";
-import { TransactionParamsDto } from "@domain/model/params";
+import { PaginationParamsDto, TransactionParamsDto } from "@domain/model/params";
 import { QueryRunner } from "typeorm";
 import { ResultSetHeader } from "mysql2"
 const db = AppDataSource
@@ -185,7 +185,10 @@ export default class TransactionRepository {
         return await db.query<ResultSetHeader>(`DELETE FROM transaction WHERE id = ?`, [transaction_id])
     }
 
-    static async DBGetUserTransactionListById(userid: number, whereClause: string, limit: number): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]>{
+    static async DBGetUserTransactionListById(userid: number, paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]>{
+
+        const { limit, sort, whereClause } = paginationParams
+        
         return db.query<TransactionResponseDto.GetTransactionListByIdResponse[]>(
             `SELECT t.id,
             t.user_id,
@@ -201,6 +204,7 @@ export default class TransactionRepository {
         FROM TRANSACTION t
         ${whereClause}
         AND user_id = ?
+        ORDER BY t.id ${sort}
         LIMIT ?`, [userid, limit + 1])
     }
 

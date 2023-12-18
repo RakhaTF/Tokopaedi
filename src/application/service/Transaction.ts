@@ -274,7 +274,7 @@ export default class TransactionAppService {
         //Generate whereClause
         const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "t", tablePK: "id" })
         
-        const transactionList = await TransactionDomainService.GetUserTransactionListByIdDomain(userid, whereClause, Number(limit))
+        const transactionList = await TransactionDomainService.GetUserTransactionListByIdDomain(userid, { whereClause, limit: Number(limit), sort })
 
         //Generate pagination
         const result = Paginate({ data: transactionList, limit })

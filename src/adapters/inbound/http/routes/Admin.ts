@@ -353,26 +353,20 @@ const routes: RouteOptions[] = [
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_TRANSACTION_LIST }),
         handler: AdminController.GetUserTransactionListById,
         schema: {
-            tags: ["Admin"],
-            body: Schema.BaseRequestSchema("Raihan", {
-                userid: { type: "number" },
-            }),
-            response: Schema.BaseResponse({
-                type: "Array of Object",
-                message: {
-                    id: { type: "number" },
+            body: Schema.BasePaginationRequestSchema({
+                pic: "Rakha",
+                search: {
+                    payment: "string",
+                    shipped_to: "number",
+                    items_price: "number",
+                    total_price: "number",
+                    created: "number",
+                },
+                additional_body: {
                     user_id: { type: "number" },
-                    payment_method: { type: "string" },
-                    items_price: { type: "string" },
-                    shipping_price: { type: "string" },
-                    total_price: { type: "string" },
-                    shipping_address_id: { type: "number" },
-                    is_paid: { type: "number" },
-                    paid_at: { type: "number" },
-                    created_at: { type: "number" },
-                    updated_at: { type: "number" },
                 },
             }),
+            response: Schema.BasePaginationResultSchema,
         },
     },
     {
@@ -546,8 +540,8 @@ const routes: RouteOptions[] = [
                     action: "string",
                 },
             }),
-            response: Schema.BasePaginationResultSchema
-        }
+            response: Schema.BasePaginationResultSchema,
+        },
     },
 ]
 

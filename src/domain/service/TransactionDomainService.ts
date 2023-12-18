@@ -1,6 +1,6 @@
 import TransactionRepository from "@adapters/outbound/repository/TransactionRepository"
 import { QueryRunner } from "typeorm"
-import { TransactionParamsDto } from "@domain/model/params";
+import { PaginationParamsDto, TransactionParamsDto } from "@domain/model/params";
 
 export default class TransactionDomainService {
     static async CreateTransactionIdDomain(params: TransactionParamsDto.CreateTransactionIdParams, query_runner?: QueryRunner){
@@ -86,8 +86,8 @@ export default class TransactionDomainService {
         return transactionDetail[0]
     }
 
-    static async GetUserTransactionListByIdDomain(userid: number, whereClause: string, limit: number){
-        const transactionList = await TransactionRepository.DBGetUserTransactionListById(userid, whereClause, limit)
+    static async GetUserTransactionListByIdDomain(userid: number, paginationParams: PaginationParamsDto.RepoPaginationParams){
+        const transactionList = await TransactionRepository.DBGetUserTransactionListById(userid, paginationParams)
         if (transactionList.length < 1) {
             throw new Error("No Transaction Found")
         }

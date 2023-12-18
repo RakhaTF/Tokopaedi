@@ -10,3 +10,9 @@ export type Paginate = {
     data: { id: number }[]
     limit: number
 }
+
+export type RepoPaginationParams = {
+    limit: number;
+    whereClause: string;
+    sort: string;
+}

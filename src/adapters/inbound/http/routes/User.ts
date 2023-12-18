@@ -229,25 +229,19 @@ const routes: RouteOptions[] = [
         method: ["POST"],
         url: "/api/v1/user/transaction/list",
         handler: UserController.TransactionList,
-        // schema: {
-        //     tags: ["User"],
-        //     response: Schema.BaseResponse({
-        //         type: "Array of Object",
-        //         message: {
-        //             id: { type: "number" },
-        //             user_id: { type: "number" },
-        //             payment_method: { type: "string" },
-        //             items_price: { type: "string" },
-        //             shipping_price: { type: "string" },
-        //             total_price: { type: "string" },
-        //             shipping_address_id: { type: "number" },
-        //             is_paid: { type: "number" },
-        //             paid_at: { type: "number" },
-        //             created_at: { type: "number" },
-        //             updated_at: { type: "number" },
-        //         },
-        //     }),
-        // },
+        schema: {
+            body: Schema.BasePaginationRequestSchema({
+                pic: "Rakha",
+                search: {
+                    payment: "string",
+                    shipped_to: "number",
+                    items_price: "number",
+                    total_price: "number",
+                    created: "number",
+                },
+            }),
+            response: Schema.BasePaginationResultSchema,
+        },
     },
     {
         method: ["POST"],
@@ -255,13 +249,13 @@ const routes: RouteOptions[] = [
         handler: UserController.ChangePassword,
         schema: {
             body: Schema.BaseRequestSchema("Raihan", {
-                oldPassword: {type: "string"},
-                newPassword: {type: "string"}
+                oldPassword: { type: "string" },
+                newPassword: { type: "string" },
             }),
             response: Schema.BaseResponse({
-                type: "Boolean"
-            })
-        }
+                type: "Boolean",
+            }),
+        },
     },
 ]
 
