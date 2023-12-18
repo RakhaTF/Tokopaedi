@@ -4,8 +4,9 @@ import UserDomainService from "@domain/service/UserDomainService";
 import { checkPassword, hashPassword } from "helpers/Password/Password"
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import moment from 'moment'
-import { AdminParamsDto, UserParamsDto } from "@domain/model/params";
+import { AdminParamsDto, LogParamsDto, UserParamsDto } from "@domain/model/params";
 import { AdminResponseDto } from "@domain/model/response";
+import LogDomainService from "@domain/service/LogDomainService";
 
 const prohibitedWords = require("indonesian-badwords")
 
@@ -179,7 +180,7 @@ export default class AdminAppService {
         return await AdminDomainService.GetRulesList()
     }
 
-    static async CreateRules(rule: string) {
+    static async CreateRules(rule: string, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.CreateRule.validateAsync(rule)
 
         //checking duplicate, cannot update rule to an existing rule 
@@ -189,11 +190,27 @@ export default class AdminAppService {
             throw new Error("Rule Already Exist!")
         }
 
-        await AdminDomainService.CreateRule(rule)
-        return true;
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await AdminDomainService.CreateRule(rule, query_runner)
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error;
+        }
     }
 
-    static async UpdateRule(params: AdminParamsDto.UpdateRuleParams) {
+    static async UpdateRule(params: AdminParamsDto.UpdateRuleParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.UpdateRule.validateAsync(params)
 
         //checking duplicate, can't update rule to an existing rule 
@@ -203,17 +220,50 @@ export default class AdminAppService {
             throw new Error("Rule Already Exist!")
         }
 
-        await AdminDomainService.UpdateRule(params)
-        return true;
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await AdminDomainService.UpdateRule(params, query_runner)
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error;
+        }
     }
 
-    static async DeleteRule(rules_id: number) {
+    static async DeleteRule(rules_id: number, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.RulesId.validateAsync(rules_id)
-        await AdminDomainService.DeleteRule(rules_id)
-        return true;
+
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+        
+        try {
+            await query_runner.startTransaction()
+            
+            await AdminDomainService.DeleteRule(rules_id, query_runner)
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error;
+        }
     }
 
-    static async AssignRule(params: AdminParamsDto.AssignRuleParams) {
+    static async AssignRule(params: AdminParamsDto.AssignRuleParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.AssignRule.validateAsync(params)
 
         //Checking for duplicate, can't reassign existing rule to a group_id.
@@ -225,14 +275,47 @@ export default class AdminAppService {
             throw new Error("Can't Reassign Existing Rule!")
         }
 
-        await AdminDomainService.AssignRule(params)
-        return true;
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+        
+        try {
+            await query_runner.startTransaction()
+            
+            await AdminDomainService.AssignRule(params, query_runner)
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error;
+        }
     }
 
-    static async RevokeRule(params: AdminParamsDto.RevokeRuleParams) {
+    static async RevokeRule(params: AdminParamsDto.RevokeRuleParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.RevokeRule.validateAsync(params)
-        await AdminDomainService.RevokeRule(params)
-        return true;
+        
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+        
+        try {
+            await query_runner.startTransaction()
+            
+            await AdminDomainService.RevokeRule(params, query_runner)
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error;
+        }
     }
 
     static async ChangeUserPass(params: AdminParamsDto.ChangeUserPassParams) {
