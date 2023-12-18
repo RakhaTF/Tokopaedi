@@ -18,17 +18,18 @@ export default class LogAppService {
         searchFilter = unicorn(searchFilter, {
             user_id: "l.user_id",
             time: "l.time",
-            action: "l.action"
+            action: "l.action",
+            name: "u.name"
         })
 
         //Generate whereClause
         const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "l", tablePK: "id" })
 
-        const log = await LogDomainService.GetSystemLogDomain(Number(limit), whereClause)
+        const log = await LogDomainService.GetSystemLogDomain({limit: Number(limit), whereClause, sort})
 
         //Generate pagination
         const result = Paginate({ data: log, limit })
-        
+        console.log({result})
         return result
     }
 }
