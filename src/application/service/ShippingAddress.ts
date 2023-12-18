@@ -4,6 +4,10 @@ import ShippingAddressDomainService from "@domain/service/ShippingAddressDomainS
 import * as ShippingAddressSchema from "helpers/JoiSchema/ShippingAddress"
 import LogDomainService from "@domain/service/LogDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
+import { CommonRequestDto } from "@domain/model/request";
+import * as CommonSchema from "helpers/JoiSchema/Common";
+import unicorn from "format-unicorn/safe";
+import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination"
 
 export default class ShippingAddressAppService {
     static async CreateShippingAddress(params: ShippingAddressParamsDto.CreateShippingAddressParams, logData: LogParamsDto.CreateLogParams) {
@@ -42,9 +46,30 @@ export default class ShippingAddressAppService {
         return shippingAddressDetail
     }
 
-    static async GetShippingAddressList(user_id: number) {
-        await ShippingAddressSchema.ShippingAddressId.validateAsync(user_id)
-        return await ShippingAddressDomainService.GetShippingAddressListDomain(user_id)
+    static async GetShippingAddressList(user_id: number, paginationParams: CommonRequestDto.PaginationRequest) {
+        await CommonSchema.Pagination.validateAsync(paginationParams)
+        const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
+        
+        
+        /*
+        search filter, to convert filter field into sql string
+        e.g: ({payment} = "Credit Card" AND {items_price} > 1000) will turn into ((t.payment_method = "Credit Card" AND t.items_price > 1000))
+        every field name need to be inside {}
+        */
+       let searchFilter = search || ""
+        searchFilter = unicorn(searchFilter, {
+            id: "s.id",
+            user_id: "s.user_id",
+            city: "s.city"
+        })
+
+        //Generate whereClause
+        const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "s", tablePK: "id" })
+        const shippingList =  await ShippingAddressDomainService.GetShippingAddressListDomain(user_id, { whereClause, limit: Number(limit), sort })
+
+        //Generate pagination
+        const result = Paginate({ data: shippingList, limit })
+        return result
     }
 
     static async DeleteShippingAddress(id: number, user_id: number, logData: LogParamsDto.CreateLogParams) {

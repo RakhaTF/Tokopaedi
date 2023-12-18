@@ -1,5 +1,5 @@
 import { ShippingAddressRepository } from "@adapters/outbound/repository/ShippingAddressRepository"
-import { ShippingAddressParamsDto } from "@domain/model/params"
+import { PaginationParamsDto, ShippingAddressParamsDto } from "@domain/model/params"
 
 export default class ShippingAddressDomainService {
     static async CreateShippingAddressDomain(params: ShippingAddressParamsDto.CreateShippingAddressParams) {
@@ -17,8 +17,8 @@ export default class ShippingAddressDomainService {
         return shippingAddress[0]
     }
 
-    static async GetShippingAddressListDomain(user_id: number) {
-        const shippingAddress = await ShippingAddressRepository.DBGetShippingAddressList(user_id)
+    static async GetShippingAddressListDomain(user_id: number, paginationParams: PaginationParamsDto.RepoPaginationParams) {
+        const shippingAddress = await ShippingAddressRepository.DBGetShippingAddressList(user_id, paginationParams)
         if (shippingAddress.length < 1) {
             throw new Error("Shipping Address Not Found!")
         }

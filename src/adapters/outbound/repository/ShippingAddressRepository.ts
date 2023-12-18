@@ -1,4 +1,4 @@
-import { ShippingAddressParamsDto } from "@domain/model/params";
+import { PaginationParamsDto, ShippingAddressParamsDto } from "@domain/model/params";
 import { ShippingAddressResponseDto } from "@domain/model/response";
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import { ResultSetHeader } from 'mysql2'
@@ -18,9 +18,14 @@ export class ShippingAddressRepository {
         SELECT id, user_id, address, postal_code, city, province, country FROM shipping_address WHERE id = ?`, [id])
     }
 
-    static async DBGetShippingAddressList(user_id: number): Promise<ShippingAddressResponseDto.ShippingAddressResponse[]> {
+    static async DBGetShippingAddressList(user_id: number, paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<ShippingAddressResponseDto.ShippingAddressResponse[]> {
+        const { limit, sort, whereClause } = paginationParams
+
         return await db.query<ShippingAddressResponseDto.ShippingAddressResponse[]>(`
-        SELECT id, user_id, address, postal_code, city, province, country FROM shipping_address WHERE user_id = ?`, [user_id])
+        SELECT id, user_id, address, postal_code, city, province, country FROM shipping_address s ${whereClause} 
+        AND user_id = ?
+        ORDER BY s.id ${sort}
+        LIMIT ?`, [user_id, limit + 1])
     }
 
     static async DBDeleteShippingAddress(id: number): Promise<ResultSetHeader> {

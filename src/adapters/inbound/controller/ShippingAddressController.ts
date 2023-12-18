@@ -1,5 +1,5 @@
 import ShippingAddressAppService from "@application/service/ShippingAddress";
-import { ShippingAddressRequestDto } from "@domain/model/request";
+import { CommonRequestDto, ShippingAddressRequestDto } from "@domain/model/request";
 import { FastifyRequest } from "fastify";
 import moment from "moment";
 
@@ -41,7 +41,8 @@ export default class ShippingAddressController {
     static async GetShippingAddressList(request: FastifyRequest) {
         try {
             const { id } = request.user
-            const result = await ShippingAddressAppService.GetShippingAddressList(id)
+            const paginationRequest = request.body as CommonRequestDto.PaginationRequest
+            const result = await ShippingAddressAppService.GetShippingAddressList(id, paginationRequest)
             return { message: result }
         } catch (error) {
             throw error
