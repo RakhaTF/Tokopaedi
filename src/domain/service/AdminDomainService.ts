@@ -11,8 +11,8 @@ export default class AdminDomainService {
         return result[0]
     }
 
-    static async DeleteUserDomain(email: string){
-        const result = await AdminRepository.DBDeleteUser(email)
+    static async DeleteUserDomain(email: string, query_runner?: QueryRunner){
+        const result = await AdminRepository.DBDeleteUser(email, query_runner)
         if (result.affectedRows < 1){
             throw new Error ("Failed delete data")
         }
@@ -91,8 +91,8 @@ export default class AdminDomainService {
         return listOfRules[0]
     }
 
-    static async ChangeUserPassDomain(userid: number, encryptPass: string){
-        const result = await AdminRepository.DBChangeUserPass(userid, encryptPass)
+    static async ChangeUserPassDomain(userid: number, encryptPass: string, query_runner?: QueryRunner){
+        const result = await AdminRepository.DBChangeUserPass(userid, encryptPass, query_runner)
         if (result.affectedRows < 1){
             throw Error ("Failed change user password")
         }

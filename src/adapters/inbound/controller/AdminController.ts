@@ -30,6 +30,13 @@ export default class AdminController {
                 name,
                 email,
                 password
+            },
+            {
+                user_id: jwt.id,
+                action: "Create User",
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
             })
 
             const result = {message: createUser}
@@ -49,6 +56,13 @@ export default class AdminController {
                 userid,
                 name,
                 email
+            },
+            {
+                user_id: jwt.id,
+                action: `Update Profile User ${userid}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
             })
 
             const result = {message : updateUserProfile}
@@ -84,6 +98,13 @@ export default class AdminController {
             const deleteUser = await AdminAppService.DeleteUserService({
                 id: jwt.id,
                 email
+            },
+            {
+                user_id: jwt.id,
+                action: "Delete User",
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
             })
 
             const result = {message : deleteUser}
@@ -229,6 +250,13 @@ export default class AdminController {
                 userid,
                 password,
                 confirmPassword
+            },
+            {
+                user_id: userid,
+                action: `Change User Password ${userid}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
             })
 
             const result = {message: changeUserPass}

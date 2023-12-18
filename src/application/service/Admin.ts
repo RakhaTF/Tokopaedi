@@ -19,7 +19,7 @@ export default class AdminAppService {
         return admin
     }
 
-    static async CreateUserService({id, level = 3, name, email, password}){
+    static async CreateUserService({id, level = 3, name, email, password}, logData: LogParamsDto.CreateLogParams){
         await AdminSchema.CreateUser.validateAsync({id, level, name, email, password})
 
         await UserDomainService.GetEmailExistDomain(email)
@@ -43,6 +43,9 @@ export default class AdminAppService {
 
             const user_result = await UserDomainService.GetUserByIdDomain(insertId, query_runner)
 
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
             await query_runner.commitTransaction();
             await query_runner.release();
 
@@ -54,42 +57,59 @@ export default class AdminAppService {
         }
     }
 
-    static async UpdateProfileUser(params: AdminParamsDto.UpdateProfileUserParams){
+    static async UpdateProfileUser(params: AdminParamsDto.UpdateProfileUserParams, logData: LogParamsDto.CreateLogParams ){
         await AdminSchema.UpdateProfileUser.validateAsync(params)
 
-        const user = await UserDomainService.GetUserDataByIdDomain(params.userid)
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-        if (user.id < 1){
-            throw new Error ("User not found")
-        }
+        try {
+            await query_runner.startTransaction()
 
-        if (user.email != params.email){
-            let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email)
-            if (userEmailExist.length > 0) {
-                throw new Error ("Email is not available")
+            const user = await UserDomainService.GetUserDataByIdDomain(params.userid,query_runner)
+
+            if (user.id < 1){
+                throw new Error ("User not found")
             }
+
+            if (user.email != params.email){
+                let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email, query_runner)
+                if (userEmailExist.length > 0) {
+                    throw new Error ("Email is not available")
+                }
+            }
+
+            let banned = [
+                "SuperAdmin",
+                "Product Management Staff",
+                "User Management Staff",
+                "Shipping and Transaction Management Staff",
+            ]
+
+            if (banned.includes(params.name) || prohibitedWords.flag(params.name)){
+                throw new Error("Banned words name")
+            }
+
+            const obj: UserParamsDto.UpdateUserEditProfileParams = {
+                id: user.id,
+                email: params.email,
+                name: params.name
+            }
+
+            await UserDomainService.UpdateUserEditProfileDomainService(obj, query_runner)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return obj
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
         }
-
-        let banned = [
-            "SuperAdmin",
-            "Product Management Staff",
-            "User Management Staff",
-            "Shipping and Transaction Management Staff",
-        ]
-
-        if (banned.includes(params.name) || prohibitedWords.flag(params.name)){
-            throw new Error("Banned words name")
-        }
-
-        const obj: UserParamsDto.UpdateUserEditProfileParams = {
-            id: user.id,
-            email: params.email,
-            name: params.name
-        }
-
-        await UserDomainService.UpdateUserEditProfileDomainService(obj)
-
-        return obj
     }
 
     static async UpdateProfileService(params: AdminParamsDto.UpdateProfileParams){
@@ -134,16 +154,33 @@ export default class AdminAppService {
         return obj
     }
 
-    static async DeleteUserService(params: AdminParamsDto.DeleteUserParams){
+    static async DeleteUserService(params: AdminParamsDto.DeleteUserParams, logData: LogParamsDto.CreateLogParams){
         await AdminSchema.DeleteUser.validateAsync(params)
 
         if (params.id < 1){
             throw new Error ("User not found")
         }
 
-        const deleteUser = await AdminDomainService.DeleteUserDomain(params.email)
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-        return deleteUser
+        try {
+            await query_runner.startTransaction()
+
+            const deleteUser = await AdminDomainService.DeleteUserDomain(params.email, query_runner)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return deleteUser
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
     }
 
     static async GetUserListService(){
@@ -318,19 +355,37 @@ export default class AdminAppService {
         }
     }
 
-    static async ChangeUserPass(params: AdminParamsDto.ChangeUserPassParams) {
+    static async ChangeUserPass(params: AdminParamsDto.ChangeUserPassParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.ChangeUserPass.validateAsync(params)
 
-        const encryptPass = await hashPassword(params.password)
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-        const sama = await checkPassword(params.confirmPassword, encryptPass)
-        if (!sama){
-            throw new Error ("Invalid Confirm Password")
+        try {
+            await query_runner.startTransaction()
+
+            const encryptPass = await hashPassword(params.password)
+
+            const sama = await checkPassword(params.confirmPassword, encryptPass)
+            if (!sama){
+                throw new Error ("Invalid Confirm Password")
+            }
+
+            const result = await AdminDomainService.ChangeUserPassDomain(params.userid, encryptPass, query_runner)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+
+            return result
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
         }
-
-        const result = await AdminDomainService.ChangeUserPassDomain(params.userid, encryptPass)
-
-        return result
     }
 
     static async ChangePasswordService(params: AdminParamsDto.ChangePasswordParams){

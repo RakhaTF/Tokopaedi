@@ -19,8 +19,8 @@ export default class AdminRepository {
         return result
     }
 
-    static async DBDeleteUser(email: string) {
-        const result = await db.query(`DELETE FROM user WHERE email = ?`, [email])
+    static async DBDeleteUser(email: string, query_runner?: QueryRunner) {
+        const result = await db.query(`DELETE FROM user WHERE email = ?`, [email], query_runner)
         return result
     }
 
@@ -101,8 +101,8 @@ export default class AdminRepository {
         GROUP BY 1`, [group_id])
     }
 
-    static async DBChangeUserPass(userid: number, encryptPass: string){
-        return db.query(`UPDATE user SET password = ? WHERE id = ?`, [encryptPass, userid])
+    static async DBChangeUserPass(userid: number, encryptPass: string, query_runner?: QueryRunner){
+        return db.query(`UPDATE user SET password = ? WHERE id = ?`, [encryptPass, userid], query_runner)
     }
 
     static async DBGetTransactionList(): Promise<AdminResponseDto.GetTransactionListResponse[]>{
