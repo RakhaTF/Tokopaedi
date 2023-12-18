@@ -1,11 +1,12 @@
 import ProductAppService from "@application/service/Product";
-import { ProductRequestDto } from "@domain/model/request";
+import { CommonRequestDto, ProductRequestDto } from "@domain/model/request";
 import { FastifyRequest } from "fastify";
 
 export default class ProductController {
-    static async GetProductList() {
+    static async GetProductList(request: FastifyRequest) {
         try {
-            const product = await ProductAppService.GetProductList()
+            const paginationRequest = request.body as CommonRequestDto.PaginationRequest
+            const product = await ProductAppService.GetProductList(paginationRequest)
             return { message: product };
         } catch (error) {
             throw error

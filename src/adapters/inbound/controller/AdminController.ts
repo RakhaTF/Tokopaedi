@@ -1,7 +1,7 @@
 import { FastifyRequest } from "fastify";
 import AdminAppService from "@application/service/Admin";
 import TransactionAppService from "@application/service/Transaction";
-import { AdminRequestDto, ShippingAddressRequestDto, TransactionRequestDto } from "@domain/model/request";
+import { AdminRequestDto, CommonRequestDto, ShippingAddressRequestDto, TransactionRequestDto } from "@domain/model/request";
 import ShippingAddressAppService from "@application/service/ShippingAddress";
 
 export default class AdminController {
@@ -231,10 +231,11 @@ export default class AdminController {
 
     static async GetUserTransactionListById(request: FastifyRequest){
         try {
-            const {userid} = request.body as TransactionRequestDto.GetUserTransactionListByIdRequest
+            const { userid } = request.body as TransactionRequestDto.GetUserTransactionListByIdRequest
+            const paginationRequest = request.body as CommonRequestDto.PaginationRequest
             const getUserTransactionListById = await TransactionAppService.GetUserTransactionListByIdService({
                 userid
-            })
+            }, paginationRequest)
 
             const result = {message: getUserTransactionListById}
             return result

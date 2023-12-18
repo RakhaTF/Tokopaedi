@@ -3,8 +3,8 @@ import { ProductRequestDto } from "@domain/model/request";
 import { QueryRunner } from "typeorm";
 
 export default class ProductDomainService {
-    static async GetProductListDomain(){
-        const productList = await ProductRepository.DBGetProductList()
+    static async GetProductListDomain(limit: number, whereClause: string){
+        const productList = await ProductRepository.DBGetProductList(limit, whereClause)
         if(productList.length < 1){
             throw new Error("Product is empty!")
         }

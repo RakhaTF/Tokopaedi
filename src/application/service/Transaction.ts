@@ -3,10 +3,14 @@ import * as TransactionSchema from "helpers/JoiSchema/Transaction"
 import TransactionDomainService from "@domain/service/TransactionDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import ProductDomainService from "@domain/service/ProductDomainService"
-import { TransactionRequestDto } from "@domain/model/request"
+import { CommonRequestDto, TransactionRequestDto } from "@domain/model/request"
 import { TransactionResponseDto } from "@domain/model/response"
 import { Product } from "@domain/entity/Product"
 import moment from "moment-timezone"
+import * as CommonSchema from "helpers/JoiSchema/Common";
+import unicorn from "format-unicorn/safe";
+import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination"
+
 export default class TransactionAppService {
     static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams) {
         const { product_id, qty, id } = params
@@ -238,11 +242,33 @@ export default class TransactionAppService {
         return transaction
     }
 
-    static async GetUserTransactionListByIdService(params: TransactionParamsDto.GetUserTransactionListByIdParams) {
-        const result = await TransactionDomainService.GetUserTransactionListByIdDomain(params.userid)
-        if (result.length < 1) {
-            throw new Error("Data not found")
-        }
+    static async GetUserTransactionListByIdService({userid}: TransactionParamsDto.GetUserTransactionListByIdParams, paginationParams: CommonRequestDto.PaginationRequest) {
+        await CommonSchema.Pagination.validateAsync(paginationParams)
+        const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
+        
+        
+        /*
+        search filter, to convert filter field into sql string
+        e.g: ({payment} = "Credit Card" AND {items_price} > 1000) will turn into ((t.payment_method = "Credit Card" AND t.items_price > 1000))
+        every field name need to be inside {}
+        */
+       let searchFilter = search || ""
+        searchFilter = unicorn(searchFilter, {
+            payment: "t.payment_method",
+            shipped_to: "t.shipping_address_id",
+            items_price: "t.items_price",
+            total_price: "t.total_price",
+            created: "t.created_at",
+        })
+
+        //Generate whereClause
+        const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "t", tablePK: "id" })
+        
+        const transactionList = await TransactionDomainService.GetUserTransactionListByIdDomain(userid, whereClause, Number(limit))
+
+        //Generate pagination
+        const result = Paginate({ data: transactionList, limit })
+        
         return result
     }
 
