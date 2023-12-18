@@ -2,6 +2,7 @@ import { FastifyRequest } from "fastify";
 import UserAppService from "@application/service/User";
 import { CommonRequestDto, UserRequestDto } from "@domain/model/request";
 import TransactionAppService from "@application/service/Transaction";
+import moment from "moment";
 
 export default class UserController {
     static async GetUserProfile(request: FastifyRequest){
@@ -22,11 +23,19 @@ export default class UserController {
         try {
             const jwt = request.user
             const {email, name} = request.body as UserRequestDto.UpdateUserRequest
-            const updateUserProfile = await UserAppService.UpdateUserProfileService({
-                id: jwt.id,
-                email,
-                name
-            })
+            const updateUserProfile = await UserAppService.UpdateUserProfileService(
+                {
+                    id: jwt.id,
+                    email,
+                    name
+                },
+                {
+                    user_id: jwt.id,
+                    action: "Update User Profile",
+                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                    browser: request.headers["user-agent"] as string,
+                    time: moment().unix(),
+                })
 
             const result = {message : updateUserProfile}
 
@@ -44,6 +53,13 @@ export default class UserController {
                 id: jwt.id,
                 oldPassword,
                 newPassword
+            },
+            {
+                user_id: jwt.id,
+                action: "Change Password",
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
             })
 
             const result = {message: changePassword}
@@ -68,7 +84,14 @@ export default class UserController {
     static async DeleteTransaction(request: FastifyRequest) {
         try {
             const { id } = request.body as {id: number}
-            const deleteTransaction = await TransactionAppService.DeleteTransaction(id)
+            const deleteTransaction = await TransactionAppService.DeleteTransaction(id,
+                {
+                    user_id: id,
+                    action: "Delete Transaction",
+                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                    browser: request.headers["user-agent"] as string,
+                    time: moment().unix(),
+                })
             return { message: deleteTransaction }
         } catch (error) {
             throw error;

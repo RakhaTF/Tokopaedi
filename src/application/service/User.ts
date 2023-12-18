@@ -1,7 +1,9 @@
-import { UserParamsDto } from "@domain/model/params";
+import { LogParamsDto, UserParamsDto } from "@domain/model/params";
 import UserDomainService from "@domain/service/UserDomainService";
 import * as UserSchema from "helpers/JoiSchema/User";
 import { checkPassword, hashPassword } from "helpers/Password/Password"
+import LogDomainService from "@domain/service/LogDomainService"
+import { AppDataSource } from "@infrastructure/mysql/connection"
 
 const prohibitedWords = require("indonesian-badwords")
 
@@ -14,67 +16,103 @@ export default class UserAppService {
         return user
     }
 
-    static async UpdateUserProfileService(params: UserParamsDto.UpdateUserParams){
+    static async UpdateUserProfileService(params: UserParamsDto.UpdateUserParams, logData: LogParamsDto.CreateLogParams){
         await UserSchema.UpdateUserProfile.validateAsync(params)
 
-        if (params.id < 1){
-            throw new Error ("User not found")
-        }
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-        const user = await UserDomainService.GetUserDataByIdDomain(params.id)
+        try {
+            await query_runner.startTransaction()
 
-        if (user.id < 1){
-            throw new Error ("User not found")
-        }
-
-        if (user.email != params.email){
-            let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email)
-            if (userEmailExist.length > 0) {
-                throw new Error ("Email is not available")
+            if (params.id < 1){
+                throw new Error ("User not found")
             }
+    
+            const user = await UserDomainService.GetUserDataByIdDomain(params.id)
+    
+            if (user.id < 1){
+                throw new Error ("User not found")
+            }
+    
+            if (user.email != params.email){
+                let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email)
+                if (userEmailExist.length > 0) {
+                    throw new Error ("Email is not available")
+                }
+            }
+    
+            let banned = [
+                "SuperAdmin",
+                "Product Management Staff",
+                "User Management Staff",
+                "Shipping and Transaction Management Staff",
+            ]
+    
+            if (banned.includes(params.name) || prohibitedWords.flag(params.name)){
+                throw new Error("Banned words name")
+            }
+    
+            const obj: UserParamsDto.UpdateUserEditProfileParams = {
+                id: user.id,
+                email: params.email,
+                name: params.name
+            }
+    
+            await UserDomainService.UpdateUserEditProfileDomainService(obj)
+    
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+
+            return obj
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
         }
-
-        let banned = [
-            "SuperAdmin",
-            "Product Management Staff",
-            "User Management Staff",
-            "Shipping and Transaction Management Staff",
-        ]
-
-        if (banned.includes(params.name) || prohibitedWords.flag(params.name)){
-            throw new Error("Banned words name")
-        }
-
-        const obj: UserParamsDto.UpdateUserEditProfileParams = {
-            id: user.id,
-            email: params.email,
-            name: params.name
-        }
-
-        await UserDomainService.UpdateUserEditProfileDomainService(obj)
-
-        return obj
     }
 
-    static async ChangePasswordService(params: UserParamsDto.ChangePasswordParams){
+    static async ChangePasswordService(params: UserParamsDto.ChangePasswordParams, logData: LogParamsDto.CreateLogParams){
         await UserSchema.ChangePassword.validateAsync(params)
 
         if (params.id < 1){
             throw new Error ("User not found")
         }
 
-        const passEncrypt = await hashPassword(params.newPassword)
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-        const getUserById = await UserDomainService.GetUserPasswordByIdDomain(params.id)
+        try {
+            await query_runner.startTransaction()
 
-        if (getUserById.id > 1){
-            const sama = await checkPassword(params.oldPassword, getUserById.password)
-            if (!sama){
-                throw new Error ("Invalid old password")
+            const passEncrypt = await hashPassword(params.newPassword)
+
+            const getUserById = await UserDomainService.GetUserPasswordByIdDomain(params.id)
+
+            if (getUserById.id > 1){
+                const sama = await checkPassword(params.oldPassword, getUserById.password)
+                if (!sama){
+                    throw new Error ("Invalid old password")
+                }
+
+                const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id)
+
+                //Insert into log, to track user action.
+                await LogDomainService.CreateLogDomain(logData, query_runner)
+
+                await query_runner.commitTransaction()
+                await query_runner.release()
+                return result
             }
-
-            const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id)
-            return result
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
         }
     }
 }

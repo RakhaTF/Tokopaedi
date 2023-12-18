@@ -335,10 +335,37 @@ export default class TransactionAppService {
         await TransactionDomainService.UpdateDeliveryStatusDomain(updateDeliveryStatus)
         return true;
     }    
-  
-    static async DeleteTransaction(transaction_id: number) {
+
+    static async DeleteUserTransaction(transaction_id: number) {
         await TransactionSchema.TransactionId.validateAsync(transaction_id)
+
         await TransactionDomainService.DeleteTransactionDomain(transaction_id)
+
         return true;
+    }
+  
+    static async DeleteTransaction(transaction_id: number, logData: LogParamsDto.CreateLogParams) {
+        await TransactionSchema.TransactionId.validateAsync(transaction_id)
+
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await TransactionDomainService.DeleteTransactionDomain(transaction_id)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
     }
 }
