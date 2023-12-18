@@ -55,6 +55,31 @@ export default class TransactionAppService {
 
             await TransactionDomainService.InsertOrderItemDomain(insertOrderObj, query_runner)
 
+            const orderItem = await TransactionDomainService.GetOrderItemByOrderIdDomain(insertId, query_runner)
+
+            /*
+            Update product stock after create transaction
+            */
+            const productOrder = orderItem.map((tx) => {
+                return {
+                    product_id: tx.product_id,
+                    qty: tx.qty,
+                }
+            })
+
+            const updateProductPromises = productOrder.map(async (p) => {
+                const productDetail = await ProductDomainService.GetProductDetailDomain(p.product_id)
+
+                const updateProductData: Partial<Product> = {
+                    ...productDetail,
+                    stock: productDetail.stock - p.qty,
+                }
+
+                return ProductDomainService.UpdateProductDomain({ ...updateProductData, id: p.product_id }, query_runner)
+            })
+
+            await Promise.all(updateProductPromises)
+
             const getOrderItem = await TransactionDomainService.GetOrderItemByOrderIdDomain(insertId, query_runner)
 
             //Insert into log, to track user action.
@@ -132,8 +157,6 @@ export default class TransactionAppService {
     static async PayTransaction(params: TransactionRequestDto.PayTransactionRequest, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.PayTransaction.validateAsync(params)
         const { transaction_id, expedition_name, payment_method, shipping_address_id, user_id } = params
-
-        const transactionDetails = await TransactionDomainService.GetCurrentTransactionDetailDomain(transaction_id)
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
