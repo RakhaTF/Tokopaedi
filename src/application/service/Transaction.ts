@@ -1,4 +1,4 @@
-import { TransactionParamsDto } from "@domain/model/params"
+import { LogParamsDto, TransactionParamsDto } from "@domain/model/params"
 import * as TransactionSchema from "helpers/JoiSchema/Transaction"
 import TransactionDomainService from "@domain/service/TransactionDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
@@ -10,9 +10,10 @@ import moment from "moment-timezone"
 import * as CommonSchema from "helpers/JoiSchema/Common";
 import unicorn from "format-unicorn/safe";
 import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination"
+import LogDomainService from "@domain/service/LogDomainService"
 
 export default class TransactionAppService {
-    static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams) {
+    static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams, logData: LogParamsDto.CreateLogParams) {
         const { product_id, qty, id } = params
 
         await TransactionSchema.CreateTransaction.validateAsync(params)
@@ -56,6 +57,9 @@ export default class TransactionAppService {
 
             const getOrderItem = await TransactionDomainService.GetOrderItemByOrderIdDomain(insertId, query_runner)
 
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
             await query_runner.commitTransaction()
             await query_runner.release()
 
@@ -67,7 +71,7 @@ export default class TransactionAppService {
         }
     }
 
-    static async UpdateTransactionProductQtyService(params: TransactionParamsDto.UpdateTransactionProductQtyParams) {
+    static async UpdateTransactionProductQtyService(params: TransactionParamsDto.UpdateTransactionProductQtyParams, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.UpdateTransactionService.validateAsync(params)
         const { order_id, product_id, qty, updated_at } = params
 
@@ -113,6 +117,8 @@ export default class TransactionAppService {
                 query_runner
             )
 
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
             await query_runner.commitTransaction()
             await query_runner.release()
             return true
@@ -123,7 +129,7 @@ export default class TransactionAppService {
         }
     }
 
-    static async PayTransaction(params: TransactionRequestDto.PayTransactionRequest) {
+    static async PayTransaction(params: TransactionRequestDto.PayTransactionRequest, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.PayTransaction.validateAsync(params)
         const { transaction_id, expedition_name, payment_method, shipping_address_id, user_id } = params
 
@@ -188,7 +194,7 @@ export default class TransactionAppService {
             })
 
             await Promise.all(updateProductPromises)
-
+            await LogDomainService.CreateLogDomain(logData, query_runner)
             await query_runner.commitTransaction()
             return true
         } catch (error) {

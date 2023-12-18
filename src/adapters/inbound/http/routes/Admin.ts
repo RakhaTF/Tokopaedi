@@ -4,6 +4,7 @@ import { AuthValidate, CheckAuthAdmin } from "helpers/prehandler/AuthValidate";
 import { Rules } from "@domain/model/Rules";
 import * as Schema from "helpers/ApiSchema/ApiSchema"
 import AdminController from "@adapters/inbound/controller/AdminController";
+import LogController from "@adapters/inbound/controller/LogController";
 
 const routes: RouteOptions[] = [
     {
@@ -503,6 +504,12 @@ const routes: RouteOptions[] = [
                 },
             }),
         }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/log/list",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_SYSTEM_LOG }),
+        handler: LogController.GetSystemLog
     }
 ]
 

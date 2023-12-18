@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -e ts --exec \"ts-node -r tsconfig-paths/register -r ./src/index.ts\"",
-    "migration:run": "npx typeorm-ts-node-commonjs migration:run -d src/infrastructure/mysql/connection.ts"
+    "migrate": "npx typeorm-ts-node-commonjs migration:run -d src/infrastructure/mysql/connection.ts"
   },
   "dependencies": {
     "@fastify/formbody": "7.4.0",

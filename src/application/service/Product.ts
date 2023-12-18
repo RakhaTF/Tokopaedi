@@ -23,12 +23,12 @@ export default class ProductAppService {
         })
 
         //Generate whereClause
-        const whereClause = await GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "p", tablePK: "id" })
+        const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "p", tablePK: "id" })
 
         const product = await ProductDomainService.GetProductListDomain(Number(limit), whereClause)
 
         //Generate pagination
-        const result = await Paginate({ data: product, limit })
+        const result = Paginate({ data: product, limit })
         
         return result
     }

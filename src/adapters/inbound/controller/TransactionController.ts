@@ -6,17 +6,26 @@ import moment from "moment";
 export default class TransactionController {
     static async CreateTransaction(request: FastifyRequest){
         try {
-            const jwt = request.user
+            const { id } = request.user
             const { product_id, qty } = request.body as TransactionRequestDto.CreateTransactionRequest
-            const createTransaction = await TransactionAppService.CreateTransactionService({
-                id: jwt.id,
-                product_id,
-                qty,
-                created_at: moment().unix(),
-                updated_at: moment().unix()
-            })
+            const createTransaction = await TransactionAppService.CreateTransactionService(
+                {
+                    id,
+                    product_id,
+                    qty,
+                    created_at: moment().unix(),
+                    updated_at: moment().unix(),
+                },
+                {
+                    user_id: id,
+                    action: "Create Transaction",
+                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                    browser: request.headers["user-agent"] as string,
+                    time: moment().unix(),
+                }
+            )
 
-            const result = {message: createTransaction}
+            const result = { message: createTransaction }
 
             return result
         } catch (error) {
@@ -26,14 +35,21 @@ export default class TransactionController {
 
     static async UpdateTransactionProductQty(request: FastifyRequest){
         try {
-            const jwt = request.user
+            const { id } = request.user
             const { product_id, order_id, qty } = request.body as TransactionRequestDto.UpdateTransactionRequest
             const updateTransaction = await TransactionAppService.UpdateTransactionProductQtyService({
-                id: jwt.id,
+                id,
                 order_id,
                 product_id,
                 qty,
                 updated_at: moment().unix()
+            },
+            {
+                user_id: id,
+                action: `Update Transaction #${order_id} Product #${product_id} Qty: ${qty}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
             })
 
             const result = {message: updateTransaction}
@@ -48,7 +64,16 @@ export default class TransactionController {
         try {
             const { id } = request.user
             const requestBody = request.body as TransactionRequestDto.PayTransactionRequest
-            const payTransaction = await TransactionAppService.PayTransaction({ ...requestBody, user_id: id })
+            const payTransaction = await TransactionAppService.PayTransaction(
+                { ...requestBody, user_id: id },
+                {
+                    user_id: id,
+                    action: `Pay Transaction #${requestBody.transaction_id}`,
+                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                    browser: request.headers["user-agent"] as string,
+                    time: moment().unix(),
+                }
+            )
             return { message: payTransaction }
         } catch (error) {
             throw error
