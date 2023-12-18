@@ -1,6 +1,6 @@
 import { FastifyRequest } from "fastify";
 import UserAppService from "@application/service/User";
-import { UserRequestDto } from "@domain/model/request";
+import { CommonRequestDto, UserRequestDto } from "@domain/model/request";
 import TransactionAppService from "@application/service/Transaction";
 
 export default class UserController {
@@ -57,7 +57,8 @@ export default class UserController {
     static async TransactionList(request: FastifyRequest) {
         try {
             const { id } = request.user
-            const transactionList = await TransactionAppService.GetUserTransactionListByIdService({userid: id})
+            const paginationRequest = request.body as CommonRequestDto.PaginationRequest
+            const transactionList = await TransactionAppService.GetUserTransactionListByIdService({userid: id}, paginationRequest)
             return { message: transactionList }
         } catch (error) {
             throw error;

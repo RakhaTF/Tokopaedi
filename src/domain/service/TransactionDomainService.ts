@@ -86,8 +86,8 @@ export default class TransactionDomainService {
         return transactionDetail[0]
     }
 
-    static async GetUserTransactionListByIdDomain(userid: number){
-        const transactionList = await TransactionRepository.DBGetUserTransactionListById(userid)
+    static async GetUserTransactionListByIdDomain(userid: number, whereClause: string, limit: number){
+        const transactionList = await TransactionRepository.DBGetUserTransactionListById(userid, whereClause, limit)
         if (transactionList.length < 1) {
             throw new Error("No Transaction Found")
         }

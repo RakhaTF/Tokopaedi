@@ -7,8 +7,12 @@ import { QueryRunner } from "typeorm";
 const db = AppDataSource;
 
 export default class ProductRepository {
-    static async DBGetProductList() {
-        return await db.query<ProductResponseDto.ProductListResponse>(`SELECT id, name, description, price, stock FROM product`)
+    static async DBGetProductList(limit: number, whereClause: string) {
+        return await db.query<ProductResponseDto.ProductListResponse>(`
+        SELECT p.id, p.name, p.description, p.price, p.stock
+        FROM product p
+        ${whereClause}
+        LIMIT ?`, [limit + 1])
     }
 
     static async DBGetProductDetail(id: number) {

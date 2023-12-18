@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -e ts --exec \"ts-node -r tsconfig-paths/register -r ./src/index.ts\"",
-    "migration:run": "npx typeorm-ts-node-commonjs migration:run -d src/infrastructure/mysql/connection.ts"
+    "migrate": "npx typeorm-ts-node-commonjs migration:run -d src/infrastructure/mysql/connection.ts"
   },
   "dependencies": {
     "@fastify/formbody": "7.4.0",
@@ -17,6 +17,7 @@
     "dotenv": "^16.3.1",
     "fastify": "4.24.3",
     "fastify-plugin": "4.5.1",
+    "format-unicorn": "^1.1.1",
     "indonesian-badwords": "^1.0.1",
     "joi": "17.11.0",
     "jsonwebtoken": "9.0.2",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "5.0.2",
+    "@types/format-unicorn": "^1.1.5",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.10.1",
     "ts-node": "^10.9.2",

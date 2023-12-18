@@ -1,14 +1,19 @@
-import { TransactionParamsDto } from "@domain/model/params"
+import { LogParamsDto, TransactionParamsDto } from "@domain/model/params"
 import * as TransactionSchema from "helpers/JoiSchema/Transaction"
 import TransactionDomainService from "@domain/service/TransactionDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import ProductDomainService from "@domain/service/ProductDomainService"
-import { TransactionRequestDto } from "@domain/model/request"
+import { CommonRequestDto, TransactionRequestDto } from "@domain/model/request"
 import { TransactionResponseDto } from "@domain/model/response"
 import { Product } from "@domain/entity/Product"
 import moment from "moment-timezone"
+import * as CommonSchema from "helpers/JoiSchema/Common";
+import unicorn from "format-unicorn/safe";
+import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination"
+import LogDomainService from "@domain/service/LogDomainService"
+
 export default class TransactionAppService {
-    static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams) {
+    static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams, logData: LogParamsDto.CreateLogParams) {
         const { product_id, qty, id } = params
 
         await TransactionSchema.CreateTransaction.validateAsync(params)
@@ -77,6 +82,9 @@ export default class TransactionAppService {
 
             const getOrderItem = await TransactionDomainService.GetOrderItemByOrderIdDomain(insertId, query_runner)
 
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
             await query_runner.commitTransaction()
             await query_runner.release()
 
@@ -88,7 +96,7 @@ export default class TransactionAppService {
         }
     }
 
-    static async UpdateTransactionProductQtyService(params: TransactionParamsDto.UpdateTransactionProductQtyParams) {
+    static async UpdateTransactionProductQtyService(params: TransactionParamsDto.UpdateTransactionProductQtyParams, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.UpdateTransactionService.validateAsync(params)
         const { order_id, product_id, qty, updated_at } = params
 
@@ -133,6 +141,9 @@ export default class TransactionAppService {
                 },
                 query_runner
             )
+            
+            //insert to log to track user action
+            await LogDomainService.CreateLogDomain(logData, query_runner)
 
             await query_runner.commitTransaction()
             await query_runner.release()
@@ -144,7 +155,7 @@ export default class TransactionAppService {
         }
     }
 
-    static async PayTransaction(params: TransactionRequestDto.PayTransactionRequest) {
+    static async PayTransaction(params: TransactionRequestDto.PayTransactionRequest, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.PayTransaction.validateAsync(params)
         const { transaction_id, expedition_name, payment_method, shipping_address_id, user_id } = params
 
@@ -184,6 +195,9 @@ export default class TransactionAppService {
                 transaction_id,
             }
             await TransactionDomainService.PayTransactionDomain(payTransactionObject, query_runner)
+
+            //insert to log to track user action
+            await LogDomainService.CreateLogDomain(logData, query_runner)
 
             await query_runner.commitTransaction()
             return true
@@ -238,11 +252,33 @@ export default class TransactionAppService {
         return transaction
     }
 
-    static async GetUserTransactionListByIdService(params: TransactionParamsDto.GetUserTransactionListByIdParams) {
-        const result = await TransactionDomainService.GetUserTransactionListByIdDomain(params.userid)
-        if (result.length < 1) {
-            throw new Error("Data not found")
-        }
+    static async GetUserTransactionListByIdService({userid}: TransactionParamsDto.GetUserTransactionListByIdParams, paginationParams: CommonRequestDto.PaginationRequest) {
+        await CommonSchema.Pagination.validateAsync(paginationParams)
+        const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
+        
+        
+        /*
+        search filter, to convert filter field into sql string
+        e.g: ({payment} = "Credit Card" AND {items_price} > 1000) will turn into ((t.payment_method = "Credit Card" AND t.items_price > 1000))
+        every field name need to be inside {}
+        */
+       let searchFilter = search || ""
+        searchFilter = unicorn(searchFilter, {
+            payment: "t.payment_method",
+            shipped_to: "t.shipping_address_id",
+            items_price: "t.items_price",
+            total_price: "t.total_price",
+            created: "t.created_at",
+        })
+
+        //Generate whereClause
+        const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "t", tablePK: "id" })
+        
+        const transactionList = await TransactionDomainService.GetUserTransactionListByIdDomain(userid, whereClause, Number(limit))
+
+        //Generate pagination
+        const result = Paginate({ data: transactionList, limit })
+        
         return result
     }
 

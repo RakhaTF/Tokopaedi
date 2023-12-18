@@ -4,6 +4,7 @@ import { AuthValidate, CheckAuthAdmin } from "helpers/prehandler/AuthValidate";
 import { Rules } from "@domain/model/Rules";
 import * as Schema from "helpers/ApiSchema/ApiSchema"
 import AdminController from "@adapters/inbound/controller/AdminController";
+import LogController from "@adapters/inbound/controller/LogController";
 
 const routes: RouteOptions[] = [
     {
@@ -19,8 +20,8 @@ const routes: RouteOptions[] = [
                 price: { type: "integer" },
                 stock: { type: "integer" },
             }),
-            response: Schema.BaseResponse({ type: 'Boolean' })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -30,8 +31,8 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Rakha", { id: { type: "integer" } }),
-            response: Schema.BaseResponse({ type: 'Boolean' })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -47,8 +48,8 @@ const routes: RouteOptions[] = [
                 price: { type: "integer" },
                 stock: { type: "integer" },
             }),
-            response: Schema.BaseResponse({ type: 'Boolean' })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["GET"],
@@ -57,17 +58,17 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             response: Schema.BaseResponse({
-                type: 'Object',
+                type: "Object",
                 message: {
-                    id: {type : "number"},
-                    name: {type: "string"},
-                    email: {type: "string"},
-                    level: {type: "number"},
-                    created_at: {type: "number"},
-                    group_rules: {type: "string"}
-                }
-            })
-        }
+                    id: { type: "number" },
+                    name: { type: "string" },
+                    email: { type: "string" },
+                    level: { type: "number" },
+                    created_at: { type: "number" },
+                    group_rules: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -76,22 +77,22 @@ const routes: RouteOptions[] = [
         handler: AdminController.CreateUser,
         schema: {
             tags: ["Admin"],
-            body: Schema.BaseRequestSchema('Raihan',{
-                name: {type: 'string'},
-                email: {type: 'string'},
-                password: {type: 'string'}
+            body: Schema.BaseRequestSchema("Raihan", {
+                name: { type: "string" },
+                email: { type: "string" },
+                password: { type: "string" },
             }),
             response: Schema.BaseResponse({
-                type: 'Object',
+                type: "Object",
                 message: {
-                    id: {type : "number"},
-                    name: {type: "string"},
-                    email: {type: "string"},
-                    level: {type: "number"},
-                    created_at: {type: "number"},
-                }
-            })
-        }
+                    id: { type: "number" },
+                    name: { type: "string" },
+                    email: { type: "string" },
+                    level: { type: "number" },
+                    created_at: { type: "number" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -100,20 +101,20 @@ const routes: RouteOptions[] = [
         handler: AdminController.UpdateProfileUser,
         schema: {
             tags: ["Admin"],
-            body: Schema.BaseRequestSchema('Raihan',{
-                userid: {type: 'number'},
-                name: {type: 'string'},
-                email: {type: 'string'}
+            body: Schema.BaseRequestSchema("Raihan", {
+                userid: { type: "number" },
+                name: { type: "string" },
+                email: { type: "string" },
             }),
             response: Schema.BaseResponse({
-                type: 'Object',
+                type: "Object",
                 message: {
-                    id: {type: 'number'},
-                    email: {type: 'string'},
-                    name: {type: 'string'}
-                }
-            })
-        }
+                    id: { type: "number" },
+                    email: { type: "string" },
+                    name: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -121,19 +122,19 @@ const routes: RouteOptions[] = [
         handler: AdminController.UpdateProfile,
         schema: {
             tags: ["Admin"],
-            body: Schema.BaseRequestSchema('Raihan',{
-                name: {type: 'string'},
-                email: {type: 'string'}
+            body: Schema.BaseRequestSchema("Raihan", {
+                name: { type: "string" },
+                email: { type: "string" },
             }),
             response: Schema.BaseResponse({
-                type: 'Object',
+                type: "Object",
                 message: {
-                    id: {type: 'number'},
-                    email: {type: 'string'},
-                    name: {type: 'string'}
-                }
-            })
-        }
+                    id: { type: "number" },
+                    email: { type: "string" },
+                    name: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -142,52 +143,52 @@ const routes: RouteOptions[] = [
         handler: AdminController.DeleteUser,
         schema: {
             tags: ["Admin"],
-            body: Schema.BaseRequestSchema('Raihan',{
-                email: {type: 'string'}
+            body: Schema.BaseRequestSchema("Raihan", {
+                email: { type: "string" },
             }),
             response: Schema.BaseResponse({
-                type: 'Boolean'
-            })
-        }
+                type: "Boolean",
+            }),
+        },
     },
     {
         method: ["GET"],
         url: "/api/v1/admin/user-list",
-        preHandler: CheckAuthAdmin({ rules : Rules.VIEW_USER_LIST }),
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_LIST }),
         handler: AdminController.GetUserList,
         schema: {
             tags: ["Admin"],
             response: Schema.BaseResponse({
-                type: 'Array of Object',
+                type: "Array of Object",
                 message: {
-                    id: {type: 'number'},
-                    email: {type: 'string'},
-                    name: {type: 'string'},
-                    created_at: {type: 'number'}
-                }
-            })
-        }
+                    id: { type: "number" },
+                    email: { type: "string" },
+                    name: { type: "string" },
+                    created_at: { type: "number" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
         url: "/api/v1/admin/user-detail",
-        preHandler: CheckAuthAdmin({ rules : Rules.VIEW_USER_PROFILE }),
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_PROFILE }),
         handler: AdminController.GetUserDetailProfile,
         schema: {
             tags: ["Admin"],
-            body: Schema.BaseRequestSchema('Raihan',{
-                email: {type: 'string'}
+            body: Schema.BaseRequestSchema("Raihan", {
+                email: { type: "string" },
             }),
             response: Schema.BaseResponse({
-                type: 'Object',
+                type: "Object",
                 message: {
-                    id: {type: 'number'},
-                    email: {type: 'string'},
-                    name: {type: 'string'},
-                    created_at: {type: 'number'}
-                }
-            })
-        }
+                    id: { type: "number" },
+                    email: { type: "string" },
+                    name: { type: "string" },
+                    created_at: { type: "number" },
+                },
+            }),
+        },
     },
     {
         method: ["GET"],
@@ -202,9 +203,9 @@ const routes: RouteOptions[] = [
                     name: { type: "string" },
                     rights: { type: "array", items: { type: "string" } },
                     rules_id: { type: "array", items: { type: "integer" } },
-                }
-            })
-        }
+                },
+            }),
+        },
     },
     {
         method: ["GET"],
@@ -219,9 +220,9 @@ const routes: RouteOptions[] = [
                 message: {
                     rules_id: { type: "integer" },
                     rules: { type: "string" },
-                }
-            })
-        }
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -231,8 +232,8 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Rakha", { rule: { type: "string" } }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -245,8 +246,8 @@ const routes: RouteOptions[] = [
                 rule: { type: "string" },
                 rules_id: { type: "integer" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -258,8 +259,8 @@ const routes: RouteOptions[] = [
             body: Schema.BaseRequestSchema("Rakha", {
                 rules_id: { type: "integer" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -273,7 +274,7 @@ const routes: RouteOptions[] = [
                 rules_id: { type: "integer" },
             }),
             response: Schema.BaseResponse({ type: "Boolean" }),
-        }
+        },
     },
     {
         method: ["POST"],
@@ -286,8 +287,8 @@ const routes: RouteOptions[] = [
                 group_id: { type: "integer" },
                 rules_id: { type: "integer" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -297,14 +298,14 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Raihan", {
-                userid: {type: "number"},
-                password: {type: "string"},
-                confirmPassword: {type: "string"}
+                userid: { type: "number" },
+                password: { type: "string" },
+                confirmPassword: { type: "string" },
             }),
             response: Schema.BaseResponse({
-                type: "Boolean"
-            })
-        }
+                type: "Boolean",
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -313,13 +314,13 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Raihan", {
-                oldPassword: {type: "string"},
-                newPassword: {type: "string"}
+                oldPassword: { type: "string" },
+                newPassword: { type: "string" },
             }),
             response: Schema.BaseResponse({
-                type: "Boolean"
-            })
-        }
+                type: "Boolean",
+            }),
+        },
     },
     {
         method: ["GET"],
@@ -331,20 +332,20 @@ const routes: RouteOptions[] = [
             response: Schema.BaseResponse({
                 type: "Array of Object",
                 message: {
-                    id: {type: "number"},
-                    user_id: {type: "number"},
-                    payment_method: {type: "string"},
-                    items_price: {type: "number"},
-                    shipping_price: {type: "number"},
-                    total_price: {type: "number"},
-                    shipping_address_id: {type: "number"},
-                    is_paid: {type: "number"},
-                    paid_at: {type: "number"},
-                    created_at: {type: "number"},
-                    updated_at: {type: "number"},
-                }
-            })
-        }
+                    id: { type: "number" },
+                    user_id: { type: "number" },
+                    payment_method: { type: "string" },
+                    items_price: { type: "number" },
+                    shipping_price: { type: "number" },
+                    total_price: { type: "number" },
+                    shipping_address_id: { type: "number" },
+                    is_paid: { type: "number" },
+                    paid_at: { type: "number" },
+                    created_at: { type: "number" },
+                    updated_at: { type: "number" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -354,25 +355,25 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Raihan", {
-                userid: {type: 'number'}
+                userid: { type: "number" },
             }),
             response: Schema.BaseResponse({
                 type: "Array of Object",
                 message: {
-                    id: {type: "number"},
-                    user_id: {type: "number"},
-                    payment_method: {type: "string"},
-                    items_price: {type: "string"},
-                    shipping_price: {type: "string"},
-                    total_price: {type: "string"},
-                    shipping_address_id: {type: "number"},
-                    is_paid: {type: "number"},
-                    paid_at: {type: "number"},
-                    created_at: {type: "number"},
-                    updated_at: {type: "number"},
-                }
-            })
-        }
+                    id: { type: "number" },
+                    user_id: { type: "number" },
+                    payment_method: { type: "string" },
+                    items_price: { type: "string" },
+                    shipping_price: { type: "string" },
+                    total_price: { type: "string" },
+                    shipping_address_id: { type: "number" },
+                    is_paid: { type: "number" },
+                    paid_at: { type: "number" },
+                    created_at: { type: "number" },
+                    updated_at: { type: "number" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -382,12 +383,12 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Rakha", {
-                transaction_id: { type: 'number' },
-                is_delivered: { type: 'number' },
-                status: { type: 'number' },
+                transaction_id: { type: "number" },
+                is_delivered: { type: "number" },
+                status: { type: "number" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["GET"],
@@ -399,16 +400,16 @@ const routes: RouteOptions[] = [
             response: Schema.BaseResponse({
                 type: "Array of Object",
                 message: {
-                    id: {type: 'number'},
-                    user_id: {type: 'number'},
-                    address: {type: 'string'},
-                    postal_code: {type: 'string'},
-                    city: {type: 'string'},
-                    province: {type: 'string'},
-                    country: {type: 'string'},
-                }
-            })
-        }
+                    id: { type: "number" },
+                    user_id: { type: "number" },
+                    address: { type: "string" },
+                    postal_code: { type: "string" },
+                    city: { type: "string" },
+                    province: { type: "string" },
+                    country: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -418,9 +419,9 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Rakha", {
-                transaction_id: { type: 'number' }
+                transaction_id: { type: "number" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
+            response: Schema.BaseResponse({ type: "Boolean" }),
         },
     },
     {
@@ -431,19 +432,19 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Raihan", {
-                user_id: {type: 'number'}
+                user_id: { type: "number" },
             }),
             response: Schema.BaseResponse({
-                type: 'Array of Object',
+                type: "Array of Object",
                 message: {
-                    address: {type: 'string'},
-                    postal_code: {type: 'string'},
-                    city: {type: 'string'},
-                    province: {type: 'string'},
-                    country: {type: 'string'},
-                }
-            })
-        }
+                    address: { type: "string" },
+                    postal_code: { type: "string" },
+                    city: { type: "string" },
+                    province: { type: "string" },
+                    country: { type: "string" },
+                },
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -453,10 +454,10 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Rakha", {
-                transaction_id: { type: 'number' }
+                transaction_id: { type: "number" },
             }),
-            response: Schema.BaseResponse({ type: "Boolean" })
-        }
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
     },
     {
         method: ["POST"],
@@ -502,7 +503,7 @@ const routes: RouteOptions[] = [
                     created_at: { type: "string" },
                 },
             }),
-        }
+        },
     },
     {
         method: ["POST"],
@@ -512,13 +513,13 @@ const routes: RouteOptions[] = [
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Raihan", {
-                user_id : {type: "number"},
-                level : {type: "number"}
+                user_id: { type: "number" },
+                level: { type: "number" },
             }),
             response: Schema.BaseResponse({
-                type: "Boolean"
-            })
-        }
+                type: "Boolean",
+            }),
+        },
     },
     {
         method: ["POST"],
@@ -529,8 +530,25 @@ const routes: RouteOptions[] = [
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Raihan", { transaction_id: { type: "number" } }),
             response: Schema.BaseResponse({ type: "Boolean" }),
+        },
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/log/list",
+        preHandler: CheckAuthAdmin({ rules: Rules.VIEW_SYSTEM_LOG }),
+        handler: LogController.GetSystemLog,
+        schema: {
+            body: Schema.BasePaginationRequestSchema({
+                pic: "Rakha",
+                search: {
+                    user_id: "number",
+                    time: "number",
+                    action: "string",
+                },
+            }),
+            response: Schema.BasePaginationResultSchema
         }
-    }
+    },
 ]
 
 export default async function AdminRoute(

@@ -1,11 +1,36 @@
 import { Product } from "@domain/model/BaseClass/Product";
-import { ProductRequestDto } from "@domain/model/request";
+import { CommonRequestDto, ProductRequestDto } from "@domain/model/request";
 import ProductDomainService from "@domain/service/ProductDomainService";
 import * as ProductSchema from "helpers/JoiSchema/Product";
+import * as CommonSchema from "helpers/JoiSchema/Common";
+import unicorn from "format-unicorn/safe";
+import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination";
 
 export default class ProductAppService {
-    static async GetProductList() {
-        return await ProductDomainService.GetProductListDomain()
+    static async GetProductList(params: CommonRequestDto.PaginationRequest) {
+        await CommonSchema.Pagination.validateAsync(params)
+        const { lastId = 0, limit = 100, search, sort = "ASC" } = params
+
+        /*
+        search filter, to convert filter field into sql string
+        e.g: ({name} = "iPhone" AND {price} > 1000) will turn into ((p.name = "iPhone" AND p.price > 1000))
+        every field name need to be inside {}
+        */
+        let searchFilter = search || ""
+        searchFilter = unicorn(searchFilter, {
+            name: "p.name",
+            price: "p.price"
+        })
+
+        //Generate whereClause
+        const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "p", tablePK: "id" })
+
+        const product = await ProductDomainService.GetProductListDomain(Number(limit), whereClause)
+
+        //Generate pagination
+        const result = Paginate({ data: product, limit })
+        
+        return result
     }
 
     static async GetProductDetail(id: number) {

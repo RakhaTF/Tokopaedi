@@ -226,28 +226,28 @@ const routes: RouteOptions[] = [
         },
     },
     {
-        method: ["GET"],
+        method: ["POST"],
         url: "/api/v1/user/transaction/list",
         handler: UserController.TransactionList,
-        schema: {
-            tags: ["User"],
-            response: Schema.BaseResponse({
-                type: "Array of Object",
-                message: {
-                    id: { type: "number" },
-                    user_id: { type: "number" },
-                    payment_method: { type: "string" },
-                    items_price: { type: "string" },
-                    shipping_price: { type: "string" },
-                    total_price: { type: "string" },
-                    shipping_address_id: { type: "number" },
-                    is_paid: { type: "number" },
-                    paid_at: { type: "number" },
-                    created_at: { type: "number" },
-                    updated_at: { type: "number" },
-                },
-            }),
-        },
+        // schema: {
+        //     tags: ["User"],
+        //     response: Schema.BaseResponse({
+        //         type: "Array of Object",
+        //         message: {
+        //             id: { type: "number" },
+        //             user_id: { type: "number" },
+        //             payment_method: { type: "string" },
+        //             items_price: { type: "string" },
+        //             shipping_price: { type: "string" },
+        //             total_price: { type: "string" },
+        //             shipping_address_id: { type: "number" },
+        //             is_paid: { type: "number" },
+        //             paid_at: { type: "number" },
+        //             created_at: { type: "number" },
+        //             updated_at: { type: "number" },
+        //         },
+        //     }),
+        // },
     },
     {
         method: ["POST"],
