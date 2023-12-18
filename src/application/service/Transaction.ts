@@ -141,7 +141,8 @@ export default class TransactionAppService {
                 },
                 query_runner
             )
-
+            
+            //insert to log to track user action
             await LogDomainService.CreateLogDomain(logData, query_runner)
 
             await query_runner.commitTransaction()
@@ -195,29 +196,9 @@ export default class TransactionAppService {
             }
             await TransactionDomainService.PayTransactionDomain(payTransactionObject, query_runner)
 
-            /*
-            Update product stock after transaction is successfully paid
-            */
-            const productPaid = transactionDetails.map((tx) => {
-                return {
-                    product_id: tx.product_id,
-                    qty: tx.qty,
-                }
-            })
-
-            const updateProductPromises = productPaid.map(async (p) => {
-                const productDetail = await ProductDomainService.GetProductDetailDomain(p.product_id)
-
-                const updateProductData: Partial<Product> = {
-                    ...productDetail,
-                    stock: productDetail.stock - p.qty,
-                }
-
-                return ProductDomainService.UpdateProductDomain({ ...updateProductData, id: p.product_id }, query_runner)
-            })
-
-            await Promise.all(updateProductPromises)
+            //insert to log to track user action
             await LogDomainService.CreateLogDomain(logData, query_runner)
+
             await query_runner.commitTransaction()
             return true
         } catch (error) {
