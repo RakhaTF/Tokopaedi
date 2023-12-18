@@ -1,4 +1,4 @@
-import { AssignRuleRequest, RevokeRuleRequest, UpdateRuleRequest } from "../request/AdminRequest";
+import { AssignRuleRequest, RevokeRuleRequest, UpdateRuleRequest, UpdateUserLevelRequest } from "../request/AdminRequest";
 
 export type UpdateProfileUserParams = {
     id: number;
@@ -40,3 +40,5 @@ export type ChangePasswordParams = {
     oldPassword: string;
     newPassword: string;
 }
+
+export type UpdateUserLevelParams = UpdateUserLevelRequest

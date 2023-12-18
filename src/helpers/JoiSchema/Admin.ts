@@ -137,3 +137,12 @@ export const ChangePassword = Joi.object({
         'any.required': 'New Password is required',
     })
 }).options({ abortEarly: false });
+
+export const UpdateUserLevel = Joi.object({
+    user_id: Joi.number().required().messages({
+        'any.required': 'User Id is required',
+    }),
+    level: Joi.number().required().messages({
+        'any.required': 'Level is required',
+    })
+}).options({ abortEarly: false });

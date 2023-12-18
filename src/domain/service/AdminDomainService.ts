@@ -105,4 +105,12 @@ export default class AdminDomainService {
     static async GetUserShippingAddressDomain(){
         return await AdminRepository.DBGetUserShippingAddress()
     }
+
+    static async UpdateUserLevelDomain(user_id: number, level: number){
+        const result = await AdminRepository.DBUpdateUserLevel(user_id, level)
+        if (result.affectedRows < 1){
+            throw Error ("Failed update user level")
+        }
+        return true
+    }
 }

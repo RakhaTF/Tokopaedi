@@ -510,6 +510,33 @@ const routes: RouteOptions[] = [
         url: "/api/v1/admin/log/list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_SYSTEM_LOG }),
         handler: LogController.GetSystemLog
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/update-user-level",
+        preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_USER_LEVEL }),
+        handler: AdminController.UpdateUserLevel,
+        schema: {
+            tags: ["Admin"],
+            body: Schema.BaseRequestSchema("Raihan", {
+                user_id : {type: "number"},
+                level : {type: "number"}
+            }),
+            response: Schema.BaseResponse({
+                type: "Boolean"
+            })
+        }
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/transaction/delete",
+        preHandler: CheckAuthAdmin({ rules: Rules.DELETE_TRANSACTION }),
+        handler: AdminController.DeleteUserTransaction,
+        schema: {
+            tags: ["Admin"],
+            body: Schema.BaseRequestSchema("Raihan", { transaction_id: { type: "number" } }),
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        }
     }
 ]
 

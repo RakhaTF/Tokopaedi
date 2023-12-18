@@ -48,3 +48,8 @@ export type ChangePasswordRequest = {
     oldPassword: string;
     newPassword: string;
 }
+
+export type UpdateUserLevelRequest = {
+    user_id: number;
+    level: number;
+}

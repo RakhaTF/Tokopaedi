@@ -279,4 +279,12 @@ export default class AdminAppService {
     static async GetUserShippingAddressService(){
         return await AdminDomainService.GetUserShippingAddressDomain()
     }
+
+    static async UpdateUserLevelService(params: AdminParamsDto.UpdateUserLevelParams){
+        await AdminSchema.UpdateUserLevel.validateAsync(params)
+
+        const updateUserLevel = await AdminDomainService.UpdateUserLevelDomain(params.user_id, params.level)
+
+        return updateUserLevel
+    }
 }

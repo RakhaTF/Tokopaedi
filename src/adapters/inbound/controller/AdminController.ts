@@ -306,4 +306,31 @@ export default class AdminController {
             throw error
         }
     }
+
+    static async UpdateUserLevel(request: FastifyRequest){
+        try {
+            const { user_id, level } = request.body as AdminRequestDto.UpdateUserLevelRequest
+            const updateUserLevel = await AdminAppService.UpdateUserLevelService({
+                user_id,
+                level
+            })
+
+            const result = {message: updateUserLevel}
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async DeleteUserTransaction(request: FastifyRequest){
+        try {
+            const { transaction_id } = request.body as { transaction_id: number }
+            const deleteTransaction = await TransactionAppService.DeleteTransaction(transaction_id)
+
+            const result = {message: deleteTransaction}
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
 }
