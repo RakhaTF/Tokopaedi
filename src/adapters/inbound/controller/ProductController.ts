@@ -30,7 +30,7 @@ export default class ProductController {
             const deleteProduct = await ProductAppService.DeleteProduct(id,
                 {
                     user_id: id,
-                    action: "Delete Product",
+                    action: `Delete Product ${id}`,
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
                     browser: request.headers["user-agent"] as string,
                     time: moment().unix(),
@@ -47,7 +47,7 @@ export default class ProductController {
             const createProduct = await ProductAppService.CreateProduct(request.body as ProductRequestDto.CreateProductRequest,
                 {
                     user_id: jwt.id,
-                    action: "Change Password",
+                    action: "Create Product",
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
                     browser: request.headers["user-agent"] as string,
                     time: moment().unix(),
@@ -64,7 +64,7 @@ export default class ProductController {
             const updateProduct = await ProductAppService.UpdateProduct(request.body as ProductRequestDto.UpdateProductRequest,
                 {
                     user_id: jwt.id,
-                    action: "Update Product",
+                    action: `Update Product ${jwt.id}`,
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
                     browser: request.headers["user-agent"] as string,
                     time: moment().unix(),
