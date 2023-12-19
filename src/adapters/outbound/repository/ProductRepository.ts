@@ -18,17 +18,17 @@ export default class ProductRepository {
         LIMIT ?`, [limit + 1])
     }
 
-    static async DBGetProductDetail(id: number) {
-        return await db.query<ProductResponseDto.ProductDetailResponse[]>(`SELECT id, name, description, price, stock FROM product WHERE id = ?`, [id])
+    static async DBGetProductDetail(id: number, query_runner?: QueryRunner) {
+        return await db.query<ProductResponseDto.ProductDetailResponse[]>(`SELECT id, name, description, price, stock FROM product WHERE id = ?`, [id], query_runner)
     }
 
-    static async DBDeleteProduct(id: number) {
-        return await db.query<ResultSetHeader>(`DELETE FROM product WHERE id = ?`, [id])
+    static async DBDeleteProduct(id: number, query_runner?: QueryRunner) {
+        return await db.query<ResultSetHeader>(`DELETE FROM product WHERE id = ?`, [id], query_runner)
     }
 
-    static async DBCreateProduct(product: ProductRequestDto.CreateProductRequest) {
+    static async DBCreateProduct(product: ProductRequestDto.CreateProductRequest, query_runner?:QueryRunner) {
         const { name, description, price, stock } = product
-        return await db.query<ResultSetHeader>(`INSERT INTO product(name, description, price, stock) VALUES(?, ?, ?, ?)`, [name, description, price, stock])
+        return await db.query<ResultSetHeader>(`INSERT INTO product(name, description, price, stock) VALUES(?, ?, ?, ?)`, [name, description, price, stock], query_runner)
     }
 
     static async DBUpdateProduct(product: ProductRequestDto.UpdateProductRequest, query_runner?: QueryRunner) {

@@ -1,6 +1,7 @@
 import ProductAppService from "@application/service/Product";
 import { CommonRequestDto, ProductRequestDto } from "@domain/model/request";
-import { FastifyRequest } from "fastify";
+import { FastifyRequest } from "fastify"
+import moment from "moment";
 
 export default class ProductController {
     static async GetProductList(request: FastifyRequest) {
@@ -26,7 +27,14 @@ export default class ProductController {
     static async DeleteProduct(request: FastifyRequest) {
         try {
             const { id } = request.body as { id: number }
-            const deleteProduct = await ProductAppService.DeleteProduct(id)
+            const deleteProduct = await ProductAppService.DeleteProduct(id,
+                {
+                    user_id: id,
+                    action: "Delete Product",
+                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                    browser: request.headers["user-agent"] as string,
+                    time: moment().unix(),
+                })
             return { message: deleteProduct };
         } catch (error) {
             throw error
@@ -35,7 +43,15 @@ export default class ProductController {
 
     static async CreateProduct(request: FastifyRequest) {
         try {
-            const createProduct = await ProductAppService.CreateProduct(request.body as ProductRequestDto.CreateProductRequest)
+            const jwt = request.user
+            const createProduct = await ProductAppService.CreateProduct(request.body as ProductRequestDto.CreateProductRequest,
+                {
+                    user_id: jwt.id,
+                    action: "Change Password",
+                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                    browser: request.headers["user-agent"] as string,
+                    time: moment().unix(),
+                })
             return { message: createProduct };
         } catch (error) {
             throw error
@@ -44,7 +60,15 @@ export default class ProductController {
 
     static async UpdateProduct(request: FastifyRequest) {
         try {
-            const updateProduct = await ProductAppService.UpdateProduct(request.body as ProductRequestDto.UpdateProductRequest)
+            const jwt = request.user
+            const updateProduct = await ProductAppService.UpdateProduct(request.body as ProductRequestDto.UpdateProductRequest,
+                {
+                    user_id: jwt.id,
+                    action: "Update Product",
+                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                    browser: request.headers["user-agent"] as string,
+                    time: moment().unix(),
+                })
             return { message: updateProduct };
         } catch (error) {
             throw error
