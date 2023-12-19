@@ -1,6 +1,6 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import { AdminResponseDto } from "@domain/model/response";
-import { AdminParamsDto } from "@domain/model/params";
+import { AdminParamsDto, PaginationParamsDto } from "@domain/model/params";
 import { ResultSetHeader } from "mysql2";
 import { QueryRunner } from "typeorm";
 
@@ -105,11 +105,24 @@ export default class AdminRepository {
         return db.query(`UPDATE user SET password = ? WHERE id = ?`, [encryptPass, userid], query_runner)
     }
 
-    static async DBGetTransactionList(): Promise<AdminResponseDto.GetTransactionListResponse[]>{
-        return db.query<AdminResponseDto.GetTransactionListResponse[]>(
-        `SELECT t.id, t.user_id, t.payment_method, t.items_price, t.shipping_price, t.total_price,
-		    t.shipping_address_id, t.is_paid, t.paid_at, t.created_at, 
-		    t.updated_at FROM transaction t`)
+    static async DBGetTransactionList(paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<AdminResponseDto.GetTransactionListResponse[]> {
+        const { limit, sort, whereClause } = paginationParams
+
+        return db.query<AdminResponseDto.GetTransactionListResponse[]>(`SELECT t.id,
+            t.user_id,
+            t.payment_method,
+            t.items_price,
+            t.shipping_price,
+            t.total_price,
+            t.shipping_address_id,
+            t.is_paid,
+            t.paid_at,
+            t.created_at,
+            t.updated_at
+        FROM TRANSACTION t
+        ${whereClause}
+        ORDER BY t.id ${sort}
+        LIMIT ?`, [limit + 1])
     }
 
     static async DBGetUserShippingAddress(): Promise<AdminResponseDto.GetUserShippingAddressResponse[]>{

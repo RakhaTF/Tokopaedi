@@ -323,28 +323,24 @@ const routes: RouteOptions[] = [
         },
     },
     {
-        method: ["GET"],
+        method: ["POST"],
         url: "/api/v1/admin/transaction/list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_TRANSACTION_LIST }),
         handler: AdminController.GetTransactionList,
         schema: {
             tags: ["Admin"],
-            response: Schema.BaseResponse({
-                type: "Array of Object",
-                message: {
-                    id: { type: "number" },
-                    user_id: { type: "number" },
-                    payment_method: { type: "string" },
-                    items_price: { type: "number" },
-                    shipping_price: { type: "number" },
-                    total_price: { type: "number" },
-                    shipping_address_id: { type: "number" },
-                    is_paid: { type: "number" },
-                    paid_at: { type: "number" },
-                    created_at: { type: "number" },
-                    updated_at: { type: "number" },
+            body: Schema.BasePaginationRequestSchema({
+                pic: "Rakha",
+                search: {
+                    payment: "string",
+                    shipped_to: "number",
+                    items_price: "number",
+                    total_price: "number",
+                    created: "number",
                 },
             }),
+            response: Schema.BasePaginationResultSchema,
+
         },
     },
     {

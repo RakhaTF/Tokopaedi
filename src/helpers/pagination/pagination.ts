@@ -32,7 +32,7 @@ export function Paginate(params: PaginationParamsDto.Paginate) {
         data: [],
         column: [],
         hasNext: false,
-        dataCount: 0,
+        currentPageDataCount: 0,
         lastId: 0
     }
 
@@ -48,7 +48,7 @@ export function Paginate(params: PaginationParamsDto.Paginate) {
     //to extract data keys as column name
     result.column = Object.keys(data[0])
     
-    result.dataCount = result.data.length
+    result.currentPageDataCount = result.data.length
 
     return result
 }

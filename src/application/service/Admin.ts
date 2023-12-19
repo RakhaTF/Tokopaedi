@@ -7,6 +7,10 @@ import moment from 'moment'
 import { AdminParamsDto, LogParamsDto, UserParamsDto } from "@domain/model/params";
 import { AdminResponseDto } from "@domain/model/response";
 import LogDomainService from "@domain/service/LogDomainService";
+import { CommonRequestDto } from "@domain/model/request";
+import * as CommonSchema from "helpers/JoiSchema/Common";
+import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination";
+import unicorn from "format-unicorn/safe";
 
 const prohibitedWords = require("indonesian-badwords")
 
@@ -410,8 +414,31 @@ export default class AdminAppService {
         }
     }
 
-    static async TransactionListService(){
-        return await AdminDomainService.GetTransactionListDomain()
+    static async TransactionListService(paginationParams: CommonRequestDto.PaginationRequest) {
+        await CommonSchema.Pagination.validateAsync(paginationParams)
+        const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
+        
+        /*
+        search filter, to convert filter field into sql string
+        e.g: ({payment} = "Credit Card" AND {items_price} > 1000) will turn into ((t.payment_method = "Credit Card" AND t.items_price > 1000)) every field name need to be inside {}
+        */
+        let searchFilter = search || ""
+        searchFilter = unicorn(searchFilter, {
+            payment: "t.payment_method",
+            shipped_to: "t.shipping_address_id",
+            items_price: "t.items_price",
+            total_price: "t.total_price",
+            created: "t.created_at",
+        })
+
+        //Generate whereClause
+        const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "t", tablePK: "id" })
+
+        const transactionList = await AdminDomainService.GetTransactionListDomain({ whereClause, limit: Number(limit), sort })
+        //Generate pagination
+        const result = Paginate({ data: transactionList, limit })
+
+        return result
     }
 
     static async GetUserShippingAddressService(){

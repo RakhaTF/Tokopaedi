@@ -285,11 +285,12 @@ export default class AdminController {
         }
     }
 
-    static async GetTransactionList(){
+    static async GetTransactionList(request: FastifyRequest) {
         try {
-            const getTransactionList = await AdminAppService.TransactionListService()
+            const paginationRequest = request.body as CommonRequestDto.PaginationRequest
+            const getTransactionList = await AdminAppService.TransactionListService(paginationRequest)
 
-            const result = {message: getTransactionList}
+            const result = { message: getTransactionList }
             return result
         } catch (error) {
             throw error

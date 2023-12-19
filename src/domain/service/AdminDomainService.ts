@@ -1,5 +1,5 @@
 import AdminRepository from "@adapters/outbound/repository/AdminRepository"
-import { AdminParamsDto } from "@domain/model/params"
+import { AdminParamsDto, PaginationParamsDto } from "@domain/model/params"
 import { QueryRunner } from "typeorm"
 
 export default class AdminDomainService {
@@ -99,8 +99,8 @@ export default class AdminDomainService {
         return true
     }
 
-    static async GetTransactionListDomain(){
-        return await AdminRepository.DBGetTransactionList()
+    static async GetTransactionListDomain(paginationParams: PaginationParamsDto.RepoPaginationParams) {
+        return await AdminRepository.DBGetTransactionList(paginationParams)
     }
 
     static async GetUserShippingAddressDomain(){
