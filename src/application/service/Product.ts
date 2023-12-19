@@ -5,6 +5,9 @@ import * as ProductSchema from "helpers/JoiSchema/Product";
 import * as CommonSchema from "helpers/JoiSchema/Common";
 import unicorn from "format-unicorn/safe";
 import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination";
+import { LogParamsDto } from "@domain/model/params";
+import { AppDataSource } from "@infrastructure/mysql/connection"
+import LogDomainService from "@domain/service/LogDomainService"
 
 export default class ProductAppService {
     static async GetProductList(params: CommonRequestDto.PaginationRequest) {
@@ -38,33 +41,89 @@ export default class ProductAppService {
         return await ProductDomainService.GetProductDetailDomain(id)
     }
 
-    static async DeleteProduct(id: number) {
+    static async DeleteProduct(id: number, logData: LogParamsDto.CreateLogParams) {
         await ProductSchema.ProductId.validateAsync(id)
-        await ProductDomainService.DeleteProductDomain(id)
-        return true;
+
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await ProductDomainService.DeleteProductDomain(id, query_runner)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
     }
     
-    static async CreateProduct(product: ProductRequestDto.CreateProductRequest) {
+    static async CreateProduct(product: ProductRequestDto.CreateProductRequest, logData: LogParamsDto.CreateLogParams) {
         await ProductSchema.CreateProduct.validateAsync(product)
-        await ProductDomainService.CreateProductDomain(product)
-        return true;
+
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+            await ProductDomainService.CreateProductDomain(product, query_runner)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+        
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
     }
 
-    static async UpdateProduct(product: ProductRequestDto.UpdateProductRequest) {
+    static async UpdateProduct(product: ProductRequestDto.UpdateProductRequest, logData: LogParamsDto.CreateLogParams) {
         await ProductSchema.UpdateProduct.validateAsync(product)
         const { id, description, name, price, stock } = product
 
-        const existingProduct = await ProductDomainService.GetProductDetailDomain(id)
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-        let updateProductData: Partial<Product> = existingProduct
-        if(name || description || price || stock){
-            if (name) updateProductData.name = name;
-            if (description) updateProductData.description = description;
-            if (price) updateProductData.price = price;
-            if (stock) updateProductData.stock = stock;
+        try {
+            await query_runner.startTransaction()
+
+            const existingProduct = await ProductDomainService.GetProductDetailDomain(id, query_runner)
+
+            let updateProductData: Partial<Product> = existingProduct
+            if(name || description || price || stock){
+                if (name) updateProductData.name = name;
+                if (description) updateProductData.description = description;
+                if (price) updateProductData.price = price;
+                if (stock) updateProductData.stock = stock;
+            }
+
+            await ProductDomainService.UpdateProductDomain({...updateProductData, id}, query_runner)
+            
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
         }
-
-        await ProductDomainService.UpdateProductDomain({...updateProductData, id})
-        return true;
     }
 }

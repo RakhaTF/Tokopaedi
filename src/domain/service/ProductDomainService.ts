@@ -12,23 +12,23 @@ export default class ProductDomainService {
         return productList
     }
     
-    static async GetProductDetailDomain(id: number){
-        const productDetail = await ProductRepository.DBGetProductDetail(id)
+    static async GetProductDetailDomain(id: number, query_runner?: QueryRunner){
+        const productDetail = await ProductRepository.DBGetProductDetail(id, query_runner)
         if(productDetail.length < 1){
             throw new Error("Product not found!")
         }
         return productDetail[0]
     }
 
-    static async DeleteProductDomain(id: number){
-        const deleteProduct = await ProductRepository.DBDeleteProduct(id)
+    static async DeleteProductDomain(id: number, query_runner?: QueryRunner){
+        const deleteProduct = await ProductRepository.DBDeleteProduct(id, query_runner)
         if(deleteProduct.affectedRows < 1){
             throw new Error("Delete Failed")
         }
     }
 
-    static async CreateProductDomain(product: ProductRequestDto.CreateProductRequest) {
-        const newProduct = await ProductRepository.DBCreateProduct(product)
+    static async CreateProductDomain(product: ProductRequestDto.CreateProductRequest, query_runner?:QueryRunner) {
+        const newProduct = await ProductRepository.DBCreateProduct(product, query_runner)
         if(newProduct.affectedRows<1){
             throw new Error("Create Product Failed!")
         }
