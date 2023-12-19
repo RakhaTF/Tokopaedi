@@ -208,17 +208,17 @@ export default class TransactionRepository {
         LIMIT ?`, [userid, limit + 1])
     }
 
-    static async DBUpdateDeliveryStatus(params: TransactionParamsDto.UpdateDeliveryStatusParams) {
+    static async DBUpdateDeliveryStatus(params: TransactionParamsDto.UpdateDeliveryStatusParams, query_runner?: QueryRunner) {
         const { is_delivered, status, transaction_id, updated_at } = params
         
         const query = `UPDATE delivery_status SET status = ?, is_delivered = ?, updated_at = ? WHERE transaction_id = ?`
-        return await db.query<ResultSetHeader>(query, [status, is_delivered, updated_at, transaction_id])
+        return await db.query<ResultSetHeader>(query, [status, is_delivered, updated_at, transaction_id], query_runner)
     }
 
-    static async DBUpateTransactionStatus(params: TransactionParamsDto.UpdateTransactionStatusParams) {
+    static async DBUpateTransactionStatus(params: TransactionParamsDto.UpdateTransactionStatusParams, query_runner?: QueryRunner) {
         const { status, transaction_id, updated_at } = params
         return await db.query<ResultSetHeader>(`
-        UPDATE transaction_status SET status = ?, update_time = ? WHERE transaction_id = ?`, [status, updated_at, transaction_id])
+        UPDATE transaction_status SET status = ?, update_time = ? WHERE transaction_id = ?`, [status, updated_at, transaction_id], query_runner)
     }
 
     static async DBGetTransactionStatus(transaction_id: number): Promise<TransactionResponseDto.GetTransactionStatusResponse[]> { 

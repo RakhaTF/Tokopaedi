@@ -313,8 +313,15 @@ export default class AdminController {
 
     static async UpdateDeliveryStatus(request: FastifyRequest) {
         try {
+            const { id } = request.user
             const { is_delivered, status, transaction_id } = request.body as TransactionRequestDto.UpdateDeliveryStatusRequest
-            const updateDeliveryStatus = await TransactionAppService.UpdateDeliveryStatus({ is_delivered, status, transaction_id })     
+            const updateDeliveryStatus = await TransactionAppService.UpdateDeliveryStatus({ is_delivered, status, transaction_id }, {
+                user_id: id,
+                action: `Update Transaction Delivery Status ${transaction_id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
+            })
             return { message: updateDeliveryStatus }
         } catch (error) {
             throw error;
@@ -323,8 +330,15 @@ export default class AdminController {
 
     static async ApproveTransaction(request: FastifyRequest) {
         try {
+            const { id } = request.user
             const { transaction_id } = request.body as TransactionRequestDto.UpdateTransactionStatusRequest
-            const approveTransaction = await TransactionAppService.ApproveTransaction({ transaction_id })     
+            const approveTransaction = await TransactionAppService.ApproveTransaction({ transaction_id }, {
+                user_id: id,
+                action: `Approve Transaction Status ${transaction_id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
+            })
             return { message: approveTransaction }
         } catch (error) {
             throw error;
@@ -333,8 +347,15 @@ export default class AdminController {
 
     static async RejectTransaction(request: FastifyRequest) {
         try {
+            const { id } = request.user
             const { transaction_id } = request.body as TransactionRequestDto.UpdateTransactionStatusRequest
-            const rejectTransaction = await TransactionAppService.RejectTransaction({ transaction_id })     
+            const rejectTransaction = await TransactionAppService.RejectTransaction({ transaction_id }, {
+                user_id: id,
+                action: `Reject Transaction Status ${transaction_id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
+            })
             return { message: rejectTransaction }
         } catch (error) {
             throw error;
@@ -391,8 +412,15 @@ export default class AdminController {
 
     static async DeleteUserTransaction(request: FastifyRequest){
         try {
+            const { id } = request.user
             const { transaction_id } = request.body as { transaction_id: number }
-            const deleteTransaction = await TransactionAppService.DeleteUserTransaction(transaction_id)
+            const deleteTransaction = await TransactionAppService.DeleteUserTransaction(transaction_id, {
+                user_id: id,
+                action: `Delete Transaction ${transaction_id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"] as string,
+                time: moment().unix(),
+            })
 
             const result = {message: deleteTransaction}
             return result
