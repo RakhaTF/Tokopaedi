@@ -5,12 +5,13 @@ import { AppDataSource } from "@infrastructure/mysql/connection"
 import ProductDomainService from "@domain/service/ProductDomainService"
 import { CommonRequestDto, TransactionRequestDto } from "@domain/model/request"
 import { TransactionResponseDto } from "@domain/model/response"
-import { Product } from "@domain/entity/Product"
 import moment from "moment-timezone"
 import * as CommonSchema from "helpers/JoiSchema/Common";
 import unicorn from "format-unicorn/safe";
 import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination"
 import LogDomainService from "@domain/service/LogDomainService"
+import { Product } from "@domain/model/BaseClass/Product"
+import { QueryRunner } from "typeorm"
 
 export default class TransactionAppService {
     static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams, logData: LogParamsDto.CreateLogParams) {
@@ -35,6 +36,12 @@ export default class TransactionAppService {
             items_price += parseFloat(product.price) * qty[i]
         }
 
+        /*
+        * declare transaction expiration time based on when transaction is created, default is 30 minutes. 
+        * if expired, transaction will be deleted.
+        */
+        const transactionExpireAt = moment.unix(params.created_at).add(30, 'minutes').unix()
+
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
@@ -42,7 +49,7 @@ export default class TransactionAppService {
         try {
             await query_runner.startTransaction()
 
-            const { insertId } = await TransactionDomainService.CreateTransactionIdDomain({ ...params, items_price }, query_runner)
+            const { insertId } = await TransactionDomainService.CreateTransactionIdDomain({ ...params, items_price, expire_at: transactionExpireAt }, query_runner)
 
             //auto create transaction_status after every create transaction.
             await TransactionDomainService.CreateTransactionStatusDomain({ transaction_id: insertId, update_time: moment().unix() }, query_runner)
@@ -199,13 +206,13 @@ export default class TransactionAppService {
             //insert to log to track user action
             await LogDomainService.CreateLogDomain(logData, query_runner)
 
-            await query_runner.commitTransaction()
             return true
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
             throw error
         } finally {
+            await query_runner.commitTransaction()
             await query_runner.release()
         }
     }
@@ -215,11 +222,13 @@ export default class TransactionAppService {
         const txnDetail = await TransactionDomainService.GetTransactionDetailDomain(id)
 
         //extract product name & qty
+        const productId = txnDetail.product_bought_id.split(",")
         const productName = txnDetail.product_bought.split(",")
         const qty = txnDetail.qty.split(",")
 
         const product_bought = productName.map((prod, index) => {
             return {
+                product_id: productId,
                 product_name: prod,
                 qty: qty[index],
             }
@@ -367,5 +376,60 @@ export default class TransactionAppService {
             await query_runner.release()
             throw error
         }
+    }
+
+    static async CheckExpiredTransaction() {
+        const pendingTransaction = await TransactionDomainService.GetAllPendingTransactionDomain()
+
+        /*
+        * Check if there are expired transaction, if the difference between expire_at and now in timestamp is <= 0,
+        * The transaction is expired.
+        */
+        const now = moment().unix()
+        const expiredTx = pendingTransaction.filter((tx) => moment.unix(tx.expire_at).diff(moment.unix(now), 'minutes') <= 0)
+
+        if (expiredTx.length > 0) {
+            const db = AppDataSource
+            const query_runner = db.createQueryRunner()
+            await query_runner.connect()
+
+            try {
+                await query_runner.startTransaction()
+
+                const expirePromises = expiredTx.map((tx) => this.handleExpiredTransaction(tx, query_runner))
+                await Promise.all(expirePromises)
+
+                return true
+            } catch (error) {
+                await query_runner.rollbackTransaction()
+                throw error
+            } finally {
+                await query_runner.commitTransaction()
+                await query_runner.release()
+            }
+        }
+    }
+
+    static async handleExpiredTransaction(tx: TransactionResponseDto.GetAllPendingTransactionResponse, query_runner: QueryRunner) {
+        const { product_bought_id, qty } = await TransactionDomainService.GetTransactionDetailDomain(tx.id)
+
+        const productId = product_bought_id.split(",")
+        const productQty = qty.split(",")
+
+        //restore product stock from expired transaction.
+        const updateProductPromises = productId.map((id, index) => this.restoreProductStock(Number(id), Number(productQty[index]), query_runner))
+        await Promise.all(updateProductPromises)
+
+        //delete the transaction after successfully restore the stock
+        await TransactionDomainService.DeleteTransactionDomain(tx.id, query_runner)
+    }
+
+    static async restoreProductStock(id: number, qty: number, query_runner: QueryRunner) {
+        const product = await ProductDomainService.GetProductDetailDomain(Number(id))
+
+        const updateProductData: Partial<Product> = product
+        updateProductData.stock = updateProductData.stock + Number(qty)
+
+        await ProductDomainService.UpdateProductDomain({ ...updateProductData, id: Number(id) }, query_runner)
     }
 }

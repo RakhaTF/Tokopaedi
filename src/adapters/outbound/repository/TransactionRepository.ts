@@ -11,7 +11,7 @@ export default class TransactionRepository {
             throw new Error("Must in Transaction")
         }
 
-        const result = await db.query(`INSERT INTO transaction (user_id, items_price, created_at, updated_at) VALUES (?,?,?,?)`, [params.id, params.items_price, params.created_at, params.updated_at], query_runner)
+        const result = await db.query(`INSERT INTO transaction (user_id, items_price, created_at, updated_at, expire_at) VALUES (?,?,?,?,?)`, [params.id, params.items_price, params.created_at, params.updated_at, params.expire_at], query_runner)
         return result
     }
 
@@ -133,6 +133,7 @@ export default class TransactionRepository {
                 COALESCE(t.items_price, 0) AS items_price,
                 COALESCE(t.shipping_price, 0) AS shipping_price,
                 COALESCE(t.total_price, 0) AS total_price,
+                COALESCE(GROUP_CONCAT(p.id SEPARATOR ","), 'No Products') AS product_bought_id,
                 COALESCE(GROUP_CONCAT(p.name SEPARATOR ","), 'No Products') AS product_bought,
                 COALESCE(GROUP_CONCAT(o.qty SEPARATOR ","), 'No Products') AS qty,
                 CASE 
@@ -228,5 +229,9 @@ export default class TransactionRepository {
             ON ts.transaction_id = t.id
         WHERE t.id = ?
         `, [transaction_id])
+    }
+
+    static async DBGetAllPendingTransaction(): Promise<TransactionResponseDto.GetAllPendingTransactionResponse[]>{
+        return await db.query(`SELECT t.id, t.created_at, t.expire_at FROM transaction t WHERE t.is_paid = 0`)
     }
 }
