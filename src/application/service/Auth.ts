@@ -9,7 +9,7 @@ import { UserResponseDto } from "@domain/model/response";
 import LogDomainService from "@domain/service/LogDomainService"
 
 export default class AuthAppService {
-    static async Register({level = 3, name, email, password}, logData: LogParamsDto.CreateLogParams) {
+    static async Register({level = 3, name, email, password}) {
         await UserSchema.Register.validateAsync({ level, name, email, password });
 
         const db = AppDataSource;
@@ -38,11 +38,6 @@ export default class AuthAppService {
             const user_result = await UserDomainService.GetUserByIdDomain(insertId, query_runner)
 
             await query_runner.commitTransaction();
-            await query_runner.release();
-
-            //Insert into log, to track user action.
-            await LogDomainService.CreateLogDomain({user_id: insertId, action: `Register ${insertId}`, ...logData }, query_runner )
-
             await query_runner.release();
 
             return user_result
@@ -97,10 +92,10 @@ export default class AuthAppService {
                 user: user_data
             }
 
-            await query_runner.commitTransaction()
-
             //Insert into log, to track user action.
-            await LogDomainService.CreateLogDomain({user_id: user_data.id, action: `Login ${user_data.id}`, ...logData })
+            await LogDomainService.CreateLogDomain({...logData ,user_id: user_data.id, action: `Login ${user_data.id}`})
+
+            await query_runner.commitTransaction()
 
             return result
         } catch (error) {

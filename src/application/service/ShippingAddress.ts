@@ -158,7 +158,6 @@ export default class ShippingAddressAppService {
        let searchFilter = search || ""
         searchFilter = unicorn(searchFilter, {
             id: "s.id",
-            user_id: "s.user_id",
             city: "s.city"
         })
 

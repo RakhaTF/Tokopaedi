@@ -422,7 +422,6 @@ const routes: RouteOptions[] = [
                 pic: "Raihan",
                 search: {
                     id: "number",
-                    user_id: "number",
                     city: "string"
                 }
             }),

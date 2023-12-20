@@ -6,14 +6,7 @@ import moment from "moment";
 export default class AuthController {
     static async Register(request: FastifyRequest) {
         try {
-            const register = await AuthService.Register(request.body as UserRequestDto.RegisterRequest,
-                {
-                    user_id: 0,
-                    action: `Register`,
-                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                    browser: request.headers["user-agent"],
-                    time: moment().unix(),
-                })
+            const register = await AuthService.Register(request.body as UserRequestDto.RegisterRequest)
             return { message: register };
         } catch (error) {
             throw error

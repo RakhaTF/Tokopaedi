@@ -44,7 +44,7 @@ export class ShippingAddressRepository {
         const { limit, sort, whereClause } = paginationParams
 
         return await db.query<ShippingAddressResponseDto.ShippingAddressResponse[]>(`
-        SELECT s.id, s.user_id, s.address, s.postal_code, s.city, s.province, s.country FROM shipping_address s ${whereClause} 
+        SELECT s.id, s.user_id, s.address, s.postal_code, s.city, s.province, s.country FROM shipping_address s ${whereClause}
         AND user_id = ?
         ORDER BY s.id ${sort}
         LIMIT ?`, [user_id, limit + 1]) 

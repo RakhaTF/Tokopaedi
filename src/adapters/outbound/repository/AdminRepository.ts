@@ -131,7 +131,7 @@ export default class AdminRepository {
         return db.query<AdminResponseDto.GetUserShippingAddressResponse[]>(
             `SELECT sa.id, sa.user_id, sa.address, sa.postal_code, sa.city, sa.province, sa.country
             FROM shipping_address sa ${whereClause}
-            ORDER BY s.id ${sort}
+            ORDER BY sa.id ${sort}
             LIMIT ?`, [limit + 1]
         )
     }
