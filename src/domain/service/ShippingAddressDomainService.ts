@@ -41,8 +41,8 @@ export default class ShippingAddressDomainService {
         }
     }
 
-    static async GetUserShippingAddressByIdDomain(user_id: number){
-        const result = await ShippingAddressRepository.DBGetUserShippingAddressById(user_id)
+    static async GetUserShippingAddressByIdDomain(user_id: number, paginationParams: PaginationParamsDto.RepoPaginationParams){
+        const result = await ShippingAddressRepository.DBGetUserShippingAddressById(user_id, paginationParams)
         if (result.length < 1){
             throw new Error("Shipping address not found")
         }

@@ -40,13 +40,17 @@ export class ShippingAddressRepository {
         [address, city, country, postal_code, province, id], query_runner)
     }
 
-    static async DBGetUserShippingAddressById(user_id: number): Promise<ShippingAddressResponseDto.GetUserShippingAddressById[]>{
-        return await db.query<ShippingAddressResponseDto.GetUserShippingAddressById[]>(
-            `SELECT sa.address, sa.postal_code, sa.city, sa.province, sa.country
-            FROM shipping_address sa WHERE user_id = ? AND s.is_deleted <> 1`, [user_id])
-    }
-
     static async DBCheckIsAddressAlive(id: number) {
         return await db.query<{ id: number }[]>(`SELECT s.id FROM shipping_address s WHERE s.is_deleted <> 1 AND s.id = ?`, [id])
+    }
+
+    static async DBGetUserShippingAddressById(user_id: number, paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<ShippingAddressResponseDto.GetUserShippingAddressById[]> {
+        const { limit, sort, whereClause } = paginationParams
+
+        return await db.query<ShippingAddressResponseDto.ShippingAddressResponse[]>(`
+        SELECT s.id, s.user_id, s.address, s.postal_code, s.city, s.province, s.country FROM shipping_address s ${whereClause}
+        AND user_id = ?
+        ORDER BY s.id ${sort}
+        LIMIT ?`, [user_id, limit + 1])
     }
 }

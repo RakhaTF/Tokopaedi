@@ -500,8 +500,27 @@ export default class AdminAppService {
         return result
     }
 
-    static async GetUserShippingAddressService(){
-        return await AdminDomainService.GetUserShippingAddressDomain()
+    static async GetUserShippingAddressService(paginationParams: CommonRequestDto.PaginationRequest){
+        await CommonSchema.Pagination.validateAsync(paginationParams)
+        const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
+
+        /*
+        search filter, to convert filter field into sql string
+        e.g: ({payment} = "Credit Card" AND {items_price} > 1000) will turn into ((t.payment_method = "Credit Card" AND t.items_price > 1000))
+        every field name need to be inside {}
+        */
+       let searchFilter = search || ""
+       searchFilter = unicorn(searchFilter, {
+           id: "sa.id",
+           user_id: "sa.user_id",
+           city: "sa.city"
+       })
+
+       //Generate whereClause
+       const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "sa", tablePK: "id" })
+       const getUserShipping = await AdminDomainService.GetUserShippingAddressDomain({ whereClause, limit: Number(limit), sort })
+       const result = Paginate({ data: getUserShipping, limit })
+        return result
     }
 
     static async UpdateUserLevelService(params: AdminParamsDto.UpdateUserLevelParams, logData: LogParamsDto.CreateLogParams){

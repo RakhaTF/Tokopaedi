@@ -18,8 +18,8 @@ export default class UserDomainService {
         return result
     }
 
-    static async CheckUserExistsDomain(email: string) {
-        const user = await UserRepository.DBCheckUserExists(email);
+    static async CheckUserExistsDomain(email: string, query_runner?: QueryRunner) {
+        const user = await UserRepository.DBCheckUserExists(email, query_runner);
         if (user.length < 1) {
             throw new Error("Account not found!")
         }

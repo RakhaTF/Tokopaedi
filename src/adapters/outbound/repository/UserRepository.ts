@@ -28,12 +28,12 @@ export default class UserRepository {
         return result
     }
 
-    static async DBCheckUserExists(email: string) {
+    static async DBCheckUserExists(email: string, query_runner?: QueryRunner) {
         return await db.query<UserResponseDto.CheckUserExistResult[]>(`
             SELECT 
             u.id, u.name, u.email, u.password, u.level, u.created_at, u.is_deleted
             FROM user u
-            WHERE u.email = ?`, [email]
+            WHERE u.email = ?`, [email], query_runner
         )
     }
 

@@ -378,9 +378,10 @@ export default class AdminController {
         }
     }
 
-    static async GetUserShippingAddress(){
+    static async GetUserShippingAddress(request: FastifyRequest){
         try {
-            const getUserShippingAddress = await AdminAppService.GetUserShippingAddressService()
+            const paginationRequest = request.body as CommonRequestDto.PaginationRequest
+            const getUserShippingAddress = await AdminAppService.GetUserShippingAddressService(paginationRequest)
             const result = {message: getUserShippingAddress}
 
             return result
@@ -391,8 +392,9 @@ export default class AdminController {
 
     static async GetUserShippingAddressById(request: FastifyRequest){
         try {
+            const paginationRequest = request.body as CommonRequestDto.PaginationRequest
             const {user_id} = request.body as ShippingAddressRequestDto.GetUserShippingAddressByIdRequest
-            const getUserShippingAddressById = await ShippingAddressAppService.GetUserShippingAddressByIdService({user_id})
+            const getUserShippingAddressById = await ShippingAddressAppService.GetUserShippingAddressByIdService(user_id, paginationRequest)
 
             const result = {message: getUserShippingAddressById}
             return result
