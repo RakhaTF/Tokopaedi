@@ -9,6 +9,7 @@ export type ShippingAddressResponse = {
 }
 
 export type GetUserShippingAddressById = {
+    id: number;
     address: string;
     postal_code: string;
     city: string;

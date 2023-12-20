@@ -143,18 +143,30 @@ export default class ShippingAddressAppService {
             await query_runner.release()
             throw error
         }
-
-        await ShippingAddressDomainService.UpdateShippingAddressDomain({ ...updateAddressData, id, user_id })
-
-        //Insert into log, to track user action.
-        await LogDomainService.CreateLogDomain(logData)
-        return true;
     }
 
-    static async GetUserShippingAddressByIdService(params: ShippingAddressParamsDto.GetUserShippingAddressByIdParams){
-        await ShippingAddressSchema.GetUserShippingAddressById.validateAsync(params)
+    static async GetUserShippingAddressByIdService(user_id: number, paginationParams: CommonRequestDto.PaginationRequest){
+        await CommonSchema.Pagination.validateAsync(paginationParams)
+        const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
+        
 
-        const result = await ShippingAddressDomainService.GetUserShippingAddressByIdDomain(params.user_id)
+        /*
+        search filter, to convert filter field into sql string
+        e.g: ({payment} = "Credit Card" AND {items_price} > 1000) will turn into ((t.payment_method = "Credit Card" AND t.items_price > 1000))
+        every field name need to be inside {}
+        */
+       let searchFilter = search || ""
+        searchFilter = unicorn(searchFilter, {
+            id: "s.id",
+            user_id: "s.user_id",
+            city: "s.city"
+        })
+
+       //Generate whereClause
+       const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "s", tablePK: "id" })
+
+        const getUserShippingById = await ShippingAddressDomainService.GetUserShippingAddressByIdDomain(user_id, { whereClause, limit: Number(limit), sort })
+        const result = Paginate({ data: getUserShippingById, limit })
         return result
     }
 }

@@ -103,8 +103,8 @@ export default class AdminDomainService {
         return await AdminRepository.DBGetTransactionList(paginationParams)
     }
 
-    static async GetUserShippingAddressDomain(){
-        return await AdminRepository.DBGetUserShippingAddress()
+    static async GetUserShippingAddressDomain(paginationParams: PaginationParamsDto.RepoPaginationParams){
+        return await AdminRepository.DBGetUserShippingAddress(paginationParams)
     }
 
     static async UpdateUserLevelDomain(user_id: number, level: number){

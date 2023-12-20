@@ -381,24 +381,21 @@ const routes: RouteOptions[] = [
         },
     },
     {
-        method: ["GET"],
+        method: ["POST"],
         url: "/api/v1/admin/user/shipping-address",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_SHIPPING_ADDRESS }),
         handler: AdminController.GetUserShippingAddress,
         schema: {
             tags: ["Admin"],
-            response: Schema.BaseResponse({
-                type: "Array of Object",
-                message: {
-                    id: { type: "number" },
-                    user_id: { type: "number" },
-                    address: { type: "string" },
-                    postal_code: { type: "string" },
-                    city: { type: "string" },
-                    province: { type: "string" },
-                    country: { type: "string" },
-                },
+            body: Schema.BasePaginationRequestSchema({
+                pic: "Raihan",
+                search: {
+                    id: "number",
+                    user_id: "number",
+                    city: "string"
+                }
             }),
+            response: Schema.BasePaginationResultSchema,
         },
     },
     {
@@ -421,19 +418,15 @@ const routes: RouteOptions[] = [
         handler: AdminController.GetUserShippingAddressById,
         schema: {
             tags: ["Admin"],
-            body: Schema.BaseRequestSchema("Raihan", {
-                user_id: { type: "number" },
+            body: Schema.BasePaginationRequestSchema({
+                pic: "Raihan",
+                search: {
+                    id: "number",
+                    user_id: "number",
+                    city: "string"
+                }
             }),
-            response: Schema.BaseResponse({
-                type: "Array of Object",
-                message: {
-                    address: { type: "string" },
-                    postal_code: { type: "string" },
-                    city: { type: "string" },
-                    province: { type: "string" },
-                    country: { type: "string" },
-                },
-            }),
+            response: Schema.BasePaginationResultSchema,
         },
     },
     {
