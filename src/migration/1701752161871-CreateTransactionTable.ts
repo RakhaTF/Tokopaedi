@@ -16,6 +16,7 @@ export class CreateTransactionTable1701752161871 implements MigrationInterface {
                 paid_at INT(11),
                 created_at INT(11) NOT NULL,
                 updated_at INT(11) NOT NULL,
+                is_deleted TINYINT(1) DEFAULT '0' COMMENT '0 = false, 1 = true',
                 FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
                 FOREIGN KEY (shipping_address_id) REFERENCES shipping_address(id) ON DELETE SET NULL
             )

@@ -72,7 +72,7 @@ export default class ShippingAddressAppService {
         return result
     }
 
-    static async DeleteShippingAddress(id: number, user_id: number, logData: LogParamsDto.CreateLogParams) {
+    static async SoftDeleteShippingAddress(id: number, user_id: number, logData: LogParamsDto.CreateLogParams) {
         await ShippingAddressSchema.ShippingAddressId.validateAsync(id)
 
         const db = AppDataSource
@@ -88,7 +88,7 @@ export default class ShippingAddressAppService {
                 throw new Error("This Shipping Address Doesn't Belong To You!")
             }
 
-            await ShippingAddressDomainService.DeleteShippingAddressDomain(id, query_runner)
+            await ShippingAddressDomainService.SoftDeleteShippingAddressDomain(id, query_runner)
             
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
@@ -107,6 +107,9 @@ export default class ShippingAddressAppService {
     static async UpdateShippingAddress(params: ShippingAddressParamsDto.UpdateShippingAddressParams, logData: LogParamsDto.CreateLogParams) {
         await ShippingAddressSchema.UpdateShippingAddress.validateAsync(params)
         const { id, address, city, country, postal_code, province, user_id } = params
+
+        //additional checking to prevent mutate deleted data.
+        await ShippingAddressDomainService.CheckIsShippingAddressAliveDomain(id)
 
         const existingAddress = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id)
 
@@ -143,12 +146,6 @@ export default class ShippingAddressAppService {
             await query_runner.release()
             throw error
         }
-
-        await ShippingAddressDomainService.UpdateShippingAddressDomain({ ...updateAddressData, id, user_id })
-
-        //Insert into log, to track user action.
-        await LogDomainService.CreateLogDomain(logData)
-        return true;
     }
 
     static async GetUserShippingAddressByIdService(params: ShippingAddressParamsDto.GetUserShippingAddressByIdParams){

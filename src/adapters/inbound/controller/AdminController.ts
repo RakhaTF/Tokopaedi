@@ -115,9 +115,10 @@ export default class AdminController {
         }
     }
 
-    static async GetUserList(){
+    static async GetUserList(request: FastifyRequest){
         try {
-            const getUserList = await AdminAppService.GetUserListService()
+            const paginationRequest = request.body as CommonRequestDto.PaginationRequest
+            const getUserList = await AdminAppService.GetUserListService(paginationRequest)
 
             const result = {message : getUserList}
 
@@ -418,6 +419,25 @@ export default class AdminController {
             const deleteTransaction = await TransactionAppService.DeleteUserTransaction(transaction_id, {
                 user_id: id,
                 action: `Delete Transaction ${transaction_id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"],
+                time: moment().unix(),
+            })
+
+            const result = {message: deleteTransaction}
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+
+    static async RestoreDeletedUser(request: FastifyRequest){
+        try {
+            const { id } = request.user
+            const { user_id } = request.body as { user_id: number }
+            const deleteTransaction = await AdminAppService.RestoreDeletedUserService(user_id, {
+                user_id: id,
+                action: `Restore Deleted User #${user_id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
                 browser: request.headers["user-agent"],
                 time: moment().unix(),

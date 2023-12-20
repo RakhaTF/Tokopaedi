@@ -23,14 +23,14 @@ export class ShippingAddressRepository {
         const { limit, sort, whereClause } = paginationParams
 
         return await db.query<ShippingAddressResponseDto.ShippingAddressResponse[]>(`
-        SELECT id, user_id, address, postal_code, city, province, country FROM shipping_address s ${whereClause} 
-        AND user_id = ?
+        SELECT s.id, s.user_id, s.address, s.postal_code, s.city, s.province, s.country FROM shipping_address s ${whereClause} 
+        AND s.user_id = ? AND s.is_deleted <> 1 
         ORDER BY s.id ${sort}
         LIMIT ?`, [user_id, limit + 1])
     }
 
-    static async DBDeleteShippingAddress(id: number, query_runner?:QueryRunner): Promise<ResultSetHeader> {
-        return await db.query<ResultSetHeader>(`DELETE FROM shipping_address WHERE id = ?`, [id], query_runner)
+    static async DBSoftDeleteShippingAddress(id: number, query_runner?:QueryRunner): Promise<ResultSetHeader> {
+        return await db.query<ResultSetHeader>(`UPDATE shipping_address SET is_deleted = 1 WHERE id = ?`, [id], query_runner)
     }
 
     static async DBUpdateShippingAddress(params: ShippingAddressParamsDto.UpdateShippingAddressParams, query_runner?: QueryRunner) {
@@ -43,6 +43,10 @@ export class ShippingAddressRepository {
     static async DBGetUserShippingAddressById(user_id: number): Promise<ShippingAddressResponseDto.GetUserShippingAddressById[]>{
         return await db.query<ShippingAddressResponseDto.GetUserShippingAddressById[]>(
             `SELECT sa.address, sa.postal_code, sa.city, sa.province, sa.country
-            FROM shipping_address sa WHERE user_id = ?`, [user_id])
+            FROM shipping_address sa WHERE user_id = ? AND s.is_deleted <> 1`, [user_id])
+    }
+
+    static async DBCheckIsAddressAlive(id: number) {
+        return await db.query<{ id: number }[]>(`SELECT s.id FROM shipping_address s WHERE s.is_deleted <> 1 AND s.id = ?`, [id])
     }
 }

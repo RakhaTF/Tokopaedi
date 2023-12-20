@@ -41,17 +41,21 @@ export default class ProductAppService {
         return await ProductDomainService.GetProductDetailDomain(id)
     }
 
-    static async DeleteProduct(id: number, logData: LogParamsDto.CreateLogParams) {
+    static async SoftDeleteProduct(id: number, logData: LogParamsDto.CreateLogParams) {
         await ProductSchema.ProductId.validateAsync(id)
 
+        //additional checking to prevent mutate deleted data.
+        await ProductDomainService.CheckIsProductAliveDomain(id)
+        
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
 
+
         try {
             await query_runner.startTransaction()
 
-            await ProductDomainService.DeleteProductDomain(id, query_runner)
+            await ProductDomainService.SoftDeleteProductDomain(id, query_runner)
 
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
@@ -94,6 +98,9 @@ export default class ProductAppService {
     static async UpdateProduct(product: ProductRequestDto.UpdateProductRequest, logData: LogParamsDto.CreateLogParams) {
         await ProductSchema.UpdateProduct.validateAsync(product)
         const { id, description, name, price, stock } = product
+
+        //additional checking to prevent mutate deleted data.
+        await ProductDomainService.CheckIsProductAliveDomain(id)
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()

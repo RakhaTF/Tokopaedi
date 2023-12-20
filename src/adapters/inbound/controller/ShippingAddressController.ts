@@ -53,7 +53,7 @@ export default class ShippingAddressController {
         try {
             const user = request.user
             const { id } = request.body as { id: number }
-            const result = await ShippingAddressAppService.DeleteShippingAddress(id, user.id,
+            const result = await ShippingAddressAppService.SoftDeleteShippingAddress(id, user.id,
                 {
                     user_id: id,
                     action: `Delete Shipping Address ${id}`,

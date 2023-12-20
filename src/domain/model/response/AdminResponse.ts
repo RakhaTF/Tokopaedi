@@ -8,6 +8,7 @@ export type GetAdminDataResult = {
 }
 
 export type GetUserListResponse = {
+    id: number;
     name: string;
     email: string;
     created_at: number;

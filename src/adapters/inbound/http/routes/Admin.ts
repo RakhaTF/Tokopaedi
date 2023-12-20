@@ -152,21 +152,22 @@ const routes: RouteOptions[] = [
         },
     },
     {
-        method: ["GET"],
+        method: ["POST"],
         url: "/api/v1/admin/user-list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_LIST }),
         handler: AdminController.GetUserList,
         schema: {
             tags: ["Admin"],
-            response: Schema.BaseResponse({
-                type: "Array of Object",
-                message: {
-                    id: { type: "number" },
-                    email: { type: "string" },
-                    name: { type: "string" },
-                    created_at: { type: "number" },
-                },
+            body: Schema.BasePaginationRequestSchema({
+                pic: "Rakha",
+                search: {
+                    name: "string",
+                    email: "string",
+                    level: "number",
+                    isDeleted: "number"
+                }
             }),
+            response: Schema.BasePaginationResultSchema
         },
     },
     {
@@ -337,6 +338,7 @@ const routes: RouteOptions[] = [
                     items_price: "number",
                     total_price: "number",
                     created: "number",
+                    isDeleted: "number",
                 },
             }),
             response: Schema.BasePaginationResultSchema,
@@ -357,6 +359,7 @@ const routes: RouteOptions[] = [
                     items_price: "number",
                     total_price: "number",
                     created: "number",
+                    isDeleted: "number",
                 },
                 additional_body: {
                     user_id: { type: "number" },
@@ -538,6 +541,20 @@ const routes: RouteOptions[] = [
                 },
             }),
             response: Schema.BasePaginationResultSchema,
+        },
+    },
+    {
+        method: ["POST"],
+        url: "/api/v1/admin/restore-deleted-user",
+        preHandler: CheckAuthAdmin({ rules: Rules.RESTORE_DELETED_USER }),
+        handler: AdminController.RestoreDeletedUser,
+        schema: {
+            body: Schema.BaseRequestSchema("Rakha",{
+                user_id: { type: "number" }
+            }),
+            response: Schema.BaseResponse({
+                type: "Boolean"
+            }),
         },
     },
 ]

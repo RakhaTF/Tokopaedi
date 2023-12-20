@@ -19,14 +19,28 @@ export default class AdminRepository {
         return result
     }
 
-    static async DBDeleteUser(email: string, query_runner?: QueryRunner) {
-        const result = await db.query(`DELETE FROM user WHERE email = ?`, [email], query_runner)
+    static async DBSoftDeleteUser(email: string, query_runner?: QueryRunner) {
+        const result = await db.query(`UPDATE user SET is_deleted = 1 WHERE email = ?`, [email], query_runner)
         return result
     }
 
-    static async DBGetUserList(): Promise<AdminResponseDto.GetUserListResponse[]> {
+    static async DBGetUserList(paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<AdminResponseDto.GetUserListResponse[]> {
+        const { limit, sort, whereClause } = paginationParams
+
         const result = await db.query<AdminResponseDto.GetUserListResponse[]>(`
-        SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.level = 3`)
+        SELECT 
+        u.id, u.name, u.email, u.created_at,
+        CASE
+            WHEN u.is_deleted = 0
+                THEN 'Active'
+            WHEN u.is_deleted = 1
+                THEN 'Deleted'
+        END as is_deleted
+        FROM user u 
+        ${whereClause}
+        AND u.level = 3
+        ORDER BY u.id ${sort}
+        LIMIT ?`, [limit + 1])
         return result
     }
 
@@ -72,7 +86,7 @@ export default class AdminRepository {
         return await db.query<ResultSetHeader>(`UPDATE user_rules SET rules = ? WHERE rules_id = ?`, [rule, rules_id], query_runner)
     }
 
-    static async DBDeleteRule(rules_id: number, query_runner: QueryRunner) {
+    static async DBSoftDeleteRule(rules_id: number, query_runner: QueryRunner) {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
@@ -134,5 +148,9 @@ export default class AdminRepository {
 
     static async DBUpdateUserLevel(user_id: number, level: number){
         return db.query(`UPDATE user SET LEVEL = ? WHERE id = ?`, [level, user_id])
+    }
+
+    static async DBRestoreDeletedUser(user_id: number, query_runner: QueryRunner){
+        return await db.query<ResultSetHeader>(`UPDATE user SET is_deleted = 0 WHERE id = ?`,[user_id], query_runner)
     }
 }

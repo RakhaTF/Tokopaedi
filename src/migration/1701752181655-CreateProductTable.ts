@@ -9,7 +9,8 @@ export class CreateProductTable1701752181655 implements MigrationInterface {
                 name VARCHAR(255) NOT NULL,
                 description TEXT,
                 price DECIMAL(10,2) UNSIGNED NOT NULL,
-                stock INT UNSIGNED NOT NULL
+                stock INT UNSIGNED NOT NULL,
+                is_deleted TINYINT(1) DEFAULT '0' COMMENT '0 = false, 1 = true'
             )
         `);
     }
