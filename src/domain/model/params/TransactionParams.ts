@@ -13,6 +13,7 @@ export type CreateTransactionIdParams = {
     items_price: number;
     created_at: number;
     updated_at: number;
+    expire_at: number;
 }
 
 export type InsertOrderItemParams = {

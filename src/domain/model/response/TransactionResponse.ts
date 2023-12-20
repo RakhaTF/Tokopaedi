@@ -32,6 +32,7 @@ export type TransactionDetailQueryResult = {
     items_price: string
     shipping_price: string
     total_price: string
+    product_bought_id: string
     product_bought: string
     qty: string
     is_paid: string
@@ -97,4 +98,10 @@ export type GetTransactionStatusResponse = {
 export type GetProductDetailResult = {
     product_id: number;
     stock: number;
+}
+
+export type GetAllPendingTransactionResponse = {
+    id: number;
+    created_at: number;
+    expire_at: number
 }

@@ -122,4 +122,8 @@ export default class TransactionDomainService {
             throw new Error("Failed to delete transaction!")
         }
     }
+
+    static async GetAllPendingTransactionDomain() {
+        return await TransactionRepository.DBGetAllPendingTransaction()
+    }
 }

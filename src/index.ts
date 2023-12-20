@@ -3,6 +3,7 @@ import FastifyBaseAddon from "./application/boot/fastify/base"
 import FastifyRouteAddon from "@application/boot/fastify/route";
 import FastifySwaggerAddon from "@application/boot/fastify/swagger";
 import { AppDataSource } from "@infrastructure/mysql/connection";
+import TransactionScheduler from "cronJobs/transaction-scheduler/Transaction";
 
 const server = fastify({
     logger: {
@@ -31,6 +32,8 @@ server.listen({ port: 8080 }, (err, address) => {
         process.exit(1);
     }
     console.log(`Server listening at ${address}`);
+    //CronJob to check if there is an expire transaction
+    TransactionScheduler.executeJob()
 });
 
 server.get("/", () => {
