@@ -29,7 +29,6 @@ export default class LogAppService {
 
         //Generate pagination
         const result = Paginate({ data: log, limit })
-        console.log({result})
         return result
     }
 }

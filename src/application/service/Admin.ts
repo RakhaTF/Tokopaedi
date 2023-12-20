@@ -116,7 +116,7 @@ export default class AdminAppService {
         }
     }
 
-    static async UpdateProfileService(params: AdminParamsDto.UpdateProfileParams){
+    static async UpdateProfileService(params: AdminParamsDto.UpdateProfileParams, logData: LogParamsDto.CreateLogParams){
         await AdminSchema.UpdateProfile.validateAsync(params)
 
         if (params.id < 1){
@@ -138,9 +138,10 @@ export default class AdminAppService {
 
         let banned = [
             "SuperAdmin",
-            "Product Management Staff",
-            "User Management Staff",
-            "Shipping and Transaction Management Staff",
+            "Admin",
+            "Product Manager",
+            "User Manager",
+            "Transaction Manager",
         ]
 
         if (banned.includes(params.name) || prohibitedWords.flag(params.name)){
@@ -153,9 +154,29 @@ export default class AdminAppService {
             name: params.name
         }
 
-        await UserDomainService.UpdateUserEditProfileDomainService(obj)
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-        return obj
+        try {
+            await query_runner.startTransaction()
+
+            await UserDomainService.UpdateUserEditProfileDomainService(obj, query_runner)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+    
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            
+            return obj
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
+
     }
 
     static async DeleteUserService(params: AdminParamsDto.DeleteUserParams, logData: LogParamsDto.CreateLogParams){
@@ -392,25 +413,41 @@ export default class AdminAppService {
         }
     }
 
-    static async ChangePasswordService(params: AdminParamsDto.ChangePasswordParams){
+    static async ChangePasswordService(params: AdminParamsDto.ChangePasswordParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.ChangePassword.validateAsync(params)
 
-        if (params.id < 1){
-            throw new Error ("User not found")
+        if (params.id < 1) {
+            throw new Error("User not found")
         }
 
         const passEncrypt = await hashPassword(params.newPassword)
 
         const getUserById = await UserDomainService.GetUserPasswordByIdDomain(params.id)
 
-        if (getUserById.id > 1){
-            const sama = await checkPassword(params.oldPassword, getUserById.password)
-            if (!sama){
-                throw new Error ("Invalid old password")
-            }
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-            const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id)
+        try {
+            await query_runner.startTransaction()
+
+            const sama = await checkPassword(params.oldPassword, getUserById.password)
+            if (!sama) {
+                throw new Error("Invalid old password")
+            }
+            const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id, query_runner)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+
             return result
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
         }
     }
 
@@ -445,11 +482,31 @@ export default class AdminAppService {
         return await AdminDomainService.GetUserShippingAddressDomain()
     }
 
-    static async UpdateUserLevelService(params: AdminParamsDto.UpdateUserLevelParams){
+    static async UpdateUserLevelService(params: AdminParamsDto.UpdateUserLevelParams, logData: LogParamsDto.CreateLogParams){
         await AdminSchema.UpdateUserLevel.validateAsync(params)
 
-        const updateUserLevel = await AdminDomainService.UpdateUserLevelDomain(params.user_id, params.level)
+      
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-        return updateUserLevel
+        try {
+            await query_runner.startTransaction()
+
+            const updateUserLevel = await AdminDomainService.UpdateUserLevelDomain(params.user_id, params.level, query_runner)
+
+            
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+            
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            
+            return updateUserLevel
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
     }
 }
