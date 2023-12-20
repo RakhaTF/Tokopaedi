@@ -291,33 +291,67 @@ export default class TransactionAppService {
         return result
     }
 
-    static async ApproveTransaction(params: TransactionRequestDto.UpdateTransactionStatusRequest) {
+    static async ApproveTransaction(params: TransactionRequestDto.UpdateTransactionStatusRequest, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.UpdateTransactionStatus.validateAsync(params)
-        const {  transaction_id } = params
+        const { transaction_id } = params
 
         const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
             status: 1, //0 = pending (default), 1 = approved, 2 = rejected
-            transaction_id,  
+            transaction_id,
             updated_at: moment().unix()
         }
-        await TransactionDomainService.UpdateTransactionStatusDomain(updateTransactionStatus)
-        return true;
+
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await TransactionDomainService.UpdateTransactionStatusDomain(updateTransactionStatus, query_runner)
+            //insert to log to track user action
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            return true
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
     }
 
-    static async RejectTransaction(params: TransactionRequestDto.UpdateTransactionStatusRequest) {
+    static async RejectTransaction(params: TransactionRequestDto.UpdateTransactionStatusRequest, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.UpdateTransactionStatus.validateAsync(params)
-        const {  transaction_id } = params
+        const { transaction_id } = params
 
         const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
             status: 2, //0 = pending (default), 1 = approved, 2 = rejected
-            transaction_id,  
+            transaction_id,
             updated_at: moment().unix()
         }
-        await TransactionDomainService.UpdateTransactionStatusDomain(updateTransactionStatus)
-        return true;
+
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await TransactionDomainService.UpdateTransactionStatusDomain(updateTransactionStatus, query_runner)
+            //insert to log to track user action
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            return true
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
     }
 
-    static async UpdateDeliveryStatus(params: TransactionRequestDto.UpdateDeliveryStatusRequest) {
+    static async UpdateDeliveryStatus(params: TransactionRequestDto.UpdateDeliveryStatusRequest, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.UpdateDeliveryStatus.validateAsync(params)
         const { is_delivered, status, transaction_id } = params
 
@@ -341,16 +375,48 @@ export default class TransactionAppService {
             status, //0 = Pending, 1 = On Delivery, 2 = Delivered, 3 = Rejected
             updated_at: moment().unix()
         }
-        await TransactionDomainService.UpdateDeliveryStatusDomain(updateDeliveryStatus)
-        return true;
-    }    
 
-    static async DeleteUserTransaction(transaction_id: number) {
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await TransactionDomainService.UpdateDeliveryStatusDomain(updateDeliveryStatus, query_runner)
+            //insert to log to track user action
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            return true
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
+    }
+
+    static async DeleteUserTransaction(transaction_id: number, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.TransactionId.validateAsync(transaction_id)
 
-        await TransactionDomainService.DeleteTransactionDomain(transaction_id)
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
 
-        return true;
+        try {
+            await query_runner.startTransaction()
+
+            await TransactionDomainService.DeleteTransactionDomain(transaction_id, query_runner)
+            //insert to log to track user action
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            return true
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
+        }
     }
   
     static async DeleteTransaction(transaction_id: number, logData: LogParamsDto.CreateLogParams) {
