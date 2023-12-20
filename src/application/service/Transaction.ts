@@ -107,6 +107,9 @@ export default class TransactionAppService {
         await TransactionSchema.UpdateTransactionService.validateAsync(params)
         const { order_id, product_id, qty, updated_at } = params
 
+        //additional checking to prevent mutate deleted transaction.
+        await TransactionDomainService.CheckIsTransactionAliveDomain(order_id)
+
         // Fetch the current product details
         const product = await ProductDomainService.GetProductsPricesDomain([product_id])
 
@@ -165,6 +168,9 @@ export default class TransactionAppService {
     static async PayTransaction(params: TransactionRequestDto.PayTransactionRequest, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.PayTransaction.validateAsync(params)
         const { transaction_id, expedition_name, payment_method, shipping_address_id, user_id } = params
+
+        //additional checking to prevent mutate deleted transaction.
+        await TransactionDomainService.CheckIsTransactionAliveDomain(transaction_id)
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
@@ -278,6 +284,7 @@ export default class TransactionAppService {
             items_price: "t.items_price",
             total_price: "t.total_price",
             created: "t.created_at",
+            isDeleted: "t.is_deleted",
         })
 
         //Generate whereClause
@@ -295,9 +302,14 @@ export default class TransactionAppService {
         await TransactionSchema.UpdateTransactionStatus.validateAsync(params)
         const { transaction_id } = params
 
+        //additional checking to prevent mutate deleted transaction.
+        await TransactionDomainService.CheckIsTransactionAliveDomain(transaction_id)
+
+        const transactionDetail = await TransactionDomainService.GetTransactionDetailDomain(transaction_id)
+
         const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
             status: 1, //0 = pending (default), 1 = approved, 2 = rejected
-            transaction_id,
+            transaction_id: transactionDetail.transaction_id,
             updated_at: moment().unix()
         }
 
@@ -307,7 +319,6 @@ export default class TransactionAppService {
 
         try {
             await query_runner.startTransaction()
-
             await TransactionDomainService.UpdateTransactionStatusDomain(updateTransactionStatus, query_runner)
             //insert to log to track user action
             await LogDomainService.CreateLogDomain(logData, query_runner)
@@ -324,6 +335,9 @@ export default class TransactionAppService {
     static async RejectTransaction(params: TransactionRequestDto.UpdateTransactionStatusRequest, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.UpdateTransactionStatus.validateAsync(params)
         const { transaction_id } = params
+
+        //additional checking to prevent mutate deleted transaction.
+        await TransactionDomainService.CheckIsTransactionAliveDomain(transaction_id)
 
         const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
             status: 2, //0 = pending (default), 1 = approved, 2 = rejected
@@ -354,6 +368,9 @@ export default class TransactionAppService {
     static async UpdateDeliveryStatus(params: TransactionRequestDto.UpdateDeliveryStatusRequest, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.UpdateDeliveryStatus.validateAsync(params)
         const { is_delivered, status, transaction_id } = params
+
+        //additional checking to prevent mutate deleted transaction.
+        await TransactionDomainService.CheckIsTransactionAliveDomain(transaction_id)
 
         //get transaction status if transaction hasn't been approved / rejected, can not update delivery status
         const transactionStatus = await TransactionDomainService.GetTransactionStatusDomain(transaction_id)
@@ -399,6 +416,9 @@ export default class TransactionAppService {
     static async DeleteUserTransaction(transaction_id: number, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.TransactionId.validateAsync(transaction_id)
 
+        //additional checking to prevent mutate deleted transaction.
+        await TransactionDomainService.CheckIsTransactionAliveDomain(transaction_id)
+
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
@@ -406,7 +426,7 @@ export default class TransactionAppService {
         try {
             await query_runner.startTransaction()
 
-            await TransactionDomainService.DeleteTransactionDomain(transaction_id, query_runner)
+            await TransactionDomainService.SoftDeleteTransactionDomain(transaction_id, query_runner)
             //insert to log to track user action
             await LogDomainService.CreateLogDomain(logData, query_runner)
 
@@ -419,8 +439,11 @@ export default class TransactionAppService {
         }
     }
   
-    static async DeleteTransaction(transaction_id: number, logData: LogParamsDto.CreateLogParams) {
+    static async SoftDeleteTransaction(transaction_id: number, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.TransactionId.validateAsync(transaction_id)
+
+        //additional checking to prevent mutate deleted transaction.
+        await TransactionDomainService.CheckIsTransactionAliveDomain(transaction_id)
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
@@ -429,7 +452,7 @@ export default class TransactionAppService {
         try {
             await query_runner.startTransaction()
 
-            await TransactionDomainService.DeleteTransactionDomain(transaction_id)
+            await TransactionDomainService.SoftDeleteTransactionDomain(transaction_id)
 
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
@@ -487,7 +510,7 @@ export default class TransactionAppService {
         await Promise.all(updateProductPromises)
 
         //delete the transaction after successfully restore the stock
-        await TransactionDomainService.DeleteTransactionDomain(tx.id, query_runner)
+        await TransactionDomainService.SoftDeleteTransactionDomain(tx.id, query_runner)
     }
 
     static async RestoreProductStock(id: number, qty: number, query_runner: QueryRunner) {

@@ -1,7 +1,7 @@
 import TransactionAppService from "@application/service/Transaction";
 import { IScheduler, Scheduler } from "cronJobs/Scheduler";
 
-class TransactionScheduler extends Scheduler {
+export class TransactionScheduler extends Scheduler {
     constructor() {
         super("0 */10 * * * *");
     }
@@ -21,5 +21,3 @@ class TransactionScheduler extends Scheduler {
     }
 
 }
-
-export default new TransactionScheduler()

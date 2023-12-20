@@ -116,8 +116,8 @@ export default class TransactionDomainService {
         return transactionStatus[0]
     }
 
-    static async DeleteTransactionDomain(transaction_id: number, query_runner?: QueryRunner) {
-        const deleteTransaction = await TransactionRepository.DBDeleteTransaction(transaction_id, query_runner)
+    static async SoftDeleteTransactionDomain(transaction_id: number, query_runner?: QueryRunner) {
+        const deleteTransaction = await TransactionRepository.DBSoftDeleteTransaction(transaction_id, query_runner)
         if (deleteTransaction.affectedRows < 1) {
             throw new Error("Failed to delete transaction!")
         }
@@ -125,5 +125,13 @@ export default class TransactionDomainService {
 
     static async GetAllPendingTransactionDomain() {
         return await TransactionRepository.DBGetAllPendingTransaction()
+    }
+
+    static async CheckIsTransactionAliveDomain(id: number){
+        const isAlive = await TransactionRepository.DBCheckIsTransactionAlive(id)
+        if(isAlive.length < 1){
+            throw new Error("Transaction is deleted")
+        }
+        return true
     }
 }

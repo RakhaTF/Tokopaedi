@@ -27,7 +27,7 @@ export default class ProductController {
     static async DeleteProduct(request: FastifyRequest) {
         try {
             const { id } = request.body as { id: number }
-            const deleteProduct = await ProductAppService.DeleteProduct(id,
+            const deleteProduct = await ProductAppService.SoftDeleteProduct(id,
                 {
                     user_id: id,
                     action: `Delete Product ${id}`,

@@ -1,5 +1,11 @@
 import Joi from "joi"
 
+export const UserId = Joi.number().min(1).required().messages({
+    'number.base': 'user_id must be a number',
+    'number.min': 'user_id must be greater than or equal to 1',
+    'any.required': 'user_id is a required field',
+});
+
 export const GetAdminProfile = Joi.object({
     id: Joi.number().required().messages({
         'any.required': 'Id is required',

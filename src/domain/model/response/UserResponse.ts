@@ -41,4 +41,5 @@ export type CheckUserExistResult = {
     password: string; 
     level: number;
     created_at: number;
+    is_deleted: number;
 }

@@ -53,6 +53,11 @@ export default class AuthAppService {
 
         const existingUser = await UserDomainService.CheckUserExistsDomain(email)
 
+        //if user is deleted and they attempt to login, throw an error.
+        if(existingUser.is_deleted === 1){
+            throw new Error("Your account is deleted, please contact an admin")
+        }
+
         const checkPassworduUser = await checkPassword(params.password, existingUser.password)
         if (!checkPassworduUser){
             throw new Error ("Wrong Username Or Password")

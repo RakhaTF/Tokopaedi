@@ -208,10 +208,31 @@ export default class AdminAppService {
         }
     }
 
-    static async GetUserListService(){
-        const getUserList = await AdminDomainService.GetUserListDomain()
+    static async GetUserListService(paginationParams: CommonRequestDto.PaginationRequest){
+        await CommonSchema.Pagination.validateAsync(paginationParams)
+        const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
+        
+        /*
+        search filter, to convert filter field into sql string
+        e.g: ({payment} = "Credit Card" AND {items_price} > 1000) will turn into ((t.payment_method = "Credit Card" AND t.items_price > 1000)) every field name need to be inside {}
+        */
+        let searchFilter = search || ""
+        searchFilter = unicorn(searchFilter, {
+            name: "u.name",
+            email: "u.email",
+            level: "u.level",
+            isDeleted: "u.is_deleted",
+        })
 
-        return getUserList
+        //Generate whereClause
+        const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "u", tablePK: "id" })
+        
+        const getUserList = await AdminDomainService.GetUserListDomain({ whereClause, limit: Number(limit), sort })
+        
+        //Generate pagination
+        const result = Paginate({ data: getUserList, limit })
+
+        return result
     }
 
     static async GetUserDetailProfileService(params: AdminParamsDto.GetUserDetailProfileParams){
@@ -466,6 +487,7 @@ export default class AdminAppService {
             items_price: "t.items_price",
             total_price: "t.total_price",
             created: "t.created_at",
+            isDeleted: "t.is_deleted"
         })
 
         //Generate whereClause
@@ -507,6 +529,30 @@ export default class AdminAppService {
             await query_runner.rollbackTransaction()
             await query_runner.release()
             throw error
+        }
+    }
+
+    static async RestoreDeletedUserService(user_id: number, logData: LogParamsDto.CreateLogParams){
+        await AdminSchema.UserId.validateAsync(user_id)
+
+     
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            await AdminDomainService.RestoreDeletedUserDomain(user_id, query_runner)
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true;
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error;
         }
     }
 }

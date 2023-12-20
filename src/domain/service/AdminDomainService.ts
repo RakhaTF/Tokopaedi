@@ -12,15 +12,15 @@ export default class AdminDomainService {
     }
 
     static async DeleteUserDomain(email: string, query_runner?: QueryRunner){
-        const result = await AdminRepository.DBDeleteUser(email, query_runner)
+        const result = await AdminRepository.DBSoftDeleteUser(email, query_runner)
         if (result.affectedRows < 1){
             throw new Error ("Failed delete data")
         }
         return true
     }
 
-    static async GetUserListDomain(){
-        const result = await AdminRepository.DBGetUserList()
+    static async GetUserListDomain(params: PaginationParamsDto.RepoPaginationParams){
+        const result = await AdminRepository.DBGetUserList(params)
         if (result.length < 1){
             throw new Error ("Empty User")
         }
@@ -63,7 +63,7 @@ export default class AdminDomainService {
     }
 
     static async DeleteRule(rules_id: number, query_runner: QueryRunner) {
-        const deleteRule = await AdminRepository.DBDeleteRule(rules_id, query_runner);
+        const deleteRule = await AdminRepository.DBSoftDeleteRule(rules_id, query_runner);
         if (deleteRule.affectedRows < 1) {
             throw new Error("Failed to Delete Rule")
         }
@@ -113,5 +113,12 @@ export default class AdminDomainService {
             throw Error ("Failed update user level")
         }
         return true
+    }
+
+    static async RestoreDeletedUserDomain(user_id: number, query_runner: QueryRunner){
+        const restore = await AdminRepository.DBRestoreDeletedUser(user_id, query_runner)
+        if(restore.affectedRows < 1){
+            throw new Error("Failed to restore user")
+        }
     }
 }

@@ -84,7 +84,7 @@ export default class UserController {
     static async DeleteTransaction(request: FastifyRequest) {
         try {
             const { id } = request.body as {id: number}
-            const deleteTransaction = await TransactionAppService.DeleteTransaction(id,
+            const deleteTransaction = await TransactionAppService.SoftDeleteTransaction(id,
                 {
                     user_id: id,
                     action: `Delete Transaction ${id}`,

@@ -62,7 +62,7 @@ export default class TransactionRepository {
         FROM TRANSACTION t
         JOIN order_item o
             ON t.id = o.order_id
-        WHERE t.id = ?
+        WHERE t.id = ? AND t.is_deleted <> 1
         `,
             [id]
         )
@@ -109,6 +109,7 @@ export default class TransactionRepository {
         SELECT t.id, t.items_price FROM transaction t
         WHERE t.user_id = ? 
         AND t.is_paid = 0 
+        AND t.is_deleted <> 1
         `
 
         return await db.query(query, [user_id])
@@ -182,8 +183,8 @@ export default class TransactionRepository {
     `,[id])
     }
 
-    static async DBDeleteTransaction(transaction_id: number, query_runner?: QueryRunner) {
-        return await db.query<ResultSetHeader>(`DELETE FROM transaction WHERE id = ?`, [transaction_id], query_runner)
+    static async DBSoftDeleteTransaction(transaction_id: number, query_runner?: QueryRunner) {
+        return await db.query<ResultSetHeader>(`UPDATE transaction SET is_deleted = 1 WHERE id = ?`, [transaction_id], query_runner)
     }
 
     static async DBGetUserTransactionListById(userid: number, paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]>{
@@ -205,6 +206,7 @@ export default class TransactionRepository {
         FROM TRANSACTION t
         ${whereClause}
         AND user_id = ?
+        AND t.is_deleted <> 1
         ORDER BY t.id ${sort}
         LIMIT ?`, [userid, limit + 1])
     }
@@ -227,11 +229,15 @@ export default class TransactionRepository {
         SELECT ts.status FROM transaction_status ts
         RIGHT JOIN transaction t
             ON ts.transaction_id = t.id
-        WHERE t.id = ?
+        WHERE t.id = ? AND t.is_deleted <> 1
         `, [transaction_id])
     }
 
     static async DBGetAllPendingTransaction(): Promise<TransactionResponseDto.GetAllPendingTransactionResponse[]>{
-        return await db.query(`SELECT t.id, t.created_at, t.expire_at FROM transaction t WHERE t.is_paid = 0`)
+        return await db.query(`SELECT t.id, t.created_at, t.expire_at FROM transaction t WHERE t.is_paid = 0 AND t.is_deleted <> 1`)
+    }
+
+    static async DBCheckIsTransactionAlive(id: number) {
+        return await db.query<{ id: number }[]>(`SELECT t.id FROM transaction t WHERE t.id = ? AND t.is_deleted <> 1`, [id])
     }
 }

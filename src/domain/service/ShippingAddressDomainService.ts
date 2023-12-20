@@ -26,8 +26,8 @@ export default class ShippingAddressDomainService {
         return shippingAddress
     }
 
-    static async DeleteShippingAddressDomain(id: number, query_runner?: QueryRunner) {
-        const shippingAddress = await ShippingAddressRepository.DBDeleteShippingAddress(id, query_runner)
+    static async SoftDeleteShippingAddressDomain(id: number, query_runner?: QueryRunner) {
+        const shippingAddress = await ShippingAddressRepository.DBSoftDeleteShippingAddress(id, query_runner)
         if (shippingAddress.affectedRows < 1) {
             throw new Error("Failed to Delete Shipping Address")
         }
@@ -47,5 +47,13 @@ export default class ShippingAddressDomainService {
             throw new Error("Shipping address not found")
         }
         return result
+    }
+
+    static async CheckIsShippingAddressAliveDomain(id: number) {
+        const isAlive = await ShippingAddressRepository.DBCheckIsAddressAlive(Number(id))
+        if (isAlive.length < 1) {
+            throw new Error("Shipping Address is Deleted")
+        }
+        return true
     }
 }

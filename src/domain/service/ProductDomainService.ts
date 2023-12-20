@@ -20,8 +20,8 @@ export default class ProductDomainService {
         return productDetail[0]
     }
 
-    static async DeleteProductDomain(id: number, query_runner?: QueryRunner){
-        const deleteProduct = await ProductRepository.DBDeleteProduct(id, query_runner)
+    static async SoftDeleteProductDomain(id: number, query_runner?: QueryRunner){
+        const deleteProduct = await ProductRepository.DBSoftDeleteProduct(id, query_runner)
         if(deleteProduct.affectedRows < 1){
             throw new Error("Delete Failed")
         }
@@ -54,5 +54,13 @@ export default class ProductDomainService {
             throw new Error(`Product not found`);
         }
         return products;
+    }
+
+    static async CheckIsProductAliveDomain(id: number){
+        const isAlive = await ProductRepository.DBCheckIsProductAlive(id)
+        if(isAlive.length < 1){
+            throw new Error("Product is deleted")
+        }
+        return true
     }
 }

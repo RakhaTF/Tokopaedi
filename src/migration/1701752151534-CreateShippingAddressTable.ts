@@ -12,6 +12,7 @@ export class CreateShippingAddressTable1701752151534 implements MigrationInterfa
                 city VARCHAR(255) NOT NULL,
                 province VARCHAR(255) NOT NULL,
                 country VARCHAR(255) NOT NULL,
+                is_deleted TINYINT(1) DEFAULT '0' COMMENT '0 = false, 1 = true',
                 FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
             )
         `);
