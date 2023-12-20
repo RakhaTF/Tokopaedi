@@ -462,7 +462,7 @@ export default class TransactionAppService {
             try {
                 await query_runner.startTransaction()
 
-                const expirePromises = expiredTx.map((tx) => this.handleExpiredTransaction(tx, query_runner))
+                const expirePromises = expiredTx.map((tx) => this.HandleExpiredTransaction(tx, query_runner))
                 await Promise.all(expirePromises)
 
                 return true
@@ -476,21 +476,21 @@ export default class TransactionAppService {
         }
     }
 
-    static async handleExpiredTransaction(tx: TransactionResponseDto.GetAllPendingTransactionResponse, query_runner: QueryRunner) {
+    static async HandleExpiredTransaction(tx: TransactionResponseDto.GetAllPendingTransactionResponse, query_runner: QueryRunner) {
         const { product_bought_id, qty } = await TransactionDomainService.GetTransactionDetailDomain(tx.id)
 
         const productId = product_bought_id.split(",")
         const productQty = qty.split(",")
 
         //restore product stock from expired transaction.
-        const updateProductPromises = productId.map((id, index) => this.restoreProductStock(Number(id), Number(productQty[index]), query_runner))
+        const updateProductPromises = productId.map((id, index) => this.RestoreProductStock(Number(id), Number(productQty[index]), query_runner))
         await Promise.all(updateProductPromises)
 
         //delete the transaction after successfully restore the stock
         await TransactionDomainService.DeleteTransactionDomain(tx.id, query_runner)
     }
 
-    static async restoreProductStock(id: number, qty: number, query_runner: QueryRunner) {
+    static async RestoreProductStock(id: number, qty: number, query_runner: QueryRunner) {
         const product = await ProductDomainService.GetProductDetailDomain(Number(id))
 
         const updateProductData: Partial<Product> = product

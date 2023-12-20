@@ -33,3 +33,12 @@ export type GetUserPasswordByIdResult = {
     id: number;
     password: string;
 }
+
+export type CheckUserExistResult = {
+    id: number; 
+    name: string; 
+    email: string;
+    password: string; 
+    level: number;
+    created_at: number;
+}

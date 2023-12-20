@@ -545,9 +545,9 @@ const routes: RouteOptions[] = [
 export default async function AdminRoute(
     fastify: FastifyInstance,
     options: FastifyPluginOptions
-    ) {
-        fastify.addHook("preValidation", AuthValidate)
-        for (const route of routes) {
-            fastify.route({ ...route, config: options });
-        }
+) {
+    fastify.addHook("preValidation", AuthValidate)
+    for (const route of routes) {
+        fastify.route({ ...route, config: options });
     }
+}

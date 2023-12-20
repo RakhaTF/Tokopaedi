@@ -35,7 +35,7 @@ export default class AdminController {
                 user_id: jwt.id,
                 action: "Create User",
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"] ,
                 time: moment().unix(),
             })
 
@@ -61,7 +61,7 @@ export default class AdminController {
                 user_id: jwt.id,
                 action: `Update Profile User ${userid}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"] ,
                 time: moment().unix(),
             })
 
@@ -103,7 +103,7 @@ export default class AdminController {
                 user_id: jwt.id,
                 action: "Delete User",
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
 
@@ -166,7 +166,7 @@ export default class AdminController {
                 user_id: id,
                 action: `Create Rule ${rule}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
             return { message: createRule }
@@ -183,7 +183,7 @@ export default class AdminController {
                 user_id: id,
                 action: `Update Rule #${updateRuleParams.rules_id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
             return { message: updateRule }
@@ -200,7 +200,7 @@ export default class AdminController {
                 user_id: id,
                 action: `Delete Rule #${rules_id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
             return { message: deleteRule }
@@ -217,7 +217,7 @@ export default class AdminController {
                 user_id: id,
                 action: `Assign Rule #${assignRuleParams.rules_id} To User Group #${assignRuleParams.group_id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
             return { message: assignRule }
@@ -234,7 +234,7 @@ export default class AdminController {
                 user_id: id,
                 action: `Revoke Rule #${revokeRuleParams.rules_id} From User Group #${revokeRuleParams.group_id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
             return { message: RevokeRule }
@@ -255,7 +255,7 @@ export default class AdminController {
                 user_id: userid,
                 action: `Change User Password ${userid}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
 
@@ -320,7 +320,7 @@ export default class AdminController {
                 user_id: id,
                 action: `Update Transaction Delivery Status ${transaction_id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
             return { message: updateDeliveryStatus }
@@ -337,7 +337,7 @@ export default class AdminController {
                 user_id: id,
                 action: `Approve Transaction Status ${transaction_id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
             return { message: approveTransaction }
@@ -354,7 +354,7 @@ export default class AdminController {
                 user_id: id,
                 action: `Reject Transaction Status ${transaction_id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
             return { message: rejectTransaction }
@@ -419,7 +419,7 @@ export default class AdminController {
                 user_id: id,
                 action: `Delete Transaction ${transaction_id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
 

@@ -20,7 +20,7 @@ export default class TransactionController {
                     user_id: id,
                     action: "Create Transaction",
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                    browser: request.headers["user-agent"] as string,
+                    browser: request.headers["user-agent"],
                     time: moment().unix(),
                 }
             )
@@ -48,7 +48,7 @@ export default class TransactionController {
                 user_id: id,
                 action: `Update Transaction #${order_id} Product #${product_id} Qty: ${qty}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
 
@@ -70,7 +70,7 @@ export default class TransactionController {
                     user_id: id,
                     action: `Pay Transaction #${requestBody.transaction_id}`,
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                    browser: request.headers["user-agent"] as string,
+                    browser: request.headers["user-agent"],
                     time: moment().unix(),
                 }
             )

@@ -1,5 +1,4 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
-import { User } from "@domain/entity/User";
 import { QueryRunner } from 'typeorm';
 import { UserResponseDto } from "@domain/model/response";
 import { UserParamsDto } from "@domain/model/params";
@@ -30,7 +29,7 @@ export default class UserRepository {
     }
 
     static async DBCheckUserExists(email: string) {
-        return await db.query<User[]>(`
+        return await db.query<UserResponseDto.CheckUserExistResult[]>(`
             SELECT 
             u.id, u.name, u.email, u.password, u.level, u.created_at
             FROM user u

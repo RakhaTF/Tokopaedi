@@ -1,10 +1,6 @@
 import UserDomainService from "@domain/service/UserDomainService";
 import { UserClaimsResponse } from "../response/UserResponse";
 
-export async function getUserData(id: number) {
-    return await UserDomainService.GetUserDataByIdDomain(id)
-}
-
 export class User {
     id: number;
     name: string;
@@ -35,6 +31,6 @@ export class User {
     }
 
     static async getUserData(id: number){
-        return await getUserData(id)
+        return await UserDomainService.GetUserDataByIdDomain(id)
     }
 }

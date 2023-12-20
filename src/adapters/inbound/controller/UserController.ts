@@ -33,7 +33,7 @@ export default class UserController {
                     user_id: jwt.id,
                     action: "Update User Profile",
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                    browser: request.headers["user-agent"] as string,
+                    browser: request.headers["user-agent"],
                     time: moment().unix(),
                 })
 
@@ -58,7 +58,7 @@ export default class UserController {
                 user_id: jwt.id,
                 action: "Change Password",
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"] as string,
+                browser: request.headers["user-agent"],
                 time: moment().unix(),
             })
 
@@ -89,7 +89,7 @@ export default class UserController {
                     user_id: id,
                     action: `Delete Transaction ${id}`,
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                    browser: request.headers["user-agent"] as string,
+                    browser: request.headers["user-agent"],
                     time: moment().unix(),
                 })
             return { message: deleteTransaction }

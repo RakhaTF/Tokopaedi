@@ -32,7 +32,7 @@ export default class ProductController {
                     user_id: id,
                     action: `Delete Product ${id}`,
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                    browser: request.headers["user-agent"] as string,
+                    browser: request.headers["user-agent"],
                     time: moment().unix(),
                 })
             return { message: deleteProduct };
@@ -49,7 +49,7 @@ export default class ProductController {
                     user_id: jwt.id,
                     action: "Create Product",
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                    browser: request.headers["user-agent"] as string,
+                    browser: request.headers["user-agent"],
                     time: moment().unix(),
                 })
             return { message: createProduct };
@@ -66,7 +66,7 @@ export default class ProductController {
                     user_id: jwt.id,
                     action: `Update Product ${jwt.id}`,
                     ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                    browser: request.headers["user-agent"] as string,
+                    browser: request.headers["user-agent"],
                     time: moment().unix(),
                 })
             return { message: updateProduct };
