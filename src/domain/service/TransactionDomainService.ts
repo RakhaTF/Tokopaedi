@@ -94,15 +94,15 @@ export default class TransactionDomainService {
         return transactionList
     }
 
-    static async UpdateDeliveryStatusDomain(params: TransactionParamsDto.UpdateDeliveryStatusParams) {
-        const updateDeliveryStatusDomain = await TransactionRepository.DBUpdateDeliveryStatus(params)
+    static async UpdateDeliveryStatusDomain(params: TransactionParamsDto.UpdateDeliveryStatusParams, query_runner: QueryRunner) {
+        const updateDeliveryStatusDomain = await TransactionRepository.DBUpdateDeliveryStatus(params, query_runner)
         if (updateDeliveryStatusDomain.affectedRows < 1) {
             throw new Error("Failed to update delivery status")
         }
     }
 
-    static async UpdateTransactionStatusDomain(params: TransactionParamsDto.UpdateTransactionStatusParams) {
-        const updateTransactionStatus = await TransactionRepository.DBUpateTransactionStatus(params)
+    static async UpdateTransactionStatusDomain(params: TransactionParamsDto.UpdateTransactionStatusParams, query_runner: QueryRunner) {
+        const updateTransactionStatus = await TransactionRepository.DBUpateTransactionStatus(params, query_runner)
         if (updateTransactionStatus.affectedRows < 1) {
             throw new Error("Failed to update transaction status")
         }
