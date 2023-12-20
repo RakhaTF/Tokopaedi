@@ -81,6 +81,13 @@ export default class AdminController {
                 id: jwt.id,
                 name,
                 email
+            }, 
+            {
+                user_id: jwt.id,
+                action: `Update Profile`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"],
+                time: moment().unix(),
             })
 
             const result = {message : updateProfile}
@@ -269,12 +276,19 @@ export default class AdminController {
 
     static async ChangePass(request: FastifyRequest){
         try {
-            const jwt = request.user
-            const {oldPassword, newPassword} = request.body as AdminRequestDto.ChangePasswordRequest
+            const { id } = request.user
+            const { oldPassword, newPassword } = request.body as AdminRequestDto.ChangePasswordRequest
             const changePassword = await AdminAppService.ChangePasswordService({
-                id: jwt.id,
+                id,
                 oldPassword,
                 newPassword
+            }, 
+            {
+                user_id: id,
+                action: `Change Password`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"],
+                time: moment().unix(),
             })
 
             const result = {message: changePassword}
@@ -398,10 +412,18 @@ export default class AdminController {
 
     static async UpdateUserLevel(request: FastifyRequest){
         try {
+            const { id } = request.user
             const { user_id, level } = request.body as AdminRequestDto.UpdateUserLevelRequest
             const updateUserLevel = await AdminAppService.UpdateUserLevelService({
                 user_id,
                 level
+            }, 
+            {
+                user_id: id,
+                action: `Update User #${user_id} Level ${level}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"],
+                time: moment().unix(),
             })
 
             const result = {message: updateUserLevel}

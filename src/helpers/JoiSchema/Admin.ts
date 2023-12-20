@@ -142,7 +142,7 @@ export const UpdateUserLevel = Joi.object({
     user_id: Joi.number().required().messages({
         'any.required': 'User Id is required',
     }),
-    level: Joi.number().required().messages({
+    level: Joi.number().valid(4, 5, 6).required().messages({
         'any.required': 'Level is required',
     })
 }).options({ abortEarly: false });

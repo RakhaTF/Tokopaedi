@@ -132,7 +132,7 @@ export default class AdminRepository {
         )
     }
 
-    static async DBUpdateUserLevel(user_id: number, level: number){
-        return db.query(`UPDATE user SET LEVEL = ? WHERE id = ?`, [level, user_id])
+    static async DBUpdateUserLevel(user_id: number, level: number, query_runner: QueryRunner){
+        return db.query(`UPDATE user SET LEVEL = ? WHERE id = ?`, [level, user_id], query_runner)
     }
 }

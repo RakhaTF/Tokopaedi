@@ -76,11 +76,11 @@ export default class UserAppService {
         }
     }
 
-    static async ChangePasswordService(params: UserParamsDto.ChangePasswordParams, logData: LogParamsDto.CreateLogParams){
+    static async ChangePasswordService(params: UserParamsDto.ChangePasswordParams, logData: LogParamsDto.CreateLogParams) {
         await UserSchema.ChangePassword.validateAsync(params)
 
-        if (params.id < 1){
-            throw new Error ("User not found")
+        if (params.id < 1) {
+            throw new Error("User not found")
         }
 
         const db = AppDataSource
@@ -94,21 +94,19 @@ export default class UserAppService {
 
             const getUserById = await UserDomainService.GetUserPasswordByIdDomain(params.id, query_runner)
 
-            if (getUserById.id > 1){
-                const sama = await checkPassword(params.oldPassword, getUserById.password)
-                if (!sama){
-                    throw new Error ("Invalid old password")
-                }
-
-                const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id, query_runner)
-
-                //Insert into log, to track user action.
-                await LogDomainService.CreateLogDomain(logData, query_runner)
-
-                await query_runner.commitTransaction()
-                await query_runner.release()
-                return result
+            const sama = await checkPassword(params.oldPassword, getUserById.password)
+            if (!sama) {
+                throw new Error("Invalid old password")
             }
+
+            const result = await UserDomainService.UpdatePasswordDomain(passEncrypt, params.id, query_runner)
+
+            //Insert into log, to track user action.
+            await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return result
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
