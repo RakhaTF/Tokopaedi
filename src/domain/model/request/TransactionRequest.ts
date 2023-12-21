@@ -1,35 +1,35 @@
-import { PaymentMethod } from "../params/TransactionParams";
+import { PaymentMethod } from "../params/TransactionParams"
 
 export type CreateTransactionRequest = {
-    id: number;
-    product_id: number[];
-    qty: number[];
+    id: number
+    product_id: number[]
+    qty: number[]
 }
 
 export type UpdateTransactionRequest = {
-    order_id: number;
-    product_id: number;
-    qty: number;
+    order_id: number
+    product_id: number
+    qty: number
 }
 
 export type PayTransactionRequest = {
-    transaction_id: number;
-    user_id: number;
-    payment_method: PaymentMethod;
-    shipping_address_id: number;
-    expedition_name: string;
+    transaction_id: number
+    user_id: number
+    payment_method: PaymentMethod
+    shipping_address_id: number
+    expedition_name: string
 }
 
 export type GetUserTransactionListByIdRequest = {
-    userid: number;
+    userid: number
 }
 
 export type UpdateDeliveryStatusRequest = {
-    transaction_id: number;
-    status: number;
-    is_delivered: number;
+    transaction_id: number
+    status: number
+    is_delivered: number
 }
 
 export type UpdateTransactionStatusRequest = {
-    transaction_id: number;
+    transaction_id: number
 }

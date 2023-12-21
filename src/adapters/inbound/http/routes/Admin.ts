@@ -1,10 +1,10 @@
-import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify";
-import ProductController from "@adapters/inbound/controller/ProductController";
-import { AuthValidate, CheckAuthAdmin } from "helpers/prehandler/AuthValidate";
-import { Rules } from "@domain/model/Rules";
+import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
+import ProductController from "@adapters/inbound/controller/ProductController"
+import { AuthValidate, CheckAuthAdmin } from "helpers/prehandler/AuthValidate"
+import { Rules } from "@domain/model/Rules"
 import * as Schema from "helpers/ApiSchema/ApiSchema"
-import AdminController from "@adapters/inbound/controller/AdminController";
-import LogController from "@adapters/inbound/controller/LogController";
+import AdminController from "@adapters/inbound/controller/AdminController"
+import LogController from "@adapters/inbound/controller/LogController"
 
 const routes: RouteOptions[] = [
     {
@@ -164,10 +164,10 @@ const routes: RouteOptions[] = [
                     name: "string",
                     email: "string",
                     level: "number",
-                    isDeleted: "number"
-                }
+                    isDeleted: "number",
+                },
             }),
-            response: Schema.BasePaginationResultSchema
+            response: Schema.BasePaginationResultSchema,
         },
     },
     {
@@ -342,7 +342,6 @@ const routes: RouteOptions[] = [
                 },
             }),
             response: Schema.BasePaginationResultSchema,
-
         },
     },
     {
@@ -395,8 +394,8 @@ const routes: RouteOptions[] = [
                 search: {
                     id: "number",
                     user_id: "number",
-                    city: "string"
-                }
+                    city: "string",
+                },
             }),
             response: Schema.BasePaginationResultSchema,
         },
@@ -425,8 +424,8 @@ const routes: RouteOptions[] = [
                 pic: "Raihan",
                 search: {
                     id: "number",
-                    city: "string"
-                }
+                    city: "string",
+                },
             }),
             response: Schema.BasePaginationResultSchema,
         },
@@ -541,22 +540,19 @@ const routes: RouteOptions[] = [
         preHandler: CheckAuthAdmin({ rules: Rules.RESTORE_DELETED_USER }),
         handler: AdminController.RestoreDeletedUser,
         schema: {
-            body: Schema.BaseRequestSchema("Rakha",{
-                user_id: { type: "number" }
+            body: Schema.BaseRequestSchema("Rakha", {
+                user_id: { type: "number" },
             }),
             response: Schema.BaseResponse({
-                type: "Boolean"
+                type: "Boolean",
             }),
         },
     },
 ]
 
-export default async function AdminRoute(
-    fastify: FastifyInstance,
-    options: FastifyPluginOptions
-) {
+export default async function AdminRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
     fastify.addHook("preValidation", AuthValidate)
     for (const route of routes) {
-        fastify.route({ ...route, config: options });
+        fastify.route({ ...route, config: options })
     }
 }

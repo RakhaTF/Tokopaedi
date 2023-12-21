@@ -20,5 +20,5 @@ export const Pagination = Joi.object({
     limit: limit,
     search: search,
     sort: sort,
-    lastId: lastId
+    lastId: lastId,
 }).unknown(true)

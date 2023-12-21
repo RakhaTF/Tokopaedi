@@ -1,10 +1,10 @@
-import { FastifyRequest } from "fastify";
-import TransactionAppService from "@application/service/Transaction";
-import { TransactionRequestDto } from "@domain/model/request";
-import moment from "moment";
+import { FastifyRequest } from "fastify"
+import TransactionAppService from "@application/service/Transaction"
+import { TransactionRequestDto } from "@domain/model/request"
+import moment from "moment"
 
 export default class TransactionController {
-    static async CreateTransaction(request: FastifyRequest){
+    static async CreateTransaction(request: FastifyRequest) {
         try {
             const { id } = request.user
             const { product_id, qty } = request.body as TransactionRequestDto.CreateTransactionRequest
@@ -33,26 +33,28 @@ export default class TransactionController {
         }
     }
 
-    static async UpdateTransactionProductQty(request: FastifyRequest){
+    static async UpdateTransactionProductQty(request: FastifyRequest) {
         try {
             const { id } = request.user
             const { product_id, order_id, qty } = request.body as TransactionRequestDto.UpdateTransactionRequest
-            const updateTransaction = await TransactionAppService.UpdateTransactionProductQtyService({
-                id,
-                order_id,
-                product_id,
-                qty,
-                updated_at: moment().unix()
-            },
-            {
-                user_id: id,
-                action: `Update Transaction #${order_id} Product #${product_id} Qty: ${qty}`,
-                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                browser: request.headers["user-agent"],
-                time: moment().unix(),
-            })
+            const updateTransaction = await TransactionAppService.UpdateTransactionProductQtyService(
+                {
+                    id,
+                    order_id,
+                    product_id,
+                    qty,
+                    updated_at: moment().unix(),
+                },
+                {
+                    user_id: id,
+                    action: `Update Transaction #${order_id} Product #${product_id} Qty: ${qty}`,
+                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                    browser: request.headers["user-agent"],
+                    time: moment().unix(),
+                }
+            )
 
-            const result = {message: updateTransaction}
+            const result = { message: updateTransaction }
 
             return result
         } catch (error) {

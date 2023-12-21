@@ -227,7 +227,7 @@ export const BasePaginationResultSchema = {
                     },
                     lastId: { type: "integer" },
                     hasNext: { type: "boolean" },
-                    currentPageDataCount: { type: "integer" }
+                    currentPageDataCount: { type: "integer" },
                 },
             },
         },

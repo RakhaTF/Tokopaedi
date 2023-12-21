@@ -1,6 +1,6 @@
-import { LogParamsDto, UserParamsDto } from "@domain/model/params";
-import UserDomainService from "@domain/service/UserDomainService";
-import * as UserSchema from "helpers/JoiSchema/User";
+import { LogParamsDto, UserParamsDto } from "@domain/model/params"
+import UserDomainService from "@domain/service/UserDomainService"
+import * as UserSchema from "helpers/JoiSchema/User"
 import { checkPassword, hashPassword } from "helpers/Password/Password"
 import LogDomainService from "@domain/service/LogDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
@@ -8,15 +8,15 @@ import { AppDataSource } from "@infrastructure/mysql/connection"
 const prohibitedWords = require("indonesian-badwords")
 
 export default class UserAppService {
-    static async GetUserProfileService({id}) {
-        await UserSchema.GetUserProfile.validateAsync({id})
+    static async GetUserProfileService({ id }) {
+        await UserSchema.GetUserProfile.validateAsync({ id })
 
         const user = await UserDomainService.GetUserDataByIdDomain(id)
 
         return user
     }
 
-    static async UpdateUserProfileService(params: UserParamsDto.UpdateUserParams, logData: LogParamsDto.CreateLogParams){
+    static async UpdateUserProfileService(params: UserParamsDto.UpdateUserParams, logData: LogParamsDto.CreateLogParams) {
         await UserSchema.UpdateUserProfile.validateAsync(params)
 
         const db = AppDataSource
@@ -26,42 +26,37 @@ export default class UserAppService {
         try {
             await query_runner.startTransaction()
 
-            if (params.id < 1){
-                throw new Error ("User not found")
+            if (params.id < 1) {
+                throw new Error("User not found")
             }
-    
+
             const user = await UserDomainService.GetUserDataByIdDomain(params.id, query_runner)
-    
-            if (user.id < 1){
-                throw new Error ("User not found")
+
+            if (user.id < 1) {
+                throw new Error("User not found")
             }
-    
-            if (user.email != params.email){
+
+            if (user.email != params.email) {
                 let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email, query_runner)
                 if (userEmailExist.length > 0) {
-                    throw new Error ("Email is not available")
+                    throw new Error("Email is not available")
                 }
             }
-    
-            let banned = [
-                "SuperAdmin",
-                "Product Management Staff",
-                "User Management Staff",
-                "Shipping and Transaction Management Staff",
-            ]
-    
-            if (banned.includes(params.name) || prohibitedWords.flag(params.name)){
+
+            let banned = ["SuperAdmin", "Product Management Staff", "User Management Staff", "Shipping and Transaction Management Staff"]
+
+            if (banned.includes(params.name) || prohibitedWords.flag(params.name)) {
                 throw new Error("Banned words name")
             }
-    
+
             const obj: UserParamsDto.UpdateUserEditProfileParams = {
                 id: user.id,
                 email: params.email,
-                name: params.name
+                name: params.name,
             }
-    
+
             await UserDomainService.UpdateUserEditProfileDomainService(obj, query_runner)
-    
+
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
 

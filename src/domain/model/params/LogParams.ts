@@ -1,7 +1,7 @@
 export type CreateLogParams = {
-    user_id: number;
-    action: string;
-    ip: string;
-    browser: string;
-    time: number;
+    user_id: number
+    action: string
+    ip: string
+    browser: string
+    time: number
 }

@@ -1,4 +1,4 @@
-import { CreateShippingAddressRequest, UpdateShippingAddressRequest } from "../request/ShippingAddressRequest";
+import { CreateShippingAddressRequest, UpdateShippingAddressRequest } from "../request/ShippingAddressRequest"
 
 export type CreateShippingAddressParams = CreateShippingAddressRequest & {
     user_id: number
@@ -8,5 +8,5 @@ export type UpdateShippingAddressParams = UpdateShippingAddressRequest & {
 }
 
 export type GetUserShippingAddressByIdParams = {
-    user_id: number;
+    user_id: number
 }

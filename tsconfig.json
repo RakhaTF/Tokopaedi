@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "es5",
-      "es6"
-    ],
+    "lib": ["es5", "es6"],
     "target": "es2019",
     "module": "CommonJS",
     "moduleResolution": "node",
@@ -17,24 +14,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "@infrastructure/*": [
-        "./infrastructure/*"
-      ],
-      "@domain/*": [
-        "./domain/*"
-      ],
-      "@application/*": [
-        "./application/*"
-      ],
-      "@adapters/*": [
-        "./adapters/*"
-      ],
+      "@infrastructure/*": ["./infrastructure/*"],
+      "@domain/*": ["./domain/*"],
+      "@application/*": ["./application/*"],
+      "@adapters/*": ["./adapters/*"]
     }
   },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-  ]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules"]
 }

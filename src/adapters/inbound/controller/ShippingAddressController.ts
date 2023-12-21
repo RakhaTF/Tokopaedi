@@ -1,7 +1,7 @@
-import ShippingAddressAppService from "@application/service/ShippingAddress";
-import { CommonRequestDto, ShippingAddressRequestDto } from "@domain/model/request";
-import { FastifyRequest } from "fastify";
-import moment from "moment";
+import ShippingAddressAppService from "@application/service/ShippingAddress"
+import { CommonRequestDto, ShippingAddressRequestDto } from "@domain/model/request"
+import { FastifyRequest } from "fastify"
+import moment from "moment"
 
 export default class ShippingAddressController {
     static async CreateShippingAddress(request: FastifyRequest) {
@@ -9,9 +9,9 @@ export default class ShippingAddressController {
             const { id } = request.user
             const data = request.body as ShippingAddressRequestDto.CreateShippingAddressRequest
             const result = await ShippingAddressAppService.CreateShippingAddress(
-                { 
-                    ...data, 
-                    user_id: id 
+                {
+                    ...data,
+                    user_id: id,
                 },
                 {
                     user_id: id,
@@ -20,7 +20,7 @@ export default class ShippingAddressController {
                     browser: request.headers["user-agent"],
                     time: moment().unix(),
                 }
-                )
+            )
             return { message: result }
         } catch (error) {
             throw error
@@ -53,28 +53,26 @@ export default class ShippingAddressController {
         try {
             const user = request.user
             const { id } = request.body as { id: number }
-            const result = await ShippingAddressAppService.SoftDeleteShippingAddress(id, user.id,
-                {
-                    user_id: id,
-                    action: `Delete Shipping Address ${id}`,
-                    ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-                    browser: request.headers["user-agent"],
-                    time: moment().unix(),
-                })
+            const result = await ShippingAddressAppService.SoftDeleteShippingAddress(id, user.id, {
+                user_id: id,
+                action: `Delete Shipping Address ${id}`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"],
+                time: moment().unix(),
+            })
             return { message: result }
         } catch (error) {
             throw error
         }
-
     }
     static async UpdateShippingAddress(request: FastifyRequest) {
         try {
             const { id } = request.user
             const updateData = request.body as ShippingAddressRequestDto.UpdateShippingAddressRequest
             const result = await ShippingAddressAppService.UpdateShippingAddress(
-                { 
-                    ...updateData, 
-                    user_id: id 
+                {
+                    ...updateData,
+                    user_id: id,
                 },
                 {
                     user_id: id,
@@ -83,7 +81,7 @@ export default class ShippingAddressController {
                     browser: request.headers["user-agent"],
                     time: moment().unix(),
                 }
-                )
+            )
             return { message: result }
         } catch (error) {
             throw error

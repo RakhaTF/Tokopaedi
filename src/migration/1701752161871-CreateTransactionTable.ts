@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
 export class CreateTransactionTable1701752161871 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             CREATE TABLE transaction (
@@ -20,13 +19,12 @@ export class CreateTransactionTable1701752161871 implements MigrationInterface {
                 FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
                 FOREIGN KEY (shipping_address_id) REFERENCES shipping_address(id) ON DELETE SET NULL
             )
-        `);
+        `)
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             DROP TABLE transaction
-        `);
+        `)
     }
-
 }

@@ -1,6 +1,6 @@
-import LogAppService from "@application/service/Log";
-import { CommonRequestDto } from "@domain/model/request";
-import { FastifyRequest } from "fastify";
+import LogAppService from "@application/service/Log"
+import { CommonRequestDto } from "@domain/model/request"
+import { FastifyRequest } from "fastify"
 
 export default class LogController {
     static async GetSystemLog(request: FastifyRequest) {
@@ -9,7 +9,7 @@ export default class LogController {
             const logList = await LogAppService.GetSystemLog(paginationRequest)
             return { message: logList }
         } catch (error) {
-            throw error;
+            throw error
         }
     }
 }

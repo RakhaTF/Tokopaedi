@@ -1,5 +1,5 @@
-import { DataSource } from "typeorm";
-import "dotenv/config";
+import { DataSource } from "typeorm"
+import "dotenv/config"
 
 export const AppDataSource = new DataSource({
     type: process.env.DB_IDENTIFIER as "mysql",
@@ -12,6 +12,6 @@ export const AppDataSource = new DataSource({
     migrationsTableName: "custom_migration_table",
     timezone: "+07:00",
     logging: true,
-    logger: 'file',
+    logger: "file",
     migrationsRun: true,
-});
+})

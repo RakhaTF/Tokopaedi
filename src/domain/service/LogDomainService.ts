@@ -1,7 +1,7 @@
-import LogRepository from "@adapters/outbound/repository/LogRepository";
-import { LogParamsDto } from "@domain/model/params";
-import { RepoPaginationParams } from "key-pagination-sql";
-import { QueryRunner } from "typeorm";
+import LogRepository from "@adapters/outbound/repository/LogRepository"
+import { LogParamsDto } from "@domain/model/params"
+import { RepoPaginationParams } from "key-pagination-sql"
+import { QueryRunner } from "typeorm"
 
 export default class LogDomainService {
     static async CreateLogDomain(params: LogParamsDto.CreateLogParams, query_runner?: QueryRunner) {
@@ -10,7 +10,7 @@ export default class LogDomainService {
             throw new Error("Failed to insert log.")
         }
     }
-    
+
     static async GetSystemLogDomain(params: RepoPaginationParams) {
         const logList = await LogRepository.GetSystemLog(params)
         if (logList.length < 1) {

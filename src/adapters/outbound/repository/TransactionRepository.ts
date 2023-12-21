@@ -1,9 +1,9 @@
-import { AppDataSource } from "@infrastructure/mysql/connection";
-import { TransactionResponseDto } from "@domain/model/response";
-import { TransactionParamsDto } from "@domain/model/params";
-import { QueryRunner } from "typeorm";
+import { AppDataSource } from "@infrastructure/mysql/connection"
+import { TransactionResponseDto } from "@domain/model/response"
+import { TransactionParamsDto } from "@domain/model/params"
+import { QueryRunner } from "typeorm"
 import { ResultSetHeader } from "mysql2"
-import { RepoPaginationParams } from "key-pagination-sql";
+import { RepoPaginationParams } from "key-pagination-sql"
 const db = AppDataSource
 
 export default class TransactionRepository {
@@ -128,7 +128,8 @@ export default class TransactionRepository {
     }
 
     static async DBGetTransactionDetail(id: number): Promise<TransactionResponseDto.TransactionDetailQueryResult[]> {
-        return await db.query(`
+        return await db.query(
+            `
         SELECT u.id AS user_id,
                 t.id AS transaction_id,
                 COALESCE(u.name, 'Not Available') AS name,
@@ -181,17 +182,18 @@ export default class TransactionRepository {
             LEFT JOIN shipping_address sa  ON t.shipping_address_id = sa.id
             WHERE t.id = ?
             GROUP BY t.id
-    `,[id])
+    `,
+            [id]
+        )
     }
 
     static async DBSoftDeleteTransaction(transaction_id: number, query_runner?: QueryRunner) {
         return await db.query<ResultSetHeader>(`UPDATE transaction SET is_deleted = 1 WHERE id = ?`, [transaction_id], query_runner)
     }
 
-    static async DBGetUserTransactionListById(userid: number, paginationParams: RepoPaginationParams): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]>{
-
+    static async DBGetUserTransactionListById(userid: number, paginationParams: RepoPaginationParams): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]> {
         const { limit, sort, whereClause } = paginationParams
-        
+
         return db.query<TransactionResponseDto.GetTransactionListByIdResponse[]>(
             `SELECT t.id,
             t.user_id,
@@ -209,32 +211,41 @@ export default class TransactionRepository {
         AND user_id = ?
         AND t.is_deleted <> 1
         ORDER BY t.id ${sort}
-        LIMIT ?`, [userid, limit + 1])
+        LIMIT ?`,
+            [userid, limit + 1]
+        )
     }
 
     static async DBUpdateDeliveryStatus(params: TransactionParamsDto.UpdateDeliveryStatusParams, query_runner?: QueryRunner) {
         const { is_delivered, status, transaction_id, updated_at } = params
-        
+
         const query = `UPDATE delivery_status SET status = ?, is_delivered = ?, updated_at = ? WHERE transaction_id = ?`
         return await db.query<ResultSetHeader>(query, [status, is_delivered, updated_at, transaction_id], query_runner)
     }
 
     static async DBUpateTransactionStatus(params: TransactionParamsDto.UpdateTransactionStatusParams, query_runner?: QueryRunner) {
         const { status, transaction_id, updated_at } = params
-        return await db.query<ResultSetHeader>(`
-        UPDATE transaction_status SET status = ?, update_time = ? WHERE transaction_id = ?`, [status, updated_at, transaction_id], query_runner)
+        return await db.query<ResultSetHeader>(
+            `
+        UPDATE transaction_status SET status = ?, update_time = ? WHERE transaction_id = ?`,
+            [status, updated_at, transaction_id],
+            query_runner
+        )
     }
 
-    static async DBGetTransactionStatus(transaction_id: number): Promise<TransactionResponseDto.GetTransactionStatusResponse[]> { 
-        return await db.query(`
+    static async DBGetTransactionStatus(transaction_id: number): Promise<TransactionResponseDto.GetTransactionStatusResponse[]> {
+        return await db.query(
+            `
         SELECT ts.status FROM transaction_status ts
         RIGHT JOIN transaction t
             ON ts.transaction_id = t.id
         WHERE t.id = ? AND t.is_deleted <> 1
-        `, [transaction_id])
+        `,
+            [transaction_id]
+        )
     }
 
-    static async DBGetAllPendingTransaction(): Promise<TransactionResponseDto.GetAllPendingTransactionResponse[]>{
+    static async DBGetAllPendingTransaction(): Promise<TransactionResponseDto.GetAllPendingTransactionResponse[]> {
         return await db.query(`SELECT t.id, t.created_at, t.expire_at FROM transaction t WHERE t.is_paid = 0 AND t.is_deleted <> 1`)
     }
 

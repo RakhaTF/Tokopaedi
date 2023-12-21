@@ -1,26 +1,26 @@
-import { User } from "@domain/model/BaseClass/User";
-import { UserClaimsResponse } from "@domain/model/response/UserResponse";
+import { User } from "@domain/model/BaseClass/User"
+import { UserClaimsResponse } from "@domain/model/response/UserResponse"
 import { FastifyRequest } from "fastify"
-import { verifyJWT } from "helpers/jwt/jwt";
-import Joi from "joi";
+import { verifyJWT } from "helpers/jwt/jwt"
+import Joi from "joi"
 
-declare module 'fastify' {
+declare module "fastify" {
     interface FastifyRequest {
-        user: User;
+        user: User
     }
 }
 
 type AuthorizeParams = {
-    rules: number;
-    user_level: number;
-    user_authority: number[];
-};
-
-if (!process.env.SUPER_ADMIN_LEVEL || process.env.SUPER_ADMIN_LEVEL == "") {
-    throw new Error("Please set Super Admin Level");
+    rules: number
+    user_level: number
+    user_authority: number[]
 }
 
-let superadmin_level = parseInt(process.env.SUPER_ADMIN_LEVEL || "0");
+if (!process.env.SUPER_ADMIN_LEVEL || process.env.SUPER_ADMIN_LEVEL == "") {
+    throw new Error("Please set Super Admin Level")
+}
+
+let superadmin_level = parseInt(process.env.SUPER_ADMIN_LEVEL || "0")
 
 function authorize(data: AuthorizeParams): number {
     try {
@@ -28,32 +28,29 @@ function authorize(data: AuthorizeParams): number {
             rules: Joi.number().required(),
             user_level: Joi.number().required(),
             user_authority: Joi.array().items(Joi.number()).required(),
-        });
+        })
 
-        const res = schema.validate(data);
+        const res = schema.validate(data)
         if (res.error) {
-            return 0;
+            return 0
         }
 
-        if (
-            data.user_authority.length < 1 &&
-            superadmin_level != data.user_level
-        ) {
-            return 0;
+        if (data.user_authority.length < 1 && superadmin_level != data.user_level) {
+            return 0
         }
 
         if (superadmin_level == data.user_level) {
-            return 1;
+            return 1
         }
 
         if (data.user_authority.includes(data.rules)) {
-            return 1;
+            return 1
         }
 
-        return 0;
+        return 0
     } catch (x_x) {
-        console.log(x_x);
-        return 0;
+        console.log(x_x)
+        return 0
     }
 }
 
@@ -62,7 +59,7 @@ export async function AuthValidate(request: FastifyRequest) {
         const user = new User()
 
         if (!request.headers || !request.headers.authorization || request.headers.authorization == "") {
-            throw new Error("PLEASE_LOGIN_FIRST");
+            throw new Error("PLEASE_LOGIN_FIRST")
         }
 
         //Verifying Token
@@ -70,14 +67,13 @@ export async function AuthValidate(request: FastifyRequest) {
         const checkClaims = Joi.object({
             id: Joi.number().required(),
             level: Joi.number().required(),
-            authority: Joi.array().items(Joi.number()).required()
+            authority: Joi.array().items(Joi.number()).required(),
         }).unknown(true)
 
-        await checkClaims.validateAsync(user_claims);
+        await checkClaims.validateAsync(user_claims)
 
         user.set(user_claims)
         request.user = user
-
     } catch (error) {
         throw error
     }
@@ -85,9 +81,9 @@ export async function AuthValidate(request: FastifyRequest) {
 
 export function CheckAuthAdmin({ rules }: { rules: number }) {
     return async function (request: FastifyRequest) {
-        const user = request.user;
+        const user = request.user
         if (user.id < 1) {
-            throw new Error("PLEASE_LOGIN_FIRST");
+            throw new Error("PLEASE_LOGIN_FIRST")
         }
         if (rules) {
             if (
@@ -97,7 +93,7 @@ export function CheckAuthAdmin({ rules }: { rules: number }) {
                     user_authority: user.authority,
                 })
             ) {
-                throw new Error("NOT_ENOUGH_RIGHTS");
+                throw new Error("NOT_ENOUGH_RIGHTS")
             }
         }
     }

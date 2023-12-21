@@ -6,9 +6,9 @@ import ProductDomainService from "@domain/service/ProductDomainService"
 import { CommonRequestDto, TransactionRequestDto } from "@domain/model/request"
 import { TransactionResponseDto } from "@domain/model/response"
 import moment from "moment-timezone"
-import * as CommonSchema from "helpers/JoiSchema/Common";
-import unicorn from "format-unicorn/safe";
-import { GenerateWhereClause, Paginate } from "key-pagination-sql";
+import * as CommonSchema from "helpers/JoiSchema/Common"
+import unicorn from "format-unicorn/safe"
+import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import LogDomainService from "@domain/service/LogDomainService"
 import { Product } from "@domain/model/BaseClass/Product"
 import { QueryRunner } from "typeorm"
@@ -36,7 +36,7 @@ export default class TransactionAppService {
 
             //Additional layer of checking the product stock, if it's 0, user can't buy it & throw error.
             //If the user trying to buy more than the available stock, will throw the same error
-            if(product.stock === 0 || product.stock < qty[i]){
+            if (product.stock === 0 || product.stock < qty[i]) {
                 throw new Error(`Product ${product.name} is out of stock!`)
             }
 
@@ -44,10 +44,10 @@ export default class TransactionAppService {
         }
 
         /*
-        * declare transaction expiration time based on when transaction is created, default is 30 minutes. 
-        * if expired, transaction will be deleted.
-        */
-        const transactionExpireAt = moment.unix(params.created_at).add(30, 'minutes').unix()
+         * declare transaction expiration time based on when transaction is created, default is 30 minutes.
+         * if expired, transaction will be deleted.
+         */
+        const transactionExpireAt = moment.unix(params.created_at).add(30, "minutes").unix()
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
@@ -158,7 +158,7 @@ export default class TransactionAppService {
                 },
                 query_runner
             )
-            
+
             //insert to log to track user action
             await LogDomainService.CreateLogDomain(logData, query_runner)
 
@@ -247,8 +247,8 @@ export default class TransactionAppService {
             }
         })
 
-        const paid_at = moment.unix(txnDetail.paid_at).tz('Asia/Jakarta').format("YYYY-MM-DD HH:mm:ss")
-        const created_at = moment.unix(txnDetail.created_at).tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss')
+        const paid_at = moment.unix(txnDetail.paid_at).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
+        const created_at = moment.unix(txnDetail.created_at).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
 
         const transaction: TransactionResponseDto.TransactionDetailResult = {
             user_id: txnDetail.user_id,
@@ -269,22 +269,21 @@ export default class TransactionAppService {
                 province: txnDetail.province,
                 country: txnDetail.country,
             },
-            created_at
+            created_at,
         }
         return transaction
     }
 
-    static async GetUserTransactionListByIdService({userid}: TransactionParamsDto.GetUserTransactionListByIdParams, paginationParams: CommonRequestDto.PaginationRequest) {
+    static async GetUserTransactionListByIdService({ userid }: TransactionParamsDto.GetUserTransactionListByIdParams, paginationParams: CommonRequestDto.PaginationRequest) {
         await CommonSchema.Pagination.validateAsync(paginationParams)
         const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
-        
-        
+
         /*
         search filter, to convert filter field into sql string
         e.g: ({payment} = "Credit Card" AND {items_price} > 1000) will turn into ((t.payment_method = "Credit Card" AND t.items_price > 1000))
         every field name need to be inside {}
         */
-       let searchFilter = search || ""
+        let searchFilter = search || ""
         searchFilter = unicorn(searchFilter, {
             payment: "t.payment_method",
             shipped_to: "t.shipping_address_id",
@@ -296,12 +295,12 @@ export default class TransactionAppService {
 
         //Generate whereClause
         const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "t", tablePK: "id" })
-        
+
         const transactionList = await TransactionDomainService.GetUserTransactionListByIdDomain(userid, { whereClause, limit: Number(limit), sort })
 
         //Generate pagination
         const result = Paginate({ data: transactionList, limit })
-        
+
         return result
     }
 
@@ -317,7 +316,7 @@ export default class TransactionAppService {
         const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
             status: 1, //0 = pending (default), 1 = approved, 2 = rejected
             transaction_id: transactionDetail.transaction_id,
-            updated_at: moment().unix()
+            updated_at: moment().unix(),
         }
 
         const db = AppDataSource
@@ -349,7 +348,7 @@ export default class TransactionAppService {
         const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
             status: 2, //0 = pending (default), 1 = approved, 2 = rejected
             transaction_id,
-            updated_at: moment().unix()
+            updated_at: moment().unix(),
         }
 
         const db = AppDataSource
@@ -385,11 +384,11 @@ export default class TransactionAppService {
         if (transactionStatus.status !== 1) {
             switch (transactionStatus.status) {
                 case 0:
-                    throw new Error("Please approve the transaction first!");
+                    throw new Error("Please approve the transaction first!")
                 case 2:
-                    throw new Error("This transaction is rejected!");
+                    throw new Error("This transaction is rejected!")
                 default:
-                    throw new Error("Invalid transaction status!");
+                    throw new Error("Invalid transaction status!")
             }
         }
 
@@ -397,7 +396,7 @@ export default class TransactionAppService {
             transaction_id,
             is_delivered, // 0 = pending, 1 = delivered
             status, //0 = Pending, 1 = On Delivery, 2 = Delivered, 3 = Rejected
-            updated_at: moment().unix()
+            updated_at: moment().unix(),
         }
 
         const db = AppDataSource
@@ -445,7 +444,7 @@ export default class TransactionAppService {
             throw error
         }
     }
-  
+
     static async SoftDeleteTransaction(transaction_id: number, logData: LogParamsDto.CreateLogParams) {
         await TransactionSchema.TransactionId.validateAsync(transaction_id)
 
@@ -466,7 +465,7 @@ export default class TransactionAppService {
 
             await query_runner.commitTransaction()
             await query_runner.release()
-            return true;
+            return true
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
@@ -478,11 +477,11 @@ export default class TransactionAppService {
         const pendingTransaction = await TransactionDomainService.GetAllPendingTransactionDomain()
 
         /*
-        * Check if there are expired transaction, if the difference between expire_at and now in timestamp is <= 0,
-        * The transaction is expired.
-        */
+         * Check if there are expired transaction, if the difference between expire_at and now in timestamp is <= 0,
+         * The transaction is expired.
+         */
         const now = moment().unix()
-        const expiredTx = pendingTransaction.filter((tx) => moment.unix(tx.expire_at).diff(moment.unix(now), 'minutes') <= 0)
+        const expiredTx = pendingTransaction.filter((tx) => moment.unix(tx.expire_at).diff(moment.unix(now), "minutes") <= 0)
 
         if (expiredTx.length > 0) {
             const db = AppDataSource
@@ -521,12 +520,11 @@ export default class TransactionAppService {
             user_id: 1,
             action: `Restore Stock of Product Bought From Transaction #${tx.id}`,
             browser: `CRON JOB`,
-            ip: '127.0.0.1',
-            time: moment().unix()
+            ip: "127.0.0.1",
+            time: moment().unix(),
         }
         await LogDomainService.CreateLogDomain(logDataRestoreStock, query_runner)
-        
-        
+
         //delete the transaction after successfully restore the stock
         await TransactionDomainService.SoftDeleteTransactionDomain(tx.id, query_runner)
         //Insert into log to track cron job action.
@@ -534,8 +532,8 @@ export default class TransactionAppService {
             user_id: 1,
             action: `Delete Expired Transaction #${tx.id}`,
             browser: `CRON JOB`,
-            ip: '127.0.0.1',
-            time: moment().unix()
+            ip: "127.0.0.1",
+            time: moment().unix(),
         }
         await LogDomainService.CreateLogDomain(logDataDeleteTx, query_runner)
     }

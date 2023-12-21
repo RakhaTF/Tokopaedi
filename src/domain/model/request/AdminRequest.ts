@@ -1,55 +1,55 @@
 export type CreateUserRequest = {
-    name: string;
-    email: string;
-    password: string;
+    name: string
+    email: string
+    password: string
 }
 
 export type UpdateUserProfileRequest = {
-    userid: number;
-    name: string;
-    email: string;
+    userid: number
+    name: string
+    email: string
 }
 
 export type UpdateProfileRequest = {
-    name: string;
-    email: string;
+    name: string
+    email: string
 }
 
 export type DeleteUserRequest = {
-    email: string;
+    email: string
 }
 
 export type GetUserDetailProfileRequest = {
-    email: string;
+    email: string
 }
 
 export type UpdateRuleRequest = {
-    rule: string;
-    rules_id: number;
+    rule: string
+    rules_id: number
 }
 
 export type AssignRuleRequest = {
-    group_id: number;
-    rules_id: number;
+    group_id: number
+    rules_id: number
 }
 
 export type RevokeRuleRequest = {
-    group_id: number;
-    rules_id: number;
+    group_id: number
+    rules_id: number
 }
 
 export type ChangeUserPassRequest = {
-    userid: number;
-    password: string;
-    confirmPassword: string;
+    userid: number
+    password: string
+    confirmPassword: string
 }
 
 export type ChangePasswordRequest = {
-    oldPassword: string;
-    newPassword: string;
+    oldPassword: string
+    newPassword: string
 }
 
 export type UpdateUserLevelRequest = {
-    user_id: number;
-    level: number;
+    user_id: number
+    level: number
 }

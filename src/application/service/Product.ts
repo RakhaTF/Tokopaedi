@@ -1,11 +1,11 @@
-import { Product } from "@domain/model/BaseClass/Product";
-import { CommonRequestDto, ProductRequestDto } from "@domain/model/request";
-import ProductDomainService from "@domain/service/ProductDomainService";
-import * as ProductSchema from "helpers/JoiSchema/Product";
-import * as CommonSchema from "helpers/JoiSchema/Common";
-import unicorn from "format-unicorn/safe";
-import { GenerateWhereClause, Paginate } from "key-pagination-sql";
-import { LogParamsDto } from "@domain/model/params";
+import { Product } from "@domain/model/BaseClass/Product"
+import { CommonRequestDto, ProductRequestDto } from "@domain/model/request"
+import ProductDomainService from "@domain/service/ProductDomainService"
+import * as ProductSchema from "helpers/JoiSchema/Product"
+import * as CommonSchema from "helpers/JoiSchema/Common"
+import unicorn from "format-unicorn/safe"
+import { GenerateWhereClause, Paginate } from "key-pagination-sql"
+import { LogParamsDto } from "@domain/model/params"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import LogDomainService from "@domain/service/LogDomainService"
 
@@ -22,7 +22,7 @@ export default class ProductAppService {
         let searchFilter = search || ""
         searchFilter = unicorn(searchFilter, {
             name: "p.name",
-            price: "p.price"
+            price: "p.price",
         })
 
         //Generate whereClause
@@ -32,7 +32,7 @@ export default class ProductAppService {
 
         //Generate pagination
         const result = Paginate({ data: product, limit })
-        
+
         return result
     }
 
@@ -46,11 +46,10 @@ export default class ProductAppService {
 
         //additional checking to prevent mutate deleted data.
         await ProductDomainService.CheckIsProductAliveDomain(id)
-        
+
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
-
 
         try {
             await query_runner.startTransaction()
@@ -62,14 +61,14 @@ export default class ProductAppService {
 
             await query_runner.commitTransaction()
             await query_runner.release()
-            return true;
+            return true
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
             throw error
         }
     }
-    
+
     static async CreateProduct(product: ProductRequestDto.CreateProductRequest, logData: LogParamsDto.CreateLogParams) {
         await ProductSchema.CreateProduct.validateAsync(product)
 
@@ -86,8 +85,8 @@ export default class ProductAppService {
 
             await query_runner.commitTransaction()
             await query_runner.release()
-        
-            return true;
+
+            return true
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
@@ -112,21 +111,21 @@ export default class ProductAppService {
             const existingProduct = await ProductDomainService.GetProductDetailDomain(id, query_runner)
 
             let updateProductData: Partial<Product> = existingProduct
-            if(name || description || price || stock){
-                if (name) updateProductData.name = name;
-                if (description) updateProductData.description = description;
-                if (price) updateProductData.price = price;
-                if (stock) updateProductData.stock = stock;
+            if (name || description || price || stock) {
+                if (name) updateProductData.name = name
+                if (description) updateProductData.description = description
+                if (price) updateProductData.price = price
+                if (stock) updateProductData.stock = stock
             }
 
-            await ProductDomainService.UpdateProductDomain({...updateProductData, id}, query_runner)
-            
+            await ProductDomainService.UpdateProductDomain({ ...updateProductData, id }, query_runner)
+
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
 
             await query_runner.commitTransaction()
             await query_runner.release()
-            return true;
+            return true
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()

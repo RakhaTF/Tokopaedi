@@ -1,5 +1,5 @@
-import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify";
-import ProductController from "@adapters/inbound/controller/ProductController";
+import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
+import ProductController from "@adapters/inbound/controller/ProductController"
 import * as Schema from "helpers/ApiSchema/ApiSchema"
 
 const routes: RouteOptions[] = [
@@ -35,18 +35,15 @@ const routes: RouteOptions[] = [
                     name: { type: "string" },
                     description: { type: "string" },
                     price: { type: "integer" },
-                    stock: { type: "integer" }
-                }
-            })
-        }
-    }
+                    stock: { type: "integer" },
+                },
+            }),
+        },
+    },
 ]
 
-export default async function ProductRoute(
-    fastify: FastifyInstance,
-    options: FastifyPluginOptions
-) {
+export default async function ProductRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
     for (const route of routes) {
-        fastify.route({ ...route, config: options });
+        fastify.route({ ...route, config: options })
     }
 }

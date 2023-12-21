@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
 export class CreateUserTable1701752140433 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             CREATE TABLE user (
@@ -14,13 +13,12 @@ export class CreateUserTable1701752140433 implements MigrationInterface {
                 is_deleted TINYINT(1) DEFAULT '0' COMMENT '0 = false, 1 = true',
                 FOREIGN KEY (level) REFERENCES user_groups(level_id)
             )
-        `);
+        `)
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             DROP TABLE user
-        `);
+        `)
     }
-
 }
