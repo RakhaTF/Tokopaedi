@@ -1,14 +1,14 @@
-import { PaginationParamsDto } from "@domain/model/params";
 import { ProductRequestDto } from "@domain/model/request";
 import { ProductResponseDto } from "@domain/model/response";
 import { AppDataSource } from "@infrastructure/mysql/connection";
+import { RepoPaginationParams } from "key-pagination-sql";
 import { ResultSetHeader } from "mysql2";
 import { QueryRunner } from "typeorm";
 
 const db = AppDataSource;
 
 export default class ProductRepository {
-    static async DBGetProductList(params: PaginationParamsDto.RepoPaginationParams) {
+    static async DBGetProductList(params: RepoPaginationParams) {
         const { limit, sort, whereClause } = params
         return await db.query<ProductResponseDto.ProductListResponse>(`
         SELECT p.id, p.name, p.description, p.price, p.stock

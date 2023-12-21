@@ -1,5 +1,6 @@
 import AdminRepository from "@adapters/outbound/repository/AdminRepository"
-import { AdminParamsDto, PaginationParamsDto } from "@domain/model/params"
+import { AdminParamsDto } from "@domain/model/params"
+import { RepoPaginationParams } from "key-pagination-sql"
 import { QueryRunner } from "typeorm"
 
 export default class AdminDomainService {
@@ -19,7 +20,7 @@ export default class AdminDomainService {
         return true
     }
 
-    static async GetUserListDomain(params: PaginationParamsDto.RepoPaginationParams){
+    static async GetUserListDomain(params: RepoPaginationParams){
         const result = await AdminRepository.DBGetUserList(params)
         if (result.length < 1){
             throw new Error ("Empty User")
@@ -99,11 +100,11 @@ export default class AdminDomainService {
         return true
     }
 
-    static async GetTransactionListDomain(paginationParams: PaginationParamsDto.RepoPaginationParams) {
+    static async GetTransactionListDomain(paginationParams: RepoPaginationParams) {
         return await AdminRepository.DBGetTransactionList(paginationParams)
     }
 
-    static async GetUserShippingAddressDomain(paginationParams: PaginationParamsDto.RepoPaginationParams){
+    static async GetUserShippingAddressDomain(paginationParams: RepoPaginationParams){
         return await AdminRepository.DBGetUserShippingAddress(paginationParams)
     }
 

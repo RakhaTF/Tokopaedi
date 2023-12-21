@@ -1,6 +1,7 @@
-import { PaginationParamsDto, ShippingAddressParamsDto } from "@domain/model/params";
+import { ShippingAddressParamsDto } from "@domain/model/params";
 import { ShippingAddressResponseDto } from "@domain/model/response";
 import { AppDataSource } from "@infrastructure/mysql/connection";
+import { RepoPaginationParams } from "key-pagination-sql";
 import { ResultSetHeader } from 'mysql2'
 import { QueryRunner } from "typeorm";
 const db = AppDataSource;
@@ -19,7 +20,7 @@ export class ShippingAddressRepository {
         SELECT id, user_id, address, postal_code, city, province, country FROM shipping_address WHERE id = ?`, [id], query_runner)
     }
 
-    static async DBGetShippingAddressList(user_id: number, paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<ShippingAddressResponseDto.ShippingAddressResponse[]> {
+    static async DBGetShippingAddressList(user_id: number, paginationParams: RepoPaginationParams): Promise<ShippingAddressResponseDto.ShippingAddressResponse[]> {
         const { limit, sort, whereClause } = paginationParams
 
         return await db.query<ShippingAddressResponseDto.ShippingAddressResponse[]>(`
@@ -44,7 +45,7 @@ export class ShippingAddressRepository {
         return await db.query<{ id: number }[]>(`SELECT s.id FROM shipping_address s WHERE s.is_deleted <> 1 AND s.id = ?`, [id])
     }
 
-    static async DBGetUserShippingAddressById(user_id: number, paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<ShippingAddressResponseDto.GetUserShippingAddressById[]> {
+    static async DBGetUserShippingAddressById(user_id: number, paginationParams: RepoPaginationParams): Promise<ShippingAddressResponseDto.GetUserShippingAddressById[]> {
         const { limit, sort, whereClause } = paginationParams
 
         return await db.query<ShippingAddressResponseDto.ShippingAddressResponse[]>(`

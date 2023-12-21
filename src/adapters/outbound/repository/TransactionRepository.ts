@@ -1,8 +1,9 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import { TransactionResponseDto } from "@domain/model/response";
-import { PaginationParamsDto, TransactionParamsDto } from "@domain/model/params";
+import { TransactionParamsDto } from "@domain/model/params";
 import { QueryRunner } from "typeorm";
 import { ResultSetHeader } from "mysql2"
+import { RepoPaginationParams } from "key-pagination-sql";
 const db = AppDataSource
 
 export default class TransactionRepository {
@@ -187,7 +188,7 @@ export default class TransactionRepository {
         return await db.query<ResultSetHeader>(`UPDATE transaction SET is_deleted = 1 WHERE id = ?`, [transaction_id], query_runner)
     }
 
-    static async DBGetUserTransactionListById(userid: number, paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]>{
+    static async DBGetUserTransactionListById(userid: number, paginationParams: RepoPaginationParams): Promise<TransactionResponseDto.GetTransactionListByIdResponse[]>{
 
         const { limit, sort, whereClause } = paginationParams
         

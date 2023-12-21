@@ -1,11 +1,11 @@
 import ProductRepository from "@adapters/outbound/repository/ProductRepository";
 import { Product } from "@domain/model/BaseClass/Product";
-import { PaginationParamsDto } from "@domain/model/params";
 import { ProductRequestDto } from "@domain/model/request";
+import { RepoPaginationParams } from "key-pagination-sql";
 import { QueryRunner } from "typeorm";
 
 export default class ProductDomainService {
-    static async GetProductListDomain(params: PaginationParamsDto.RepoPaginationParams){
+    static async GetProductListDomain(params: RepoPaginationParams){
         const productList = await ProductRepository.DBGetProductList(params)
         if(productList.length < 1){
             throw new Error("Product is empty!")

@@ -1,8 +1,9 @@
 import { AppDataSource } from "@infrastructure/mysql/connection";
 import { AdminResponseDto } from "@domain/model/response";
-import { AdminParamsDto, PaginationParamsDto } from "@domain/model/params";
+import { AdminParamsDto } from "@domain/model/params";
 import { ResultSetHeader } from "mysql2";
 import { QueryRunner } from "typeorm";
+import { RepoPaginationParams } from "key-pagination-sql";
 
 const db = AppDataSource;
 
@@ -24,7 +25,7 @@ export default class AdminRepository {
         return result
     }
 
-    static async DBGetUserList(paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<AdminResponseDto.GetUserListResponse[]> {
+    static async DBGetUserList(paginationParams: RepoPaginationParams): Promise<AdminResponseDto.GetUserListResponse[]> {
         const { limit, sort, whereClause } = paginationParams
 
         const result = await db.query<AdminResponseDto.GetUserListResponse[]>(`
@@ -119,7 +120,7 @@ export default class AdminRepository {
         return db.query(`UPDATE user SET password = ? WHERE id = ?`, [encryptPass, userid], query_runner)
     }
 
-    static async DBGetTransactionList(paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<AdminResponseDto.GetTransactionListResponse[]> {
+    static async DBGetTransactionList(paginationParams: RepoPaginationParams): Promise<AdminResponseDto.GetTransactionListResponse[]> {
         const { limit, sort, whereClause } = paginationParams
 
         return db.query<AdminResponseDto.GetTransactionListResponse[]>(`SELECT t.id,
@@ -139,7 +140,7 @@ export default class AdminRepository {
         LIMIT ?`, [limit + 1])
     }
 
-    static async DBGetUserShippingAddress( paginationParams: PaginationParamsDto.RepoPaginationParams): Promise<AdminResponseDto.GetUserShippingAddressResponse[]>{
+    static async DBGetUserShippingAddress( paginationParams: RepoPaginationParams): Promise<AdminResponseDto.GetUserShippingAddressResponse[]>{
         const { limit, sort, whereClause } = paginationParams
 
         return db.query<AdminResponseDto.GetUserShippingAddressResponse[]>(
