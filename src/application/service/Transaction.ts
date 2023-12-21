@@ -525,10 +525,19 @@ export default class TransactionAppService {
             time: moment().unix()
         }
         await LogDomainService.CreateLogDomain(logDataRestoreStock, query_runner)
-
-
+        
+        
         //delete the transaction after successfully restore the stock
         await TransactionDomainService.SoftDeleteTransactionDomain(tx.id, query_runner)
+        //Insert into log to track cron job action.
+        const logDataDeleteTx: LogParamsDto.CreateLogParams = {
+            user_id: 1,
+            action: `Delete Expired Transaction #${tx.id}`,
+            browser: `CRON JOB`,
+            ip: '127.0.0.1',
+            time: moment().unix()
+        }
+        await LogDomainService.CreateLogDomain(logDataDeleteTx, query_runner)
     }
 
     static async RestoreProductStock(id: number, qty: number, query_runner: QueryRunner) {
