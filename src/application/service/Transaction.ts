@@ -28,12 +28,19 @@ export default class TransactionAppService {
             throw new Error("Please pay your current transaction.")
         }
 
-        const products = await ProductDomainService.GetProductsPricesDomain(product_id)
+        const products = await ProductDomainService.GetProductsPricesAndStockDomain(product_id)
         //looping to get total of items price
         let items_price = 0
         for (let i = 0; i < product_id.length; i++) {
             const product = products.find((p) => p.id === product_id[i])
-            items_price += parseFloat(product.price) * qty[i]
+
+            //Additional layer of checking the product stock, if it's 0, user can't buy it & throw error.
+            //If the user trying to buy more than the available stock, will throw the same error
+            if(product.stock === 0 || product.stock < qty[i]){
+                throw new Error(`Product ${product.name} is out of stock!`)
+            }
+
+            items_price += parseFloat(product.price.toString()) * qty[i]
         }
 
         /*
@@ -111,7 +118,7 @@ export default class TransactionAppService {
         await TransactionDomainService.CheckIsTransactionAliveDomain(order_id)
 
         // Fetch the current product details
-        const product = await ProductDomainService.GetProductsPricesDomain([product_id])
+        const product = await ProductDomainService.GetProductsPricesAndStockDomain([product_id])
 
         // Fetch the current order details
         const currentOrder = await TransactionDomainService.GetCurrentTransactionDetailDomain(order_id)
@@ -123,7 +130,7 @@ export default class TransactionAppService {
         const qtyDifference = qty - currentProductOrder.qty
 
         // Calculate the difference in price
-        const priceDifference = parseFloat(product[0].price) * qtyDifference
+        const priceDifference = parseFloat(product[0].price.toString()) * qtyDifference
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
@@ -508,6 +515,17 @@ export default class TransactionAppService {
         //restore product stock from expired transaction.
         const updateProductPromises = productId.map((id, index) => this.RestoreProductStock(Number(id), Number(productQty[index]), query_runner))
         await Promise.all(updateProductPromises)
+
+        //Insert into log to track cron job action.
+        const logDataRestoreStock: LogParamsDto.CreateLogParams = {
+            user_id: 1,
+            action: `Restore Stock of Product Bought From Transaction #${tx.id}`,
+            browser: `CRON JOB`,
+            ip: '127.0.0.1',
+            time: moment().unix()
+        }
+        await LogDomainService.CreateLogDomain(logDataRestoreStock, query_runner)
+
 
         //delete the transaction after successfully restore the stock
         await TransactionDomainService.SoftDeleteTransactionDomain(tx.id, query_runner)

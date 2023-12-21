@@ -1,4 +1,5 @@
 import ProductRepository from "@adapters/outbound/repository/ProductRepository";
+import { Product } from "@domain/model/BaseClass/Product";
 import { PaginationParamsDto } from "@domain/model/params";
 import { ProductRequestDto } from "@domain/model/request";
 import { QueryRunner } from "typeorm";
@@ -42,12 +43,18 @@ export default class ProductDomainService {
         return newProduct
     }
 
-    static async GetProductsPricesDomain(ids: number[]) {
-        const products = [];
+    static async GetProductsPricesAndStockDomain(ids: number[]) {
+        const products: Product[] = [];
         for (const id of ids) {
             const product = await ProductRepository.DBGetProductDetail(id);
             if (product.length > 0) {
-                products.push({ id: product[0].id, price: product[0].price });
+                products.push({ 
+                    id: product[0].id, 
+                    name: product[0].name,     
+                    price: product[0].price,
+                    stock: product[0].stock,
+                    description: product[0].description,
+                });
             }
         }
         if(products.length < 1) {

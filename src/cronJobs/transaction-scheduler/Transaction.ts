@@ -3,7 +3,7 @@ import { IScheduler, Scheduler } from "cronJobs/Scheduler";
 
 export class TransactionScheduler extends Scheduler {
     constructor() {
-        super("0 */10 * * * *");
+        super("0 */5 * * * *");
     }
     private async CheckTransactionExpiration() {
         const expiredTransaction = await TransactionAppService.CheckExpiredTransaction()
