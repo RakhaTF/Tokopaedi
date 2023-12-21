@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from "typeorm"
 export class InsertProductManagerRules1701853779633 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        const rules = [116, 117, 118];
+        const rules = [115, 116, 117];
         const values = rules.map(rule => `(5, ${rule})`).join(', ');
         const query = `INSERT INTO user_group_rules (group_id, rules_id) VALUES ${values}`;
         await queryRunner.query(query);
