@@ -121,4 +121,12 @@ export default class AdminDomainService {
             throw new Error("Failed to restore user")
         }
     }
+
+    static async CheckIsUserAliveDomain(id: number){
+        const isAlive = await AdminRepository.DBCheckIsUserAlive(id)
+        if(isAlive.length < 1){
+            throw new Error("User is deleted")
+        }
+        return true
+    }
 }

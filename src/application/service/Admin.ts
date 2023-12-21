@@ -64,6 +64,8 @@ export default class AdminAppService {
     static async UpdateProfileUser(params: AdminParamsDto.UpdateProfileUserParams, logData: LogParamsDto.CreateLogParams ){
         await AdminSchema.UpdateProfileUser.validateAsync(params)
 
+        await AdminDomainService.CheckIsUserAliveDomain(params.id)
+
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
@@ -182,6 +184,8 @@ export default class AdminAppService {
     static async DeleteUserService(params: AdminParamsDto.DeleteUserParams, logData: LogParamsDto.CreateLogParams){
         await AdminSchema.DeleteUser.validateAsync(params)
 
+        await AdminDomainService.CheckIsUserAliveDomain(params.id)
+
         if (params.id < 1){
             throw new Error ("User not found")
         }
@@ -237,6 +241,8 @@ export default class AdminAppService {
 
     static async GetUserDetailProfileService(params: AdminParamsDto.GetUserDetailProfileParams){
         await AdminSchema.GetUserDetailProfile.validateAsync(params)
+
+        await AdminDomainService.CheckIsUserAliveDomain(params.id)
 
         if (params.id < 1){
             throw new Error ("User not found")
@@ -404,6 +410,8 @@ export default class AdminAppService {
     static async ChangeUserPass(params: AdminParamsDto.ChangeUserPassParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.ChangeUserPass.validateAsync(params)
 
+        await AdminDomainService.CheckIsUserAliveDomain(params.userid)
+
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
@@ -526,7 +534,8 @@ export default class AdminAppService {
     static async UpdateUserLevelService(params: AdminParamsDto.UpdateUserLevelParams, logData: LogParamsDto.CreateLogParams){
         await AdminSchema.UpdateUserLevel.validateAsync(params)
 
-      
+        await AdminDomainService.CheckIsUserAliveDomain(params.user_id)
+
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
@@ -554,6 +563,7 @@ export default class AdminAppService {
     static async RestoreDeletedUserService(user_id: number, logData: LogParamsDto.CreateLogParams){
         await AdminSchema.UserId.validateAsync(user_id)
 
+        await AdminDomainService.CheckIsUserAliveDomain(user_id)
      
         const db = AppDataSource
         const query_runner = db.createQueryRunner()

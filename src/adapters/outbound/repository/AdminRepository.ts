@@ -157,4 +157,8 @@ export default class AdminRepository {
     static async DBRestoreDeletedUser(user_id: number, query_runner: QueryRunner){
         return await db.query<ResultSetHeader>(`UPDATE user SET is_deleted = 0 WHERE id = ?`,[user_id], query_runner)
     }
+
+    static async DBCheckIsUserAlive(id: number) {
+        return await db.query<{ id: number }[]>(`SELECT u.id FROM user u WHERE u.id = ? AND u.is_deleted <> 1`, [id])
+    }
 }
