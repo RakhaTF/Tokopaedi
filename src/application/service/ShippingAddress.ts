@@ -7,7 +7,7 @@ import { AppDataSource } from "@infrastructure/mysql/connection"
 import { CommonRequestDto } from "@domain/model/request";
 import * as CommonSchema from "helpers/JoiSchema/Common";
 import unicorn from "format-unicorn/safe";
-import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination"
+import { GenerateWhereClause, Paginate } from "key-pagination-sql";
 
 export default class ShippingAddressAppService {
     static async CreateShippingAddress(params: ShippingAddressParamsDto.CreateShippingAddressParams, logData: LogParamsDto.CreateLogParams) {

@@ -1,7 +1,7 @@
 import { CommonRequestDto } from "@domain/model/request";
 import LogDomainService from "@domain/service/LogDomainService";
 import unicorn from "format-unicorn/safe";
-import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination";
+import { GenerateWhereClause, Paginate } from "key-pagination-sql";
 import * as CommonSchema from "helpers/JoiSchema/Common";
 
 export default class LogAppService {

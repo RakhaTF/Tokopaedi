@@ -4,7 +4,7 @@ import ProductDomainService from "@domain/service/ProductDomainService";
 import * as ProductSchema from "helpers/JoiSchema/Product";
 import * as CommonSchema from "helpers/JoiSchema/Common";
 import unicorn from "format-unicorn/safe";
-import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination";
+import { GenerateWhereClause, Paginate } from "key-pagination-sql";
 import { LogParamsDto } from "@domain/model/params";
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import LogDomainService from "@domain/service/LogDomainService"

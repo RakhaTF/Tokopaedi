@@ -8,7 +8,7 @@ import { TransactionResponseDto } from "@domain/model/response"
 import moment from "moment-timezone"
 import * as CommonSchema from "helpers/JoiSchema/Common";
 import unicorn from "format-unicorn/safe";
-import { GenerateWhereClause, Paginate } from "helpers/pagination/pagination"
+import { GenerateWhereClause, Paginate } from "key-pagination-sql";
 import LogDomainService from "@domain/service/LogDomainService"
 import { Product } from "@domain/model/BaseClass/Product"
 import { QueryRunner } from "typeorm"
