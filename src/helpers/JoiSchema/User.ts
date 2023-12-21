@@ -1,7 +1,7 @@
 import Joi from "joi"
 
 export const Register = Joi.object({
-    username: Joi.string().min(3).required().max(50).regex(/^[a-zA-Z ]+$/).messages({
+    name: Joi.string().min(3).required().max(50).regex(/^[a-zA-Z ]+$/).messages({
         'any.required': 'name is required',
     }),
     email: Joi.string().email().required().messages({
@@ -11,30 +11,8 @@ export const Register = Joi.object({
     password: Joi.string().alphanum().min(8).max(12).required().messages({
         'any.required': 'Password is required',
     }),
-    address: Joi.string().required().messages({
-        'any.required': 'Address is required',
-    }),
-    role: Joi.string().valid("user", "admin").required().messages({
-        'any.required': 'role is required',
-    }),
-}).options({ abortEarly: false });
-
-export const UpdateUser = Joi.object({
-    firstName: Joi.string().alphanum().min(3).required().messages({
-        'any.required': 'First name is required',
-    }),
-    lastName: Joi.string().alphanum().min(3).required().messages({
-        'any.required': 'Last name is required',
-    }),
-    password: Joi.string().alphanum().min(8).required().messages({
-        'any.required': 'Password is required',
-    }),
-    age: Joi.number().min(5).required().messages({
-        'any.required': 'Age is required',
-    }),
-    email: Joi.string().email().required().messages({
-        'any.required': 'Email is required',
-        'string.email': 'Email must be a valid email',
+    level: Joi.number().valid(3).required().messages({
+        'any.required': 'level is required',
     }),
 }).options({ abortEarly: false });
 
@@ -46,4 +24,35 @@ export const Login = Joi.object({
     password: Joi.string().alphanum().min(8).required().messages({
         'any.required': 'Password is required',
     }),
+}).options({ abortEarly: false });
+
+export const GetUserProfile = Joi.object({
+    id: Joi.number().required().messages({
+        'any.required': 'Id is required',
+    }),
+}).options({ abortEarly: false });
+
+export const UpdateUserProfile = Joi.object({
+    id: Joi.number().required().messages({
+        'any.required': 'Id is required',
+    }),
+    email: Joi.string().email().required().messages({
+        'any.required': 'Email is required',
+        'string.email': 'Email must be a valid email',
+    }),
+    name: Joi.string().min(3).required().max(50).regex(/^[a-zA-Z ]+$/).messages({
+        'any.required': 'name is required',
+    })
+}).options({ abortEarly: false });
+
+export const ChangePassword = Joi.object({
+    id: Joi.number().required().messages({
+        'any.required': 'Id is required',
+    }),
+    oldPassword: Joi.string().required().messages({
+        'any.required': 'Old Password is required',
+    }),
+    newPassword: Joi.string().alphanum().min(8).max(12).required().messages({
+        'any.required': 'New Password is required',
+    })
 }).options({ abortEarly: false });
