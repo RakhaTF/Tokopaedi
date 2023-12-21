@@ -562,8 +562,6 @@ export default class AdminAppService {
 
     static async RestoreDeletedUserService(user_id: number, logData: LogParamsDto.CreateLogParams){
         await AdminSchema.UserId.validateAsync(user_id)
-
-        await AdminDomainService.CheckIsUserAliveDomain(user_id)
      
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
