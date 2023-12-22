@@ -37,13 +37,13 @@ export default class UserAppService {
             }
 
             if (user.email != params.email) {
-                let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email, query_runner)
+                const userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email, query_runner)
                 if (userEmailExist.length > 0) {
                     throw new Error("Email is not available")
                 }
             }
 
-            let banned = ["SuperAdmin", "Product Management Staff", "User Management Staff", "Shipping and Transaction Management Staff"]
+            const banned = ["SuperAdmin", "Product Management Staff", "User Management Staff", "Shipping and Transaction Management Staff"]
 
             if (banned.includes(params.name) || prohibitedWords.flag(params.name)) {
                 throw new Error("Banned words name")

@@ -110,7 +110,7 @@ export default class ProductAppService {
 
             const existingProduct = await ProductDomainService.GetProductDetailDomain(id, query_runner)
 
-            let updateProductData: Partial<Product> = existingProduct
+            const updateProductData: Partial<Product> = existingProduct
             if (name || description || price || stock) {
                 if (name) updateProductData.name = name
                 if (description) updateProductData.description = description

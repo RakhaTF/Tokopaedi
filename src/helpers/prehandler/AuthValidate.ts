@@ -20,7 +20,7 @@ if (!process.env.SUPER_ADMIN_LEVEL || process.env.SUPER_ADMIN_LEVEL == "") {
     throw new Error("Please set Super Admin Level")
 }
 
-let superadmin_level = parseInt(process.env.SUPER_ADMIN_LEVEL || "0")
+const superadmin_level = parseInt(process.env.SUPER_ADMIN_LEVEL || "0")
 
 function authorize(data: AuthorizeParams): number {
     try {
@@ -55,7 +55,6 @@ function authorize(data: AuthorizeParams): number {
 }
 
 export async function AuthValidate(request: FastifyRequest) {
-    try {
         const user = new User()
 
         if (!request.headers || !request.headers.authorization || request.headers.authorization == "") {
@@ -74,9 +73,6 @@ export async function AuthValidate(request: FastifyRequest) {
 
         user.set(user_claims)
         request.user = user
-    } catch (error) {
-        throw error
-    }
 }
 
 export function CheckAuthAdmin({ rules }: { rules: number }) {

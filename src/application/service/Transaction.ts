@@ -61,7 +61,7 @@ export default class TransactionAppService {
             //auto create transaction_status after every create transaction.
             await TransactionDomainService.CreateTransactionStatusDomain({ transaction_id: insertId, update_time: moment().unix() }, query_runner)
 
-            let insertOrderObj = {
+            const insertOrderObj = {
                 insertId,
                 product_id,
                 qty,
@@ -140,7 +140,7 @@ export default class TransactionAppService {
             await query_runner.startTransaction()
 
             // Update the order with the new quantity
-            let updateOrderObj = {
+            const updateOrderObj = {
                 order_id,
                 product_id,
                 qty,

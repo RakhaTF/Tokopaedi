@@ -138,7 +138,7 @@ export const ResponseSchema = ({ type, message }: BaseResponseSchema) => {
         }
     }
 
-    let schema = {
+    const schema = {
         200: {
             type: "object",
             properties: {
@@ -159,7 +159,7 @@ export const BaseRequestSchema = (pic: string, requestBodyProperties: BodySchema
         properties: {}, //Example: limit: { type: "integer", default: 500 }
     }
 
-    for (let data in requestBodyProperties) {
+    for (const data in requestBodyProperties) {
         if (requestBodyProperties[data].type == "file") {
             BaseRequestSchema.properties[data] = { isFile: true }
         } else {
@@ -291,7 +291,7 @@ export const BaseResponse = ({ type, message }: BaseResponseSchema) => {
         }
     }
 
-    let schema = {
+    const schema = {
         200: {
             type: "object",
             properties: {

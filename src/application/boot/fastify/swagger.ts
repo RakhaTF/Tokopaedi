@@ -53,8 +53,8 @@ export default fp((fastify, _opts, done) => {
             deepLinking: true,
             persistAuthorization: true,
         },
-        transformStaticCSP: (header: any) => header,
-        transformSpecification: (swaggerObject: any) => swaggerObject,
+        transformStaticCSP: (header: never) => header,
+        transformSpecification: (swaggerObject: never) => swaggerObject,
     } as FastifySwaggerUiOptions
 
     fastify.register(swagger, options)
