@@ -30,6 +30,9 @@ Start the server
   npm run dev
 ```
 
+## ERD
+![tokopaedi](https://github.com/RakhaTF/Tokopaedi/assets/77679643/b1dd9d8b-df79-459d-bfaa-f26f53322895)
+
 
 ## API Reference
 
