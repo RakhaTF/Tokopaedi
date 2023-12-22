@@ -74,10 +74,6 @@ export default class UserAppService {
     static async ChangePasswordService(params: UserParamsDto.ChangePasswordParams, logData: LogParamsDto.CreateLogParams) {
         await UserSchema.ChangePassword.validateAsync(params)
 
-        if (params.id < 1) {
-            throw new Error("User not found")
-        }
-
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()

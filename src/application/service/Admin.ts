@@ -116,15 +116,7 @@ export default class AdminAppService {
     static async UpdateProfileService(params: AdminParamsDto.UpdateProfileParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.UpdateProfile.validateAsync(params)
 
-        if (params.id < 1) {
-            throw new Error("User not found")
-        }
-
         const user = await UserDomainService.GetUserDataByIdDomain(params.id)
-
-        if (user.id < 1) {
-            throw new Error("User not found")
-        }
 
         if (user.email != params.email) {
             let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email)
@@ -172,10 +164,6 @@ export default class AdminAppService {
         await AdminSchema.DeleteUser.validateAsync(params)
 
         await AdminDomainService.CheckIsUserAliveDomain(params.id)
-
-        if (params.id < 1) {
-            throw new Error("User not found")
-        }
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
@@ -230,10 +218,6 @@ export default class AdminAppService {
         await AdminSchema.GetUserDetailProfile.validateAsync(params)
 
         await AdminDomainService.CheckIsUserAliveDomain(params.id)
-
-        if (params.id < 1) {
-            throw new Error("User not found")
-        }
 
         const getUserDetailProfile = await AdminDomainService.GetUserDetailProfileDomain(params.email)
 
@@ -431,10 +415,6 @@ export default class AdminAppService {
 
     static async ChangePasswordService(params: AdminParamsDto.ChangePasswordParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.ChangePassword.validateAsync(params)
-
-        if (params.id < 1) {
-            throw new Error("User not found")
-        }
 
         const passEncrypt = await hashPassword(params.newPassword)
 
