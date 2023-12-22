@@ -160,7 +160,7 @@ export default class AdminAppService {
         }
     }
 
-    static async DeleteUserService(params: AdminParamsDto.DeleteUserParams, logData: LogParamsDto.CreateLogParams) {
+    static async SoftDeleteUserService(params: AdminParamsDto.DeleteUserParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.DeleteUser.validateAsync(params)
 
         await AdminDomainService.CheckIsUserAliveDomain(params.id)
@@ -172,7 +172,7 @@ export default class AdminAppService {
         try {
             await query_runner.startTransaction()
 
-            const deleteUser = await AdminDomainService.DeleteUserDomain(params.email, query_runner)
+            const deleteUser = await AdminDomainService.SoftDeleteUserDomain(params.email, query_runner)
 
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)

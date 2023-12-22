@@ -140,7 +140,7 @@ const routes: RouteOptions[] = [
         method: ["POST"],
         url: "/api/v1/admin/delete-user",
         preHandler: CheckAuthAdmin({ rules: Rules.DELETE_USER }),
-        handler: AdminController.DeleteUser,
+        handler: AdminController.SoftDeleteUser,
         schema: {
             tags: ["Admin"],
             body: Schema.BaseRequestSchema("Raihan", {

@@ -12,7 +12,7 @@ export default class AdminDomainService {
         return result[0]
     }
 
-    static async DeleteUserDomain(email: string, query_runner?: QueryRunner) {
+    static async SoftDeleteUserDomain(email: string, query_runner?: QueryRunner) {
         const result = await AdminRepository.DBSoftDeleteUser(email, query_runner)
         if (result.affectedRows < 1) {
             throw new Error("Failed delete data")

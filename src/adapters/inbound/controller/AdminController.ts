@@ -104,11 +104,11 @@ export default class AdminController {
         }
     }
 
-    static async DeleteUser(request: FastifyRequest) {
+    static async SoftDeleteUser(request: FastifyRequest) {
         try {
             const jwt = request.user
             const { email } = request.body as AdminRequestDto.DeleteUserRequest
-            const deleteUser = await AdminAppService.DeleteUserService(
+            const deleteUser = await AdminAppService.SoftDeleteUserService(
                 {
                     id: jwt.id,
                     email,
