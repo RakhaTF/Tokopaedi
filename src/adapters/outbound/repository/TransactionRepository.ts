@@ -12,7 +12,7 @@ export default class TransactionRepository {
             throw new Error("Must in Transaction")
         }
 
-        const result = await db.query(`INSERT INTO transaction (user_id, items_price, created_at, updated_at, expire_at) VALUES (?,?,?,?,?)`, [params.id, params.items_price, params.created_at, params.updated_at, params.expire_at], query_runner)
+        const result = await db.query<ResultSetHeader>(`INSERT INTO transaction (user_id, items_price, created_at, updated_at, expire_at) VALUES (?,?,?,?,?)`, [params.id, params.items_price, params.created_at, params.updated_at, params.expire_at], query_runner)
         return result
     }
 
@@ -21,7 +21,7 @@ export default class TransactionRepository {
             throw new Error("Must in Transaction")
         }
 
-        const result = await db.query(`INSERT INTO order_item (order_id, product_id, qty) VALUES ${valueProduct}`, [], query_runner)
+        const result = await db.query<ResultSetHeader>(`INSERT INTO order_item (order_id, product_id, qty) VALUES ${valueProduct}`, [], query_runner)
 
         return result
     }
@@ -73,7 +73,7 @@ export default class TransactionRepository {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        const result = await db.query(`UPDATE order_item SET qty = ? WHERE order_id = ? AND product_id = ?`, [params.qty, params.order_id, params.product_id], query_runner)
+        const result = await db.query<ResultSetHeader>(`UPDATE order_item SET qty = ? WHERE order_id = ? AND product_id = ?`, [params.qty, params.order_id, params.product_id], query_runner)
         return result
     }
 
@@ -81,12 +81,12 @@ export default class TransactionRepository {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        const result = await db.query(`UPDATE transaction SET items_price = ?, updated_at = ? WHERE id = ?`, [params.items_price, params.updated_at, params.order_id], query_runner)
+        const result = await db.query<ResultSetHeader>(`UPDATE transaction SET items_price = ?, updated_at = ? WHERE id = ?`, [params.items_price, params.updated_at, params.order_id], query_runner)
         return result
     }
 
     static async DBCreateTransactionStatus({ transaction_id, update_time }: { transaction_id: number; update_time: number }, query_runner: QueryRunner) {
-        await db.query<ResultSetHeader>(`INSERT INTO transaction_status(transaction_id, update_time) VALUES(?, ?)`, [transaction_id, update_time], query_runner)
+        return await db.query<ResultSetHeader>(`INSERT INTO transaction_status(transaction_id, update_time) VALUES(?, ?)`, [transaction_id, update_time], query_runner)
     }
 
     static async DBPayTransaction(params: TransactionParamsDto.PayTransactionRepositoryParams, query_runner: QueryRunner) {

@@ -12,7 +12,7 @@ export default class UserRepository {
             throw new Error("Must in Transaction")
         }
 
-        const result = await db.query(`INSERT INTO user (NAME, email, PASSWORD, LEVEL, created_at) VALUES (?,?,?,?,?)`, [user.name, user.email, user.password, user.level, user.created_at], query_runner)
+        const result = await db.query<ResultSetHeader>(`INSERT INTO user (NAME, email, PASSWORD, LEVEL, created_at) VALUES (?,?,?,?,?)`, [user.name, user.email, user.password, user.level, user.created_at], query_runner)
 
         return result
     }
@@ -94,7 +94,7 @@ export default class UserRepository {
     }
 
     static async DBUpdatePassword(passEncrypt: string, id: number, query_runner?: QueryRunner) {
-        const result = await db.query(`UPDATE user SET password = ? WHERE id = ?`, [passEncrypt, id], query_runner)
+        const result = await db.query<ResultSetHeader>(`UPDATE user SET password = ? WHERE id = ?`, [passEncrypt, id], query_runner)
         return result
     }
 }

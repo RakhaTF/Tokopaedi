@@ -6,7 +6,9 @@ import { RepoPaginationParams } from "key-pagination-sql"
 export default class TransactionDomainService {
     static async CreateTransactionIdDomain(params: TransactionParamsDto.CreateTransactionIdParams, query_runner?: QueryRunner) {
         const result = await TransactionRepository.DBCreateTransactionId(params, query_runner)
-
+        if(result.affectedRows < 1){
+            throw new Error("Failed To Create Transaction")
+        }
         return result
     }
 
@@ -32,14 +34,17 @@ export default class TransactionDomainService {
         const result = await TransactionRepository.DBUpdateOrder(params, query_runner)
 
         if (result.affectedRows < 1) {
-            throw Error("Failed update product qty")
+            throw Error("Failed to update product qty")
         }
 
         return true
     }
 
     static async CreateTransactionStatusDomain(params: { transaction_id: number; update_time: number }, query_runner: QueryRunner) {
-        return await TransactionRepository.DBCreateTransactionStatus(params, query_runner)
+        const txStatus = await TransactionRepository.DBCreateTransactionStatus(params, query_runner)
+        if(txStatus.affectedRows < 1){
+            throw new Error("Failed to create transaction status")
+        }
     }
 
     static async GetCurrentTransactionDetailDomain(id: number) {
@@ -54,7 +59,7 @@ export default class TransactionDomainService {
         const result = await TransactionRepository.DBUpdateTransactionProductQty(params, query_runner)
 
         if (result.affectedRows < 1) {
-            throw Error("Failed update updated_at in transaction")
+            throw Error("Failed to update product qty in transaction")
         }
 
         return true

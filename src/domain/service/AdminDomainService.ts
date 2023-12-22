@@ -30,6 +30,9 @@ export default class AdminDomainService {
 
     static async GetUserDetailProfileDomain(email: string) {
         const result = await AdminRepository.DBGetUserDetailProfile(email)
+        if(result.length < 1){
+            throw new Error("Profile not found")
+        }
         return result[0]
     }
 
@@ -101,11 +104,19 @@ export default class AdminDomainService {
     }
 
     static async GetTransactionListDomain(paginationParams: RepoPaginationParams) {
-        return await AdminRepository.DBGetTransactionList(paginationParams)
+        const txList = await AdminRepository.DBGetTransactionList(paginationParams)
+        if(txList.length < 1){
+            throw new Error("No Transaction Found!")
+        }
+        return txList
     }
 
     static async GetUserShippingAddressDomain(paginationParams: RepoPaginationParams) {
-        return await AdminRepository.DBGetUserShippingAddress(paginationParams)
+        const addressList = await AdminRepository.DBGetUserShippingAddress(paginationParams)
+        if(addressList.length < 1){
+            throw new Error("No Address Found!")
+        }
+        return addressList
     }
 
     static async UpdateUserLevelDomain(user_id: number, level: number, query_runner: QueryRunner) {
