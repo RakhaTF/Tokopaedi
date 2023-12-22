@@ -4,12 +4,8 @@ import { FastifyRequest } from "fastify"
 
 export default class LogController {
     static async GetSystemLog(request: FastifyRequest) {
-        try {
-            const paginationRequest = request.body as CommonRequestDto.PaginationRequest
-            const logList = await LogAppService.GetSystemLog(paginationRequest)
-            return { message: logList }
-        } catch (error) {
-            throw error
-        }
+        const paginationRequest = request.body as CommonRequestDto.PaginationRequest
+        const logList = await LogAppService.GetSystemLog(paginationRequest)
+        return { message: logList }
     }
 }
