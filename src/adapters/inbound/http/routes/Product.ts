@@ -7,19 +7,17 @@ const routes: RouteOptions[] = [
         method: ["POST"],
         url: "/api/v1/product/list",
         handler: ProductController.GetProductList,
-        // schema: {
-        //     tags: ["Product"],
-        //     response: Schema.BaseResponse({
-        //         type: "Array of Object",
-        //         message: {
-        //             id: { type: "integer" },
-        //             name: { type: "string" },
-        //             description: { type: "string" },
-        //             price: { type: "integer" },
-        //             stock: { type: "integer" }
-        //         }
-        //     })
-        // }
+        schema: {
+            tags: ["Product"],
+            body: Schema.BasePaginationRequestSchema({
+                pic: "Rakha",
+                search: {
+                    name: "string",
+                    price: "string"
+                },
+            }),
+            response: Schema.BasePaginationResultSchema
+        }
     },
     {
         method: ["POST"],

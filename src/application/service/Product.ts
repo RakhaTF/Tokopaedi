@@ -22,7 +22,7 @@ export default class ProductAppService {
         let searchFilter = search || ""
         searchFilter = unicorn(searchFilter, {
             name: "p.name",
-            price: "p.price",
+            price: "p.price"
         })
 
         //Generate whereClause
