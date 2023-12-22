@@ -74,18 +74,22 @@ export default class ShippingAddressAppService {
     static async SoftDeleteShippingAddress(id: number, user_id: number, logData: LogParamsDto.CreateLogParams) {
         await ShippingAddressSchema.ShippingAddressId.validateAsync(id)
 
+        //additional checking to prevent mutate deleted data.
+        await ShippingAddressDomainService.CheckIsShippingAddressAliveDomain(id)
+
+        //Validating data ownership.
+        const shippingAddressDetail = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id)
+
+        if (user_id !== shippingAddressDetail.user_id) {
+            throw new Error("This Shipping Address Doesn't Belong To You!")
+        }
+
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
 
         try {
             await query_runner.startTransaction()
-
-            const shippingAddressDetail = await ShippingAddressDomainService.GetShippingAddressDetailDomain(id, query_runner)
-
-            if (user_id !== shippingAddressDetail.user_id) {
-                throw new Error("This Shipping Address Doesn't Belong To You!")
-            }
 
             await ShippingAddressDomainService.SoftDeleteShippingAddressDomain(id, query_runner)
 
@@ -160,6 +164,7 @@ export default class ShippingAddressAppService {
         searchFilter = unicorn(searchFilter, {
             id: "s.id",
             city: "s.city",
+            isDeleted: "s.is_deleted"
         })
 
         //Generate whereClause

@@ -18,12 +18,11 @@ export class ShippingAddressRepository {
         )
     }
 
-    static async DBGetShippingAddressDetail(id: number, query_runner?: QueryRunner) {
+    static async DBGetShippingAddressDetail(id: number) {
         return await db.query<ShippingAddressResponseDto.ShippingAddressResponse[]>(
             `
         SELECT id, user_id, address, postal_code, city, province, country FROM shipping_address WHERE id = ?`,
-            [id],
-            query_runner
+            [id]
         )
     }
 
@@ -63,7 +62,7 @@ export class ShippingAddressRepository {
 
         return await db.query<ShippingAddressResponseDto.ShippingAddressResponse[]>(
             `
-        SELECT s.id, s.user_id, s.address, s.postal_code, s.city, s.province, s.country FROM shipping_address s ${whereClause}
+        SELECT s.id, s.user_id, s.address, s.postal_code, s.city, s.province, s.country, s.is_deleted FROM shipping_address s ${whereClause}
         AND user_id = ?
         ORDER BY s.id ${sort}
         LIMIT ?`,

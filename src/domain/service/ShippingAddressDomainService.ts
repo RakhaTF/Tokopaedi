@@ -11,8 +11,8 @@ export default class ShippingAddressDomainService {
         }
     }
 
-    static async GetShippingAddressDetailDomain(id: number, query_runner?: QueryRunner) {
-        const shippingAddress = await ShippingAddressRepository.DBGetShippingAddressDetail(id, query_runner)
+    static async GetShippingAddressDetailDomain(id: number) {
+        const shippingAddress = await ShippingAddressRepository.DBGetShippingAddressDetail(id)
         if (shippingAddress.length < 1) {
             throw new Error("Shipping Address Not Found!")
         }
