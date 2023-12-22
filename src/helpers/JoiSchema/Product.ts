@@ -11,10 +11,9 @@ const Price = Joi.number().min(1).messages({
     "number.min": "Price must be greater than or equal to 1",
 })
 
-const Description = Joi.string().max(100).alphanum().messages({
+const Description = Joi.string().max(100).pattern(/^[a-zA-Z0-9 ]*$/).messages({
     "string.base": "Description must be a string",
     "string.max": "Description must be no more than 100 characters long",
-    "string.alphanum": "Description must only contain alphanumeric characters",
 })
 
 const Stock = Joi.number().min(1).messages({

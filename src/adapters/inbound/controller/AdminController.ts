@@ -7,10 +7,8 @@ import moment from "moment"
 
 export default class AdminController {
     static async GetAdminProfile(request: FastifyRequest) {
-        const jwt = request.user
-        const getAdminProfile = await AdminAppService.GetAdminProfileService({
-            id: jwt.id,
-        })
+        const { id } = request.user
+        const getAdminProfile = await AdminAppService.GetAdminProfileService(id)
 
         const result = { message: getAdminProfile }
 

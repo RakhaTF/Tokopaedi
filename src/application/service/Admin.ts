@@ -14,8 +14,8 @@ import unicorn from "format-unicorn/safe"
 import { Profanity } from "indonesian-profanity"
 
 export default class AdminAppService {
-    static async GetAdminProfileService({ id }) {
-        await AdminSchema.GetAdminProfile.validateAsync({ id })
+    static async GetAdminProfileService(id: number) {
+        await AdminSchema.GetAdminProfile.validateAsync(id)
 
         const admin = await AdminDomainService.GetAdminDataDomain(id)
 
