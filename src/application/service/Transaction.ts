@@ -247,7 +247,13 @@ export default class TransactionAppService {
             }
         })
 
-        const paid_at = moment.unix(txnDetail.paid_at).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
+        //If the transaction is paid, convert the time.
+        let paid_at;
+        if (txnDetail.is_paid == "Paid") {
+            paid_at = moment.unix(txnDetail.paid_at).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
+        } else {
+            paid_at = txnDetail.paid_at
+        }
         const created_at = moment.unix(txnDetail.created_at).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
 
         const transaction: TransactionResponseDto.TransactionDetailResult = {
