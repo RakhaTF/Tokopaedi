@@ -20,7 +20,7 @@
     "fastify": "4.24.3",
     "fastify-plugin": "4.5.1",
     "format-unicorn": "^1.1.1",
-    "indonesian-badwords": "^1.0.1",
+    "indonesian-profanity": "^1.0.1",
     "joi": "17.11.0",
     "jsonwebtoken": "9.0.2",
     "key-pagination-sql": "^1.0.1",

@@ -8,7 +8,7 @@ import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import { LogParamsDto } from "@domain/model/params"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import LogDomainService from "@domain/service/LogDomainService"
-
+import { Profanity } from "indonesian-profanity"
 export default class ProductAppService {
     static async GetProductList(params: CommonRequestDto.PaginationRequest) {
         await CommonSchema.Pagination.validateAsync(params)
@@ -72,6 +72,11 @@ export default class ProductAppService {
     static async CreateProduct(product: ProductRequestDto.CreateProductRequest, logData: LogParamsDto.CreateLogParams) {
         await ProductSchema.CreateProduct.validateAsync(product)
 
+        //Add name checking, can not use bad words for the product name
+        if (Profanity.flag(product.name)) {
+            throw new Error("You can't use this name!")
+        }
+
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
@@ -100,6 +105,11 @@ export default class ProductAppService {
 
         //additional checking to prevent mutate deleted data.
         await ProductDomainService.CheckIsProductAliveDomain(id)
+
+        //Add name checking, can not use bad words for the product name
+        if (Profanity.flag(product.name)) {
+            throw new Error("You can't use this name!")
+        }
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()

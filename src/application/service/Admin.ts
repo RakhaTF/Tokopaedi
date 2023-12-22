@@ -11,8 +11,7 @@ import { CommonRequestDto } from "@domain/model/request"
 import * as CommonSchema from "helpers/JoiSchema/Common"
 import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import unicorn from "format-unicorn/safe"
-
-const prohibitedWords = require("indonesian-badwords")
+import { Profanity } from "indonesian-profanity"
 
 export default class AdminAppService {
     static async GetAdminProfileService({ id }) {
@@ -25,6 +24,11 @@ export default class AdminAppService {
 
     static async CreateUserService({ id, level = 3, name, email, password }, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.CreateUser.validateAsync({ id, level, name, email, password })
+
+        //Add name checking, can not use bad words for the product name
+        if (Profanity.flag(name)) {
+            throw new Error("You can't use this name!")
+        }
 
         await UserDomainService.GetEmailExistDomain(email)
 
@@ -63,6 +67,13 @@ export default class AdminAppService {
 
     static async UpdateProfileUser(params: AdminParamsDto.UpdateProfileUserParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.UpdateProfileUser.validateAsync(params)
+        
+        //Add name checking, can not use bad words for the product name
+        const banned = ["SuperAdmin", "Product Management Staff", "User Management Staff", "Shipping and Transaction Management Staff"]
+
+        if (banned.includes(params.name) || Profanity.flag(params.name)) {
+            throw new Error("Banned words name")
+        }
 
         await AdminDomainService.CheckIsUserAliveDomain(params.id)
 
@@ -75,21 +86,11 @@ export default class AdminAppService {
 
             const user = await UserDomainService.GetUserDataByIdDomain(params.userid, query_runner)
 
-            if (user.id < 1) {
-                throw new Error("User not found")
-            }
-
             if (user.email != params.email) {
                 const userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email, query_runner)
                 if (userEmailExist.length > 0) {
                     throw new Error("Email is not available")
                 }
-            }
-
-            const banned = ["SuperAdmin", "Product Management Staff", "User Management Staff", "Shipping and Transaction Management Staff"]
-
-            if (banned.includes(params.name) || prohibitedWords.flag(params.name)) {
-                throw new Error("Banned words name")
             }
 
             const obj: UserParamsDto.UpdateUserEditProfileParams = {
@@ -127,7 +128,7 @@ export default class AdminAppService {
 
         const banned = ["SuperAdmin", "Admin", "Product Manager", "User Manager", "Transaction Manager"]
 
-        if (banned.includes(params.name) || prohibitedWords.flag(params.name)) {
+        if (banned.includes(params.name) || Profanity.flag(params.name)) {
             throw new Error("Banned words name")
         }
 

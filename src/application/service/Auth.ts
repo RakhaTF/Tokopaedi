@@ -7,10 +7,20 @@ import { AppDataSource } from "@infrastructure/mysql/connection"
 import { LogParamsDto, UserParamsDto } from "@domain/model/params"
 import { UserResponseDto } from "@domain/model/response"
 import LogDomainService from "@domain/service/LogDomainService"
+import { Profanity } from "indonesian-profanity"
 
 export default class AuthAppService {
     static async Register({ level = 3, name, email, password }) {
         await UserSchema.Register.validateAsync({ level, name, email, password })
+
+        if (name === "SuperAdmin") {
+            throw new Error("Prohibited name")
+        }
+
+        //Add name checking, can not use bad words for the product name
+        if (Profanity.flag(name)) {
+            throw new Error("You can't use this name!")
+        }
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
@@ -21,9 +31,6 @@ export default class AuthAppService {
 
             await UserDomainService.GetEmailExistDomain(email)
 
-            if (name === "SuperAdmin") {
-                throw new Error("Prohibited name")
-            }
 
             const user = {
                 name,
