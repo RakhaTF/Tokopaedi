@@ -32,10 +32,6 @@ export default class UserAppService {
     
             const user = await UserDomainService.GetUserDataByIdDomain(params.id, query_runner)
     
-            if (user.id < 1){
-                throw new Error ("User not found")
-            }
-    
             if (user.email != params.email){
                 let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email, query_runner)
                 if (userEmailExist.length > 0) {
@@ -78,10 +74,6 @@ export default class UserAppService {
 
     static async ChangePasswordService(params: UserParamsDto.ChangePasswordParams, logData: LogParamsDto.CreateLogParams) {
         await UserSchema.ChangePassword.validateAsync(params)
-
-        if (params.id < 1) {
-            throw new Error("User not found")
-        }
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()

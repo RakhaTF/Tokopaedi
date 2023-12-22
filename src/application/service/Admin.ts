@@ -75,10 +75,6 @@ export default class AdminAppService {
 
             const user = await UserDomainService.GetUserDataByIdDomain(params.userid,query_runner)
 
-            if (user.id < 1){
-                throw new Error ("User not found")
-            }
-
             if (user.email != params.email){
                 let userEmailExist = await UserDomainService.GetUserEmailExistDomainService(params.email, query_runner)
                 if (userEmailExist.length > 0) {
@@ -444,10 +440,6 @@ export default class AdminAppService {
 
     static async ChangePasswordService(params: AdminParamsDto.ChangePasswordParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.ChangePassword.validateAsync(params)
-
-        if (params.id < 1) {
-            throw new Error("User not found")
-        }
 
         const passEncrypt = await hashPassword(params.newPassword)
 
