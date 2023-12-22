@@ -38,7 +38,6 @@ For list of api, go to:
 localhost:8080/documentation/
 ```
 Or, if you prefer postman, go to:
-```
 https://documenter.getpostman.com/view/28871141/2s9YkrazBH
-```
+
 
