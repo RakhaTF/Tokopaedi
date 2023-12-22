@@ -255,6 +255,7 @@ export default class TransactionAppService {
             paid_at = txnDetail.paid_at
         }
         const created_at = moment.unix(txnDetail.created_at).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
+        const expire_at = moment.unix(txnDetail.expire_at).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
 
         const transaction: TransactionResponseDto.TransactionDetailResult = {
             user_id: txnDetail.user_id,
@@ -276,6 +277,7 @@ export default class TransactionAppService {
                 country: txnDetail.country,
             },
             created_at,
+            expire_at
         }
         return transaction
     }

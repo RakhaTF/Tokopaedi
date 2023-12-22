@@ -39,6 +39,7 @@ export type TransactionDetailQueryResult = {
     transaction_status: string
     delivery_status: string
     created_at: number
+    expire_at: number
     address: string
     postal_code: string
     city: string
@@ -73,6 +74,7 @@ export type TransactionDetailResult = {
     delivery_status: string
     shipping_address: ShippingAddress
     created_at: string
+    expire_at: string
 }
 
 export type GetTransactionListByIdResponse = {

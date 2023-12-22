@@ -172,7 +172,8 @@ export default class TransactionRepository {
                 COALESCE(sa.postal_code, 'Not Available') AS postal_code, 
                 COALESCE(sa.city, 'Not Available') AS city, 
                 COALESCE(sa.province, 'Not Available') AS province, 
-                COALESCE(sa.country, 'Not Available') AS country
+                COALESCE(sa.country, 'Not Available') AS country,
+                t.expire_at
             FROM USER u
             LEFT JOIN TRANSACTION t ON u.id = t.user_id
             LEFT JOIN transaction_status ts ON t.id = ts.transaction_id

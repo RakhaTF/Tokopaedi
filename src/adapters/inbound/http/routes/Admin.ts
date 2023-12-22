@@ -485,6 +485,7 @@ const routes: RouteOptions[] = [
                         },
                     },
                     created_at: { type: "string" },
+                    expire_at: { type: "string" },
                 },
             }),
         },
