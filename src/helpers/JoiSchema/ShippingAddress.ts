@@ -1,4 +1,5 @@
 import Joi from "joi"
+import { UserId } from "./User"
 
 export const ShippingAddressId = Joi.number().min(1).required().messages({
     "number.base": "id must be a number",
@@ -7,7 +8,7 @@ export const ShippingAddressId = Joi.number().min(1).required().messages({
 })
 
 export const CreateShippingAddress = Joi.object({
-    user_id: Joi.number().required().messages({
+    user_id: UserId.required().messages({
         "any.required": "user_id is required",
     }),
     address: Joi.string().required().messages({
@@ -30,11 +31,11 @@ export const CreateShippingAddress = Joi.object({
         "any.required": "country is required",
         "string.base": "country must be a string",
     }),
-})
+}).options({ abortEarly: false })
 
 export const UpdateShippingAddress = Joi.object({
     id: ShippingAddressId,
-    user_id: Joi.number().required().messages({
+    user_id: UserId.required().messages({
         "any.required": "user_id is required",
     }),
     address: Joi.string().messages({
@@ -52,10 +53,10 @@ export const UpdateShippingAddress = Joi.object({
     country: Joi.string().messages({
         "string.base": "country must be a string",
     }),
-})
+}).options({ abortEarly: false })
 
 export const GetUserShippingAddressById = Joi.object({
-    user_id: Joi.number().required().messages({
+    user_id: UserId.required().messages({
         "any.required": "user_id is required",
     }),
 })

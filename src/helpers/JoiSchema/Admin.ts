@@ -1,4 +1,5 @@
 import Joi from "joi"
+import { Email, Name, Password } from "./User"
 
 export const UserId = Joi.number().min(1).required().messages({
     "number.base": "user_id must be a number",
@@ -6,93 +7,41 @@ export const UserId = Joi.number().min(1).required().messages({
     "any.required": "user_id is a required field",
 })
 
-export const GetAdminProfile = Joi.object({
-    id: Joi.number().required().messages({
-        "any.required": "Id is required",
-    }),
-}).options({ abortEarly: false })
+export const GetAdminProfile = UserId.required().messages({
+    "any.required": "Id is required",
+})
 
 export const CreateUser = Joi.object({
-    id: Joi.number().required().messages({
-        "any.required": "Id is required",
-    }),
-    email: Joi.string().email().required().messages({
-        "any.required": "Email is required",
-        "string.email": "Email must be a valid email",
-    }),
-    name: Joi.string()
-        .min(3)
-        .required()
-        .max(50)
-        .regex(/^[a-zA-Z ]+$/)
-        .messages({
-            "any.required": "name is required",
-        }),
-    password: Joi.string().alphanum().min(8).required().messages({
-        "any.required": "Password is required",
-    }),
+    id: UserId,
+    email: Email,
+    name: Name,
+    password: Password,
     level: Joi.number().valid(3).required().messages({
         "any.required": "level is required",
     }),
-})
+}).options({ abortEarly: false })
 
 export const UpdateProfileUser = Joi.object({
-    id: Joi.number().required().messages({
-        "any.required": "Id is required",
-    }),
-    userid: Joi.number().required().messages({
-        "any.required": "Id is required",
-    }),
-    email: Joi.string().email().required().messages({
-        "any.required": "Email is required",
-        "string.email": "Email must be a valid email",
-    }),
-    name: Joi.string()
-        .min(3)
-        .required()
-        .max(50)
-        .regex(/^[a-zA-Z ]+$/)
-        .messages({
-            "any.required": "name is required",
-        }),
+    id: UserId,
+    userid: UserId,
+    email: Email,
+    name: Name,
 }).options({ abortEarly: false })
 
 export const UpdateProfile = Joi.object({
-    id: Joi.number().required().messages({
-        "any.required": "Id is required",
-    }),
-    email: Joi.string().email().required().messages({
-        "any.required": "Email is required",
-        "string.email": "Email must be a valid email",
-    }),
-    name: Joi.string()
-        .min(3)
-        .required()
-        .max(50)
-        .regex(/^[a-zA-Z ]+$/)
-        .messages({
-            "any.required": "name is required",
-        }),
+    id: UserId,
+    email: Email,
+    name: Name,
 }).options({ abortEarly: false })
 
 export const DeleteUser = Joi.object({
-    id: Joi.number().required().messages({
-        "any.required": "Id is required",
-    }),
-    email: Joi.string().email().required().messages({
-        "any.required": "Email is required",
-        "string.email": "Email must be a valid email",
-    }),
+    id: UserId,
+    email: Email,
 }).options({ abortEarly: false })
 
 export const GetUserDetailProfile = Joi.object({
-    id: Joi.number().required().messages({
-        "any.required": "Id is required",
-    }),
-    email: Joi.string().email().required().messages({
-        "any.required": "Email is required",
-        "string.email": "Email must be a valid email",
-    }),
+    id: UserId,
+    email: Email,
 }).options({ abortEarly: false })
 
 //default existing rules starting from 100
@@ -104,11 +53,11 @@ export const RulesId = Joi.number().integer().greater(100).required().messages({
 })
 
 //Rules can only be alphabets, upppercase and separated by underscore.
-export const Rules = Joi.string().pattern(new RegExp("^[A-Z_]*$")).required().messages({
+export const Rules = Joi.string().pattern(/^[A-Z_]*$/).required().messages({
     "string.base": "rule must be a string",
     "string.pattern.base": "rule must be uppercased and separated with underscore",
     "any.required": "rule is required",
-})
+});
 
 export const GroupId = Joi.number().integer().greater(0).max(6).required().messages({
     "any.required": "group_id is required",
@@ -136,33 +85,19 @@ export const RevokeRule = Joi.object({
 }).options({ abortEarly: false })
 
 export const ChangeUserPass = Joi.object({
-    userid: Joi.number().required().messages({
-        "any.required": "User Id is required",
-    }),
-    password: Joi.string().alphanum().min(8).required().messages({
-        "any.required": "Password is required",
-    }),
-    confirmPassword: Joi.string().alphanum().min(8).required().messages({
-        "any.required": "Confirmation Password is required",
-    }),
+    userid: UserId,
+    password: Password,
+    confirmPassword: Password,
 })
 
 export const ChangePassword = Joi.object({
-    id: Joi.number().required().messages({
-        "any.required": "Id is required",
-    }),
-    oldPassword: Joi.string().required().messages({
-        "any.required": "Old Password is required",
-    }),
-    newPassword: Joi.string().alphanum().min(8).max(12).required().messages({
-        "any.required": "New Password is required",
-    }),
+    id: UserId,
+    oldPassword: Password,
+    newPassword: Password,
 }).options({ abortEarly: false })
 
 export const UpdateUserLevel = Joi.object({
-    user_id: Joi.number().required().messages({
-        "any.required": "User Id is required",
-    }),
+    user_id: UserId,
     level: Joi.number().valid(4, 5, 6).required().messages({
         "any.required": "Level is required",
     }),
