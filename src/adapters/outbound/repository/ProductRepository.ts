@@ -1,22 +1,25 @@
-import { ProductRequestDto } from "@domain/model/request";
-import { ProductResponseDto } from "@domain/model/response";
-import { AppDataSource } from "@infrastructure/mysql/connection";
-import { RepoPaginationParams } from "key-pagination-sql";
-import { ResultSetHeader } from "mysql2";
-import { QueryRunner } from "typeorm";
+import { ProductRequestDto } from "@domain/model/request"
+import { ProductResponseDto } from "@domain/model/response"
+import { AppDataSource } from "@infrastructure/mysql/connection"
+import { RepoPaginationParams } from "key-pagination-sql"
+import { ResultSetHeader } from "mysql2"
+import { QueryRunner } from "typeorm"
 
-const db = AppDataSource;
+const db = AppDataSource
 
 export default class ProductRepository {
     static async DBGetProductList(params: RepoPaginationParams) {
         const { limit, sort, whereClause } = params
-        return await db.query<ProductResponseDto.ProductListResponse>(`
+        return await db.query<ProductResponseDto.ProductListResponse>(
+            `
         SELECT p.id, p.name, p.description, p.price, p.stock
         FROM product p
         ${whereClause}
         AND p.is_deleted <> 1
         ORDER BY p.id ${sort}
-        LIMIT ?`, [limit + 1])
+        LIMIT ?`,
+            [limit + 1]
+        )
     }
 
     static async DBGetProductDetail(id: number, query_runner?: QueryRunner) {
@@ -27,7 +30,7 @@ export default class ProductRepository {
         return await db.query<ResultSetHeader>(`UPDATE product SET is_deleted = 1 WHERE id = ?`, [id], query_runner)
     }
 
-    static async DBCreateProduct(product: ProductRequestDto.CreateProductRequest, query_runner?:QueryRunner) {
+    static async DBCreateProduct(product: ProductRequestDto.CreateProductRequest, query_runner?: QueryRunner) {
         const { name, description, price, stock } = product
         return await db.query<ResultSetHeader>(`INSERT INTO product(name, description, price, stock) VALUES(?, ?, ?, ?)`, [name, description, price, stock], query_runner)
     }

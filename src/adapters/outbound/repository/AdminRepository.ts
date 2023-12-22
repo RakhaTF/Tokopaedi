@@ -1,21 +1,24 @@
-import { AppDataSource } from "@infrastructure/mysql/connection";
-import { AdminResponseDto } from "@domain/model/response";
-import { AdminParamsDto } from "@domain/model/params";
-import { ResultSetHeader } from "mysql2";
-import { QueryRunner } from "typeorm";
-import { RepoPaginationParams } from "key-pagination-sql";
+import { AppDataSource } from "@infrastructure/mysql/connection"
+import { AdminResponseDto } from "@domain/model/response"
+import { AdminParamsDto } from "@domain/model/params"
+import { ResultSetHeader } from "mysql2"
+import { QueryRunner } from "typeorm"
+import { RepoPaginationParams } from "key-pagination-sql"
 
-const db = AppDataSource;
+const db = AppDataSource
 
 export default class AdminRepository {
     static async DBGetAdminData(id: number): Promise<AdminResponseDto.GetAdminDataResult[]> {
-        const result = await db.query<AdminResponseDto.GetAdminDataResult[]>(`SELECT 
+        const result = await db.query<AdminResponseDto.GetAdminDataResult[]>(
+            `SELECT 
         u.id, u.name, u.email, u.level, u.created_at,
         GROUP_CONCAT(DISTINCT d.rules_id separator ',') as group_rules
         FROM user u
         LEFT JOIN user_group_rules d ON u.level = d.group_id
         WHERE u.id = ?
-        GROUP BY u.id`, [id])
+        GROUP BY u.id`,
+            [id]
+        )
 
         return result
     }
@@ -28,7 +31,8 @@ export default class AdminRepository {
     static async DBGetUserList(paginationParams: RepoPaginationParams): Promise<AdminResponseDto.GetUserListResponse[]> {
         const { limit, sort, whereClause } = paginationParams
 
-        const result = await db.query<AdminResponseDto.GetUserListResponse[]>(`
+        const result = await db.query<AdminResponseDto.GetUserListResponse[]>(
+            `
         SELECT 
         u.id, u.name, u.email, u.created_at,
         CASE
@@ -41,13 +45,18 @@ export default class AdminRepository {
         ${whereClause}
         AND u.level = 3
         ORDER BY u.id ${sort}
-        LIMIT ?`, [limit + 1])
+        LIMIT ?`,
+            [limit + 1]
+        )
         return result
     }
 
     static async DBGetUserDetailProfile(email: string): Promise<AdminResponseDto.GetUserDetailProfileResponse[]> {
-        const result = await db.query<AdminResponseDto.GetUserDetailProfileResponse[]>(`
-        SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.email = ?`, [email])
+        const result = await db.query<AdminResponseDto.GetUserDetailProfileResponse[]>(
+            `
+        SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.email = ?`,
+            [email]
+        )
 
         return result
     }
@@ -109,21 +118,25 @@ export default class AdminRepository {
     }
 
     static async DBGetUserGroupRulesList(group_id: number) {
-        return db.query<AdminResponseDto.GetUserGroupRulesResponse[]>(`
+        return db.query<AdminResponseDto.GetUserGroupRulesResponse[]>(
+            `
         SELECT group_id, GROUP_CONCAT(rules_id SEPARATOR ",") AS list_of_rules 
         FROM user_group_rules
         WHERE group_id = ?
-        GROUP BY 1`, [group_id])
+        GROUP BY 1`,
+            [group_id]
+        )
     }
 
-    static async DBChangeUserPass(userid: number, encryptPass: string, query_runner?: QueryRunner){
+    static async DBChangeUserPass(userid: number, encryptPass: string, query_runner?: QueryRunner) {
         return db.query(`UPDATE user SET password = ? WHERE id = ?`, [encryptPass, userid], query_runner)
     }
 
     static async DBGetTransactionList(paginationParams: RepoPaginationParams): Promise<AdminResponseDto.GetTransactionListResponse[]> {
         const { limit, sort, whereClause } = paginationParams
 
-        return db.query<AdminResponseDto.GetTransactionListResponse[]>(`SELECT t.id,
+        return db.query<AdminResponseDto.GetTransactionListResponse[]>(
+            `SELECT t.id,
             t.user_id,
             t.payment_method,
             t.items_price,
@@ -137,26 +150,29 @@ export default class AdminRepository {
         FROM TRANSACTION t
         ${whereClause}
         ORDER BY t.id ${sort}
-        LIMIT ?`, [limit + 1])
+        LIMIT ?`,
+            [limit + 1]
+        )
     }
 
-    static async DBGetUserShippingAddress( paginationParams: RepoPaginationParams): Promise<AdminResponseDto.GetUserShippingAddressResponse[]>{
+    static async DBGetUserShippingAddress(paginationParams: RepoPaginationParams): Promise<AdminResponseDto.GetUserShippingAddressResponse[]> {
         const { limit, sort, whereClause } = paginationParams
 
         return db.query<AdminResponseDto.GetUserShippingAddressResponse[]>(
             `SELECT sa.id, sa.user_id, sa.address, sa.postal_code, sa.city, sa.province, sa.country
             FROM shipping_address sa ${whereClause}
             ORDER BY sa.id ${sort}
-            LIMIT ?`, [limit + 1]
+            LIMIT ?`,
+            [limit + 1]
         )
     }
 
-    static async DBUpdateUserLevel(user_id: number, level: number, query_runner: QueryRunner){
+    static async DBUpdateUserLevel(user_id: number, level: number, query_runner: QueryRunner) {
         return db.query(`UPDATE user SET LEVEL = ? WHERE id = ?`, [level, user_id], query_runner)
     }
 
-    static async DBRestoreDeletedUser(user_id: number, query_runner: QueryRunner){
-        return await db.query<ResultSetHeader>(`UPDATE user SET is_deleted = 0 WHERE id = ?`,[user_id], query_runner)
+    static async DBRestoreDeletedUser(user_id: number, query_runner: QueryRunner) {
+        return await db.query<ResultSetHeader>(`UPDATE user SET is_deleted = 0 WHERE id = ?`, [user_id], query_runner)
     }
 
     static async DBCheckIsUserAlive(id: number) {

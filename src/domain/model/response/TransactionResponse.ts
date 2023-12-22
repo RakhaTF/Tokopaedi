@@ -1,29 +1,28 @@
 export type GetOrderItemByOrderIdResponse = {
-    order_id: number;
-    qty: number;
-    product_id: number;
+    order_id: number
+    qty: number
+    product_id: number
 }
 
 export type GetOrderByOrderIdResult = {
-    order_id: number;
-    qty: number;
-    product_id: number;
+    order_id: number
+    qty: number
+    product_id: number
 }
 
 export type GetTransactionDetailQueryResult = {
-    id: number;
-    user_id: number;
-    payment_method: string;
-    items_price: string;
-    shipping_price: string;
-    is_paid: number;
-    paid_at: number | null;
-    created_at: number;
-    updated_at: number;
-    product_id: number;
-    qty: number;
+    id: number
+    user_id: number
+    payment_method: string
+    items_price: string
+    shipping_price: string
+    is_paid: number
+    paid_at: number | null
+    created_at: number
+    updated_at: number
+    product_id: number
+    qty: number
 }
-
 
 export type TransactionDetailQueryResult = {
     user_id: number
@@ -40,6 +39,7 @@ export type TransactionDetailQueryResult = {
     transaction_status: string
     delivery_status: string
     created_at: number
+    expire_at: number
     address: string
     postal_code: string
     city: string
@@ -47,10 +47,9 @@ export type TransactionDetailQueryResult = {
     country: string
 }
 
-
 type ProductBought = {
-    product_name: string;
-    qty: string;
+    product_name: string
+    qty: string
 }
 
 type ShippingAddress = {
@@ -75,33 +74,34 @@ export type TransactionDetailResult = {
     delivery_status: string
     shipping_address: ShippingAddress
     created_at: string
+    expire_at: string
 }
 
 export type GetTransactionListByIdResponse = {
-    id: number;
-    user_id: number;
-    payment_method: string;
-    items_price: number;
-    shipping_price: number;
-    total_price: number;
-    shipping_address_id: number;
-    is_paid: number;
-    paid_at: number;
-    created_at: number;
-    updated_at: number;
+    id: number
+    user_id: number
+    payment_method: string
+    items_price: number
+    shipping_price: number
+    total_price: number
+    shipping_address_id: number
+    is_paid: number
+    paid_at: number
+    created_at: number
+    updated_at: number
 }
 
 export type GetTransactionStatusResponse = {
-    status: number;
+    status: number
 }
 
 export type GetProductDetailResult = {
-    product_id: number;
-    stock: number;
+    product_id: number
+    stock: number
 }
 
 export type GetAllPendingTransactionResponse = {
-    id: number;
-    created_at: number;
+    id: number
+    created_at: number
     expire_at: number
 }

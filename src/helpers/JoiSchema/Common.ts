@@ -17,8 +17,8 @@ const lastId = Joi.number().min(0).messages({
 })
 
 export const Pagination = Joi.object({
-    limit: limit,
-    search: search,
-    sort: sort,
-    lastId: lastId
-}).unknown(true)
+    limit,
+    search,
+    sort,
+    lastId,
+}).unknown(true).options({ abortEarly: false })

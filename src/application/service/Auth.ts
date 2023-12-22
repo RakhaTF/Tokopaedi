@@ -1,18 +1,28 @@
-import * as UserSchema from "helpers/JoiSchema/User";
+import * as UserSchema from "helpers/JoiSchema/User"
 import UserDomainService from "@domain/service/UserDomainService"
-import moment from 'moment'
+import moment from "moment"
 import { checkPassword, hashPassword } from "helpers/Password/Password"
-import { signJWT } from "helpers/jwt/jwt";
-import { AppDataSource } from "@infrastructure/mysql/connection";
-import { LogParamsDto, UserParamsDto } from "@domain/model/params";
-import { UserResponseDto } from "@domain/model/response";
+import { signJWT } from "helpers/jwt/jwt"
+import { AppDataSource } from "@infrastructure/mysql/connection"
+import { LogParamsDto, UserParamsDto } from "@domain/model/params"
+import { UserResponseDto } from "@domain/model/response"
 import LogDomainService from "@domain/service/LogDomainService"
+import { Profanity } from "indonesian-profanity"
 
 export default class AuthAppService {
     static async Register({ level = 3, name, email, password }) {
-        await UserSchema.Register.validateAsync({ level, name, email, password });
+        await UserSchema.Register.validateAsync({ level, name, email, password })
 
-        const db = AppDataSource;
+        if (name === "SuperAdmin") {
+            throw new Error("Prohibited name")
+        }
+
+        //Add name checking, can not use bad words for the product name
+        if (Profanity.flag(name)) {
+            throw new Error("You can't use this name!")
+        }
+
+        const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
 
@@ -21,38 +31,35 @@ export default class AuthAppService {
 
             await UserDomainService.GetEmailExistDomain(email)
 
-            if (name === 'SuperAdmin') {
-                throw new Error("Prohibited name")
-            }
 
             const user = {
                 name,
                 email,
                 password: await hashPassword(password),
                 level,
-                created_at: moment().unix()
+                created_at: moment().unix(),
             }
 
-            const { insertId } = await UserDomainService.CreateUserDomain(user, query_runner);
+            const { insertId } = await UserDomainService.CreateUserDomain(user, query_runner)
 
             const user_result = await UserDomainService.GetUserByIdDomain(insertId, query_runner)
 
-            await query_runner.commitTransaction();
-            await query_runner.release();
+            await query_runner.commitTransaction()
+            await query_runner.release()
 
             return user_result
         } catch (error) {
-            await query_runner.rollbackTransaction();
-            await query_runner.release();
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
             throw error
         }
     }
 
     static async Login(params: UserParamsDto.LoginParams, logData: LogParamsDto.CreateLogParams) {
         const { email, password } = params
-        await UserSchema.Login.validateAsync({ email, password });
+        await UserSchema.Login.validateAsync({ email, password })
 
-        const db = AppDataSource;
+        const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
 
@@ -80,7 +87,7 @@ export default class AuthAppService {
 
             const user_data = {
                 ...tmp_userdata,
-                authority: grouprules
+                authority: grouprules,
             }
 
             delete user_data.group_rules
@@ -88,13 +95,13 @@ export default class AuthAppService {
             const user_claims: UserResponseDto.UserClaimsResponse = {
                 id: user_data.id,
                 level: user_data.level,
-                authority: user_data.authority
+                authority: user_data.authority,
             }
             const expiresIn = process.env.EXPIRES_IN || "1h"
 
             const result = {
                 token: await signJWT(user_claims, process.env.JWT_SECRET || "TOKOPAEDI", { expiresIn }),
-                user: user_data
+                user: user_data,
             }
 
             //Insert into log, to track user action.
@@ -108,7 +115,7 @@ export default class AuthAppService {
             await query_runner.release()
             throw error
         } finally {
-            await query_runner.release();
+            await query_runner.release()
         }
     }
 }

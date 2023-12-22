@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
 export class CreateDeliveryStatusTable1702378116236 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE delivery_status(
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -18,5 +17,4 @@ export class CreateDeliveryStatusTable1702378116236 implements MigrationInterfac
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`TRUNCATE TABLE delivery_status`)
     }
-
 }

@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
 export class CreateLogTable1702874546288 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE table log(
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -17,5 +16,4 @@ export class CreateLogTable1702874546288 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`DROP table log`)
     }
-
 }

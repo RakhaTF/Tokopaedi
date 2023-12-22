@@ -1,21 +1,21 @@
 export type RegisterRequest = {
-    name: string;
-    email: string;
-    password: string;
+    name: string
+    email: string
+    password: string
 }
 
 export type LoginRequest = {
-    email: string;
-    password: string;
+    email: string
+    password: string
 }
 
 export type UpdateUserRequest = {
-    id: number;
-    email: string;
-    name: string;
+    id: number
+    email: string
+    name: string
 }
 
 export type ChangePasswordRequest = {
-    oldPassword: string;
-    newPassword: string;
+    oldPassword: string
+    newPassword: string
 }

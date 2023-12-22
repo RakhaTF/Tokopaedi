@@ -1,8 +1,8 @@
-import { CommonRequestDto } from "@domain/model/request";
-import LogDomainService from "@domain/service/LogDomainService";
-import unicorn from "format-unicorn/safe";
-import { GenerateWhereClause, Paginate } from "key-pagination-sql";
-import * as CommonSchema from "helpers/JoiSchema/Common";
+import { CommonRequestDto } from "@domain/model/request"
+import LogDomainService from "@domain/service/LogDomainService"
+import unicorn from "format-unicorn/safe"
+import { GenerateWhereClause, Paginate } from "key-pagination-sql"
+import * as CommonSchema from "helpers/JoiSchema/Common"
 
 export default class LogAppService {
     static async GetSystemLog(params: CommonRequestDto.PaginationRequest) {
@@ -19,13 +19,13 @@ export default class LogAppService {
             user_id: "l.user_id",
             time: "l.time",
             action: "l.action",
-            name: "u.name"
+            name: "u.name",
         })
 
         //Generate whereClause
         const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "l", tablePK: "id" })
 
-        const log = await LogDomainService.GetSystemLogDomain({limit: Number(limit), whereClause, sort})
+        const log = await LogDomainService.GetSystemLogDomain({ limit: Number(limit), whereClause, sort })
 
         //Generate pagination
         const result = Paginate({ data: log, limit })

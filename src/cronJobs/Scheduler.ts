@@ -1,83 +1,45 @@
-import * as cron from 'node-cron';
-
-
+import * as cron from "node-cron"
 
 export interface IScheduler {
+    success: boolean
 
-    success: boolean;
-
-    error: Error;
-
+    error: Error
 }
 
-
-
 export abstract class Scheduler {
+    private scheduleTime: string
 
-
-
-    private scheduleTime: string;
-
-    private task;
+    private task
 
     private options: cron.ScheduleOptions = {
-
-        scheduled: true
-
+        scheduled: true,
     }
-
-
 
     constructor(timeToExecute: string) {
+        this.scheduleTime = timeToExecute
 
-        this.scheduleTime = timeToExecute;
-
-        this.initiateScheduler();
-
+        this.initiateScheduler()
     }
-
-
 
     private initiateScheduler() {
-
-        const isJobValidated = cron.validate(this.scheduleTime);
+        const isJobValidated = cron.validate(this.scheduleTime)
 
         if (isJobValidated) {
-
-            this.task = cron.schedule(this.scheduleTime, this.taskInitializer, this.options);
-
+            this.task = cron.schedule(this.scheduleTime, this.taskInitializer, this.options)
         }
 
-
-
-        this.task.start();
-
+        this.task.start()
     }
-
-
 
     taskInitializer = async () => {
-
-        const job: IScheduler = await this.executeJob();
-
-
+        const job: IScheduler = await this.executeJob()
 
         if (job.success) {
-
-            console.log("Job Successfully executed");
-
+            console.log("Job Successfully executed")
         } else {
-
-            job.error = new Error("Error to execute the scheduled job");
-
+            job.error = new Error("Error to execute the scheduled job")
         }
-
     }
 
-
-
-    abstract executeJob(): Promise<IScheduler>;
-
-
-
+    abstract executeJob(): Promise<IScheduler>
 }

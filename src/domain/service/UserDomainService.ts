@@ -1,7 +1,7 @@
 import UserRepository from "@adapters/outbound/repository/UserRepository"
-import { UserParamsDto } from "@domain/model/params";
-import { UserResponseDto } from "@domain/model/response";
-import { QueryRunner } from 'typeorm';
+import { UserParamsDto } from "@domain/model/params"
+import { UserResponseDto } from "@domain/model/response"
+import { QueryRunner } from "typeorm"
 
 export default class UserDomainService {
     static async CreateUserDomain(user: UserParamsDto.RegisterParams, query_runner?: QueryRunner) {
@@ -9,7 +9,7 @@ export default class UserDomainService {
     }
 
     static async GetEmailExistDomain(email: string): Promise<UserResponseDto.GetEmailExistResult[]> {
-        const result = await UserRepository.DBGetEmailExist(email);
+        const result = await UserRepository.DBGetEmailExist(email)
 
         if (result.length > 0) {
             throw new Error("Email already exist")
@@ -19,11 +19,11 @@ export default class UserDomainService {
     }
 
     static async CheckUserExistsDomain(email: string, query_runner?: QueryRunner) {
-        const user = await UserRepository.DBCheckUserExists(email, query_runner);
+        const user = await UserRepository.DBCheckUserExists(email, query_runner)
         if (user.length < 1) {
             throw new Error("Account not found!")
         }
-        return user[0];
+        return user[0]
     }
 
     static async GetUserDataByIdDomain(id: number, query_runner?: QueryRunner) {
@@ -48,27 +48,27 @@ export default class UserDomainService {
         return await UserRepository.DBGetUserEmailExist(email, query_runner)
     }
 
-    static async UpdateUserEditProfileDomainService(params: UserParamsDto.UpdateUserEditProfileParams, query_runner?: QueryRunner){
+    static async UpdateUserEditProfileDomainService(params: UserParamsDto.UpdateUserEditProfileParams, query_runner?: QueryRunner) {
         const result = await UserRepository.DBUpdateUserEditProfile(params, query_runner)
-        if (result.affectedRows < 1){
-            throw new Error ("Failed update data")
+        if (result.affectedRows < 1) {
+            throw new Error("Failed update data")
         }
         return result
     }
 
-    static async GetUserPasswordByIdDomain(id: number, query_runner?: QueryRunner){
-        const result =  await UserRepository.DBGetUserPasswordById(id,query_runner)
-        if (result.length < 1){
-            throw new Error ("User not found")
+    static async GetUserPasswordByIdDomain(id: number, query_runner?: QueryRunner) {
+        const result = await UserRepository.DBGetUserPasswordById(id, query_runner)
+        if (result.length < 1) {
+            throw new Error("User not found")
         }
 
         return result[0]
     }
 
-    static async UpdatePasswordDomain(passEncrypt: string, id: number, query_runner?: QueryRunner){
+    static async UpdatePasswordDomain(passEncrypt: string, id: number, query_runner?: QueryRunner) {
         const result = await UserRepository.DBUpdatePassword(passEncrypt, id, query_runner)
-        if (result.affectedRows < 1){
-            throw new Error ("Failed change password")
+        if (result.affectedRows < 1) {
+            throw new Error("Failed change password")
         }
         return true
     }

@@ -93,8 +93,8 @@ const routes: RouteOptions[] = [
                 search: {
                     id: "number",
                     user_id: "number",
-                    city: "string"
-                }
+                    city: "string",
+                },
             }),
             response: Schema.BasePaginationResultSchema,
         },
@@ -208,6 +208,7 @@ const routes: RouteOptions[] = [
                         },
                     },
                     created_at: { type: "string" },
+                    expire_at: { type: "string" },
                 },
             }),
         },

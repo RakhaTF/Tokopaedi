@@ -1,5 +1,5 @@
 import { ShippingAddressRepository } from "@adapters/outbound/repository/ShippingAddressRepository"
-import {  ShippingAddressParamsDto } from "@domain/model/params"
+import { ShippingAddressParamsDto } from "@domain/model/params"
 import { RepoPaginationParams } from "key-pagination-sql"
 import { QueryRunner } from "typeorm"
 
@@ -11,8 +11,8 @@ export default class ShippingAddressDomainService {
         }
     }
 
-    static async GetShippingAddressDetailDomain(id: number, query_runner?: QueryRunner) {
-        const shippingAddress = await ShippingAddressRepository.DBGetShippingAddressDetail(id, query_runner)
+    static async GetShippingAddressDetailDomain(id: number) {
+        const shippingAddress = await ShippingAddressRepository.DBGetShippingAddressDetail(id)
         if (shippingAddress.length < 1) {
             throw new Error("Shipping Address Not Found!")
         }
@@ -34,7 +34,6 @@ export default class ShippingAddressDomainService {
         }
     }
 
-
     static async UpdateShippingAddressDomain(params: ShippingAddressParamsDto.UpdateShippingAddressParams, query_runner?: QueryRunner) {
         const shippingAddress = await ShippingAddressRepository.DBUpdateShippingAddress(params, query_runner)
         if (shippingAddress.affectedRows < 1) {
@@ -42,9 +41,9 @@ export default class ShippingAddressDomainService {
         }
     }
 
-    static async GetUserShippingAddressByIdDomain(user_id: number, paginationParams: RepoPaginationParams){
+    static async GetUserShippingAddressByIdDomain(user_id: number, paginationParams: RepoPaginationParams) {
         const result = await ShippingAddressRepository.DBGetUserShippingAddressById(user_id, paginationParams)
-        if (result.length < 1){
+        if (result.length < 1) {
             throw new Error("Shipping address not found")
         }
         return result
