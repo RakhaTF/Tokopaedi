@@ -1,7 +1,7 @@
 import Joi from "joi"
 import { UserId } from "./User"
 
-const TransactionId = Joi.number().min(1).required().messages({
+export const TransactionId = Joi.number().min(1).required().messages({
     "number.base": "transaction_id must be a number",
     "number.min": "transaction_id must be greater than or equal to 1",
     "any.required": "transaction_id is a required field",
