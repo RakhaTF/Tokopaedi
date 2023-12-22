@@ -350,6 +350,7 @@ const routes: RouteOptions[] = [
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_TRANSACTION_LIST }),
         handler: AdminController.GetUserTransactionListById,
         schema: {
+            tags: ["Admin"],
             body: Schema.BasePaginationRequestSchema({
                 pic: "Rakha",
                 search: {
@@ -523,6 +524,7 @@ const routes: RouteOptions[] = [
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_SYSTEM_LOG }),
         handler: LogController.GetSystemLog,
         schema: {
+            tags: ["Admin"],
             body: Schema.BasePaginationRequestSchema({
                 pic: "Rakha",
                 search: {
@@ -541,6 +543,7 @@ const routes: RouteOptions[] = [
         preHandler: CheckAuthAdmin({ rules: Rules.RESTORE_DELETED_USER }),
         handler: AdminController.RestoreDeletedUser,
         schema: {
+            tags: ["Admin"],
             body: Schema.BaseRequestSchema("Rakha", {
                 user_id: { type: "number" },
             }),

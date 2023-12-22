@@ -228,6 +228,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/transaction/list",
         handler: UserController.TransactionList,
         schema: {
+            tags: ["User"],
             body: Schema.BasePaginationRequestSchema({
                 pic: "Rakha",
                 search: {
@@ -246,6 +247,7 @@ const routes: RouteOptions[] = [
         url: "/api/v1/user/change-pass",
         handler: UserController.ChangePassword,
         schema: {
+            tags: ["User"],
             body: Schema.BaseRequestSchema("Raihan", {
                 oldPassword: { type: "string" },
                 newPassword: { type: "string" },
