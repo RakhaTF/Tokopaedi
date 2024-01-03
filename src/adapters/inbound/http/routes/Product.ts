@@ -5,7 +5,7 @@ import * as Schema from "helpers/ApiSchema/ApiSchema"
 const routes: RouteOptions[] = [
     {
         method: ["POST"],
-        url: "/api/v1/product/list",
+        url: "list",
         handler: ProductController.GetProductList,
         schema: {
             tags: ["Product"],
@@ -21,7 +21,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/product/detail",
+        url: "detail",
         handler: ProductController.GetProductDetail,
         schema: {
             tags: ["Product"],

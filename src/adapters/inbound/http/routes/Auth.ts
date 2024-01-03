@@ -5,7 +5,7 @@ import * as Schema from "helpers/ApiSchema/ApiSchema"
 const routes: RouteOptions[] = [
     {
         method: ["POST"],
-        url: "/api/v1/auth/register",
+        url: "register",
         handler: AuthController.Register,
         schema: {
             tags: ["Auth"],
@@ -28,7 +28,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/auth/login",
+        url: "login",
         handler: AuthController.Login,
         schema: {
             tags: ["Auth"],
