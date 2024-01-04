@@ -58,3 +58,5 @@ export const ChangePassword = Joi.object({
     oldPassword: Password,
     newPassword: Password,
 }).options({ abortEarly: false })
+
+export const VerifyEmail = Joi.string().required()

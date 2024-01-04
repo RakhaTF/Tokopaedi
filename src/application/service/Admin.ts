@@ -12,6 +12,7 @@ import * as CommonSchema from "helpers/JoiSchema/Common"
 import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import unicorn from "format-unicorn/safe"
 import { Profanity } from "indonesian-profanity"
+import { signJWT } from "helpers/jwt/jwt"
 
 export default class AdminAppService {
     static async GetAdminProfileService(id: number) {
@@ -32,12 +33,14 @@ export default class AdminAppService {
 
         await UserDomainService.GetEmailExistDomain(email)
 
+        const email_token: string = await signJWT(email, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRES_IN })
         const user = {
             name: name,
             email: email,
             password: await hashPassword(password),
             level,
             created_at: moment().unix(),
+            email_token
         }
 
         const db = AppDataSource

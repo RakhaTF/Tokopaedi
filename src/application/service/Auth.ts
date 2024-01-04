@@ -2,12 +2,13 @@ import * as UserSchema from "helpers/JoiSchema/User"
 import UserDomainService from "@domain/service/UserDomainService"
 import moment from "moment"
 import { checkPassword, hashPassword } from "helpers/Password/Password"
-import { signJWT } from "helpers/jwt/jwt"
+import { signJWT, verifyJWT } from "helpers/jwt/jwt"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import { LogParamsDto, UserParamsDto } from "@domain/model/params"
 import { UserResponseDto } from "@domain/model/response"
 import LogDomainService from "@domain/service/LogDomainService"
 import { Profanity } from "indonesian-profanity"
+import { emailer } from "@infrastructure/mailer/mailer"
 
 export default class AuthAppService {
     static async Register({ level = 3, name, email, password }) {
@@ -31,22 +32,27 @@ export default class AuthAppService {
 
             await UserDomainService.GetEmailExistDomain(email)
 
-
+            const expiresIn = process.env.EXPIRES_IN || "1h"
+            const email_token: string = await signJWT({ email: email }, process.env.JWT_SECRET, { expiresIn })
             const user = {
                 name,
                 email,
                 password: await hashPassword(password),
                 level,
                 created_at: moment().unix(),
+                email_token: encodeURIComponent(email_token)
             }
 
             const { insertId } = await UserDomainService.CreateUserDomain(user, query_runner)
 
             const user_result = await UserDomainService.GetUserByIdDomain(insertId, query_runner)
 
+            //Email service to notify newly registered user and admin.
+            emailer.notifyUserForSignup(email, name, email_token)
+            emailer.notifyAdminForNewUser(email, name)
+
             await query_runner.commitTransaction()
             await query_runner.release()
-
             return user_result
         } catch (error) {
             await query_runner.rollbackTransaction()
@@ -56,6 +62,7 @@ export default class AuthAppService {
     }
 
     static async Login(params: UserParamsDto.LoginParams, logData: LogParamsDto.CreateLogParams) {
+        console.log({ env: process.env.GMAIL_USER })
         const { email, password } = params
         await UserSchema.Login.validateAsync({ email, password })
 
@@ -116,6 +123,38 @@ export default class AuthAppService {
             throw error
         } finally {
             await query_runner.release()
+        }
+    }
+
+    static async VerifyEmail(token: string, logData: LogParamsDto.CreateLogParams) {
+        await UserSchema.VerifyEmail.validateAsync(token)
+
+        await verifyJWT(token, process.env.JWT_SECRET)
+
+        //Checking if the user is already verify their email
+        const user = await UserDomainService.FindUserByTokenDomain(token)
+        if (user.is_verified == 1) {
+            throw new Error("Account is already verified")
+        }
+
+        const db = AppDataSource
+        const query_runner = db.createQueryRunner()
+        await query_runner.connect()
+
+        try {
+            await query_runner.startTransaction()
+
+            //verify the email
+            await UserDomainService.VerifyEmailDomain(user.email, query_runner)
+            await LogDomainService.CreateLogDomain({ ...logData, user_id: user.id }, query_runner)
+
+            await query_runner.commitTransaction()
+            await query_runner.release()
+            return true
+        } catch (error) {
+            await query_runner.rollbackTransaction()
+            await query_runner.release()
+            throw error
         }
     }
 }

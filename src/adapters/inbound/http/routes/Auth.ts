@@ -54,6 +54,16 @@ const routes: RouteOptions[] = [
             }),
         },
     },
+    {
+        method: ["GET"],
+        url: "/verify-email/:token",
+        handler: AuthController.VerifyEmail,
+        schema: {
+            tags: ["Auth"],
+            params: { token: { type: "string" } },
+            response: Schema.BaseResponse({ type: "Boolean" }),
+        },
+    },
 ]
 
 export default async function AuthRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
