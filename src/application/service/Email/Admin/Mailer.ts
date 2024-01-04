@@ -3,7 +3,7 @@ import path from "path";
 import * as Handlebars from 'handlebars'
 import { MailOptions } from 'nodemailer/lib/json-transport';
 
-const templatePath = path.join(__dirname, '../../helpers/Email/template/');
+const templatePath = path.join(__dirname, '../../../../helpers/Email/template/');
 
 export const notifyAdminNewUserEmailTemplate = (email: string, username: string) => {
     return {
