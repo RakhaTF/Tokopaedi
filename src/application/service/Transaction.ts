@@ -12,6 +12,8 @@ import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import LogDomainService from "@domain/service/LogDomainService"
 import { Product } from "@domain/model/BaseClass/Product"
 import { QueryRunner } from "typeorm"
+import { emailer } from "@infrastructure/mailer/mailer"
+import UserDomainService from "@domain/service/UserDomainService"
 
 export default class TransactionAppService {
     static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams, logData: LogParamsDto.CreateLogParams) {
@@ -94,15 +96,28 @@ export default class TransactionAppService {
 
             await Promise.all(updateProductPromises)
 
-            const getOrderItem = await TransactionDomainService.GetOrderItemByOrderIdDomain(insertId, query_runner)
-
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            //create a variable to hold product detail to email to user after creating a transaction/cart
+            const productToEmail = products.map((prod, index) => {
+                return {
+                    productName: prod.name,
+                    quantity: orderItem[index].qty,
+                    price: prod.price,
+                }
+            })
+
+            //get user info
+            const { email, name } = await UserDomainService.GetUserDataByIdDomain(id)
+
+            //send email to notify user
+            emailer.notifyUserToPayTransaction({email, products: productToEmail, total: items_price, username: name})
 
             await query_runner.commitTransaction()
             await query_runner.release()
 
-            return getOrderItem
+            return orderItem
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()

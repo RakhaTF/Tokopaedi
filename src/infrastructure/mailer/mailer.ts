@@ -1,5 +1,7 @@
 
-import { newUserEmailTemplate, notifyAdminLowStockProductEmailTemplate, notifyAdminNewUserEmailTemplate } from "@application/service/Mailer";
+import { notifyAdminLowStockProductEmailTemplate, notifyAdminNewUserEmailTemplate } from "@application/service/Email/Admin/Mailer";
+import { newUserEmailTemplate, payTransactionEmailTemplate } from "@application/service/Email/User/Mailer";
+import { EmailParamsDto } from "@domain/model/params";
 import * as nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/json-transport";
 
@@ -38,8 +40,13 @@ export class Emailer {
         this.sendEmail(await newUserEmailTemplate(email, username, token));
     }
 
-    public async notifyAdminForLowStockProduct(product: { name: string, stock: number }[]){
+    public async notifyAdminForLowStockProduct(product: { name: string, stock: number }[]) {
         this.sendEmail(notifyAdminLowStockProductEmailTemplate(product))
+    }
+
+    public async notifyUserToPayTransaction(params: EmailParamsDto.PayTransactionEmailParams) {
+        const { email, products, total, username } = params
+        this.sendEmail(await payTransactionEmailTemplate({ email, username, products, total }))
     }
 }
 
