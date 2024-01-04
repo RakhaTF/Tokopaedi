@@ -154,7 +154,7 @@ export default class ProductAppService {
             }))
             //send email to admin to notify.
             emailer.notifyAdminForLowStockProduct(lowStockProduct)
+            return true
         }
-        return productList
     }
 }
