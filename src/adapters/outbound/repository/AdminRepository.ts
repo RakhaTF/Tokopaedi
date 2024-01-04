@@ -178,4 +178,8 @@ export default class AdminRepository {
     static async DBCheckIsUserAlive(id: number) {
         return await db.query<{ id: number }[]>(`SELECT u.id FROM user u WHERE u.id = ? AND u.is_deleted <> 1`, [id])
     }
+
+    static async DBCheckExpiredAccount():Promise<AdminResponseDto.CheckExpiredAccountResponse[]>{
+        return await db.query(`SELECT u.id, u.email_token FROM user u WHERE u.is_verified <> 1`)
+    }
 }

@@ -4,6 +4,8 @@ import FastifyRouteAddon from "@application/boot/fastify/route"
 import FastifySwaggerAddon from "@application/boot/fastify/swagger"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import { TransactionScheduler } from "cronJobs/transaction-scheduler/Transaction"
+// import { UserScheduler } from "cronJobs/user-scheduler/User"
+import AdminAppService from "@application/service/Admin"
 
 const server = fastify({
     logger: {
@@ -34,9 +36,11 @@ server.listen({ port: 8080 }, (err, address) => {
     console.log(`Server listening at ${address}`)
     //CronJob to check if there is an expire transaction
     new TransactionScheduler()
+    // new UserScheduler()
 })
 
-server.get("/", () => {
+server.get("/", async () => {
+    return await AdminAppService.CheckExpiredAccount()
     console.log("test")
     return "hello"
 })

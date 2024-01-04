@@ -141,4 +141,8 @@ export default class AdminDomainService {
         }
         return true
     }
+
+    static async CheckExpiredAccountDomain(){
+        return await AdminRepository.DBCheckExpiredAccount()
+    }
 }

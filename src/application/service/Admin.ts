@@ -12,8 +12,7 @@ import * as CommonSchema from "helpers/JoiSchema/Common"
 import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import unicorn from "format-unicorn/safe"
 import { Profanity } from "indonesian-profanity"
-import { signJWT } from "helpers/jwt/jwt"
-
+import jwt, { JwtPayload } from "jsonwebtoken"
 export default class AdminAppService {
     static async GetAdminProfileService(id: number) {
         await AdminSchema.GetAdminProfile.validateAsync(id)
@@ -70,7 +69,7 @@ export default class AdminAppService {
 
     static async UpdateProfileUser(params: AdminParamsDto.UpdateProfileUserParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.UpdateProfileUser.validateAsync(params)
-        
+
         //Add name checking, can not use bad words for the product name
         const banned = ["SuperAdmin", "Product Management Staff", "User Management Staff", "Shipping and Transaction Management Staff"]
 
@@ -551,5 +550,28 @@ export default class AdminAppService {
             await query_runner.release()
             throw error
         }
+    }
+
+    static async CheckExpiredAccount() {
+        const expiredAccount = await AdminDomainService.CheckExpiredAccountDomain()
+
+        const listOfUnverifiedAccount = expiredAccount.map((acc) =>
+        ({
+            id: acc.id,
+            token: acc.email_token
+        }))
+
+        const
+
+        const listOfExpiredAccount = listOfUnverifiedAccount.map((acc)=>{
+            const decoded: JwtPayload | string = jwt.decode(acc.token);
+            if(decoded && decoded.exp)
+        })
+
+        if(listOfExpiredAccount.length > 0){
+            console.log(listOfExpiredAccount)
+        }
+        console.log({ listOfUnverifiedAccount })
+        return expiredAccount
     }
 }

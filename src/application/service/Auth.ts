@@ -80,6 +80,10 @@ export default class AuthAppService {
                 throw new Error("Your account is deleted, please contact an admin")
             }
 
+            if(existingUser.is_verified === 0) {
+                throw new Error("Please verify your email first!")
+            }
+
             const checkPassworduUser = await checkPassword(params.password, existingUser.password)
             if (!checkPassworduUser) {
                 throw new Error("Wrong Username Or Password")
