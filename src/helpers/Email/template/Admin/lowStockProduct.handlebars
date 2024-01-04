@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Low Stock Notification</title>
+</head>
+<body>
+   <h1>Low Stock Notification</h1>
+   <p>Dear Admin,</p>
+   <p>We have identified the following products with low stock:</p>
+   <ul>
+       {{#each products}}
+           <li>{{this.name}} - Stock: {{this.stock}}</li>
+       {{/each}}
+   </ul>
+   <p>Please take necessary actions.</p>
+   <p>Best Regards,</p>
+   <p>Tokopaedi</p>
+</body>
+</html>

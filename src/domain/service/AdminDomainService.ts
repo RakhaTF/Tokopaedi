@@ -145,4 +145,11 @@ export default class AdminDomainService {
     static async CheckExpiredAccountDomain(){
         return await AdminRepository.DBCheckExpiredAccount()
     }
+
+    static async HardDeleteUserDomain(userId: number, query_runner?: QueryRunner){
+        const deleteUser = await AdminRepository.DBHardDeleteUser(userId, query_runner)
+        if(deleteUser.affectedRows < 1){
+            throw new Error("Failed to delete user!")
+        }
+    }
 }

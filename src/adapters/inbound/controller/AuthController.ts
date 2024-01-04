@@ -22,10 +22,7 @@ export default class AuthController {
 
     static async VerifyEmail(request: FastifyRequest) {
         const { token } = request.query as { token: string }
-        console.log({token})
-        const decodedToken = decodeURIComponent(token);
-        console.log({decodedToken})
-        const verifyEmail = await AuthService.VerifyEmail(decodedToken, {
+        const verifyEmail = await AuthService.VerifyEmail(token, {
             user_id: 0,
             action: `Verify Email`,
             ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),

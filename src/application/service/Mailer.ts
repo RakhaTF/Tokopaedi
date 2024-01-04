@@ -31,3 +31,16 @@ export const notifyAdminNewUserEmailTemplate = (email: string, username: string)
     `,
     } as MailOptions;
 };
+
+export const notifyAdminLowStockProductEmailTemplate = (product: { name: string, stock: number }[]) => {
+    const template = fs.readFileSync(templatePath + 'Admin/' + 'lowStockProduct.handlebars', 'utf8');
+    const compiledTemplate = Handlebars.compile(template);
+    const html = compiledTemplate({ products: product })
+    return {
+        from: process.env.GMAIL_SUPER_ADMIN,
+        to: process.env.GMAIL_USER,
+        subject: `Low Stock Product Notification`,
+        text: `Low Stock Product Notification`,
+        html,
+    } as MailOptions;
+};

@@ -40,7 +40,7 @@ export default class AuthAppService {
                 password: await hashPassword(password),
                 level,
                 created_at: moment().unix(),
-                email_token: encodeURIComponent(email_token)
+                email_token: email_token
             }
 
             const { insertId } = await UserDomainService.CreateUserDomain(user, query_runner)
@@ -62,7 +62,6 @@ export default class AuthAppService {
     }
 
     static async Login(params: UserParamsDto.LoginParams, logData: LogParamsDto.CreateLogParams) {
-        console.log({ env: process.env.GMAIL_USER })
         const { email, password } = params
         await UserSchema.Login.validateAsync({ email, password })
 

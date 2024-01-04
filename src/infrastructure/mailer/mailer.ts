@@ -1,5 +1,5 @@
 
-import { newUserEmailTemplate, notifyAdminNewUserEmailTemplate } from "@application/service/Mailer";
+import { newUserEmailTemplate, notifyAdminLowStockProductEmailTemplate, notifyAdminNewUserEmailTemplate } from "@application/service/Mailer";
 import * as nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/json-transport";
 
@@ -36,6 +36,10 @@ export class Emailer {
 
     public async notifyUserForSignup(email: string, username: string, token: string) {
         this.sendEmail(await newUserEmailTemplate(email, username, token));
+    }
+
+    public async notifyAdminForLowStockProduct(product: { name: string, stock: number }[]){
+        this.sendEmail(notifyAdminLowStockProductEmailTemplate(product))
     }
 }
 

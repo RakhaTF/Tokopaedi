@@ -18,7 +18,7 @@ export class UserScheduler extends Scheduler {
     }
 
     async executeJob(): Promise<IScheduler> {
-        console.log("CRON JOB HIT")
+        console.log("USER CRON JOB HIT")
         return await this.CheckExpiredAccount()
     }
     

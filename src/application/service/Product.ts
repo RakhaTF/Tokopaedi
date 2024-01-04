@@ -9,6 +9,7 @@ import { LogParamsDto } from "@domain/model/params"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import LogDomainService from "@domain/service/LogDomainService"
 import { Profanity } from "indonesian-profanity"
+import { emailer } from "@infrastructure/mailer/mailer"
 export default class ProductAppService {
     static async GetProductList(params: CommonRequestDto.PaginationRequest) {
         await CommonSchema.Pagination.validateAsync(params)
@@ -141,5 +142,19 @@ export default class ProductAppService {
             await query_runner.release()
             throw error
         }
+    }
+
+    static async CheckLowStockProduct(){
+        const productList = await ProductDomainService.CheckLowStockProductDomain
+        ()
+        if(productList.length !== 0){
+            const lowStockProduct = productList.map((prod)=>({
+                name: prod.name,
+                stock: prod.stock
+            }))
+            //send email to admin to notify.
+            emailer.notifyAdminForLowStockProduct(lowStockProduct)
+        }
+        return productList
     }
 }

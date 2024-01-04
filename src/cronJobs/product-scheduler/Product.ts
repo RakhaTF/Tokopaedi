@@ -1,13 +1,13 @@
-import TransactionAppService from "@application/service/Transaction"
+import ProductAppService from "@application/service/Product"
 import { IScheduler, Scheduler } from "cronJobs/Scheduler"
 
-export class TransactionScheduler extends Scheduler {
+export class ProductScheduler extends Scheduler {
     constructor() {
         super("0 */5 * * * *")
     }
     private async CheckTransactionExpiration() {
-        const expiredTransaction = await TransactionAppService.CheckExpiredTransaction()
-        if (expiredTransaction) {
+        const lowStockProduct = await ProductAppService.CheckLowStockProduct()
+        if (lowStockProduct) {
             return {
                 success: true,
                 error: new Error(undefined),
@@ -16,7 +16,7 @@ export class TransactionScheduler extends Scheduler {
     }
 
     async executeJob(): Promise<IScheduler> {
-        console.log("TRANSACTION CRON JOB HIT")
+        console.log("PRODUCT CRON JOB HIT")
         return await this.CheckTransactionExpiration()
     }
 }

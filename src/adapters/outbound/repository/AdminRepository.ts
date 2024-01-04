@@ -182,4 +182,8 @@ export default class AdminRepository {
     static async DBCheckExpiredAccount():Promise<AdminResponseDto.CheckExpiredAccountResponse[]>{
         return await db.query(`SELECT u.id, u.email_token FROM user u WHERE u.is_verified <> 1`)
     }
+
+    static async DBHardDeleteUser(userId: number, query_runner?: QueryRunner){
+        return await db.query<ResultSetHeader>(`DELETE FROM user WHERE id = ?`, [userId], query_runner)
+    }
 }

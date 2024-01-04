@@ -79,7 +79,6 @@ export default class UserDomainService {
 
     static async FindUserByTokenDomain(token: string) {
         const user = await UserRepository.DBFindUserByToken(token)
-        console.log({user})
         if (user.length < 1) {
             throw new Error("User not found")
         }
@@ -88,7 +87,6 @@ export default class UserDomainService {
 
     static async VerifyEmailDomain(email: string, query_runner: QueryRunner) {
         const verify = await UserRepository.DBVerifyEmail(email, query_runner)
-        console.log({verify})
         if(verify.affectedRows < 1){
             throw new Error("Failed to verify email")
         }

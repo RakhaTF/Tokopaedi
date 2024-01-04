@@ -13,6 +13,7 @@ import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import unicorn from "format-unicorn/safe"
 import { Profanity } from "indonesian-profanity"
 import jwt, { JwtPayload } from "jsonwebtoken"
+import { signJWT } from "helpers/jwt/jwt"
 export default class AdminAppService {
     static async GetAdminProfileService(id: number) {
         await AdminSchema.GetAdminProfile.validateAsync(id)
@@ -553,25 +554,22 @@ export default class AdminAppService {
     }
 
     static async CheckExpiredAccount() {
-        const expiredAccount = await AdminDomainService.CheckExpiredAccountDomain()
 
-        const listOfUnverifiedAccount = expiredAccount.map((acc) =>
-        ({
-            id: acc.id,
-            token: acc.email_token
-        }))
+        //check expired account, filter it from unverified account.
+        const expiredAccounts = (await AdminDomainService.CheckExpiredAccountDomain()).map(acc => ({ id: acc.id, token: acc.email_token })).map(acc => {
+            const decoded = jwt.decode(acc.token) as JwtPayload
+            return decoded ? { id: acc.id, isExpired: decoded.exp < moment().unix() } : undefined
+        }).filter(account => account?.isExpired)
 
-        const
+        //if there is an expired account or more, delete it permanently (hard delete).
+        if (expiredAccounts.length !== 0) {
+            const logData: LogParamsDto.CreateLogParams = { user_id: 1, action: `Delete Expired Account #`, browser: `CRON JOB`, ip: "127.0.0.1", time: moment().unix() }
 
-        const listOfExpiredAccount = listOfUnverifiedAccount.map((acc)=>{
-            const decoded: JwtPayload | string = jwt.decode(acc.token);
-            if(decoded && decoded.exp)
-        })
-
-        if(listOfExpiredAccount.length > 0){
-            console.log(listOfExpiredAccount)
+            await Promise.all(expiredAccounts.map(acc => Promise.all([
+                AdminDomainService.HardDeleteUserDomain(acc.id),
+                LogDomainService.CreateLogDomain({ ...logData, action: `Delete Expired Account #${acc.id}` })
+            ])))
+            return true
         }
-        console.log({ listOfUnverifiedAccount })
-        return expiredAccount
     }
 }
