@@ -5,7 +5,7 @@ export class ProductScheduler extends Scheduler {
     constructor() {
         super("0 */5 * * * *")
     }
-    private async CheckTransactionExpiration() {
+    private async CHeckLowStockProduct() {
         const lowStockProduct = await ProductAppService.CheckLowStockProduct()
         if (lowStockProduct) {
             return {
@@ -17,6 +17,6 @@ export class ProductScheduler extends Scheduler {
 
     async executeJob(): Promise<IScheduler> {
         console.log("PRODUCT CRON JOB HIT")
-        return await this.CheckTransactionExpiration()
+        return await this.CHeckLowStockProduct()
     }
 }
