@@ -250,7 +250,7 @@ export default class TransactionAppService {
 
             //get user transaction detail
             const transactionDetail = await TransactionDomainService.GetTransactionDetailDomain(transaction_id)
-            console.log({ transactionDetail })
+
             //create a variable to hold product detail to email
             //extract product name & qty
             const productId = transactionDetail.product_bought_id.split(",")
@@ -291,8 +291,7 @@ export default class TransactionAppService {
                 postalCode: postal_code,
                 province,
             }
-            console.log({ dataToEmail })
-            // emailer.notifyUserForSuccessfulTransaciton(dataToEmail)
+            emailer.notifyUserForSuccessfulTransaciton(dataToEmail)
 
             /**
              * END OF EMAILING SECTION

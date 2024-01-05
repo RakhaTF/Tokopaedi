@@ -91,7 +91,7 @@ export default class TransactionRepository {
 
     static async DBPayTransaction(params: TransactionParamsDto.PayTransactionRepositoryParams, query_runner: QueryRunner) {
         const { is_paid, paid_at, payment_method, shipping_price, updated_at, user_id, shipping_address_id, transaction_id } = params
-        console.log({ params })
+        
         const query = `
         UPDATE transaction SET 
         payment_method = ?, 

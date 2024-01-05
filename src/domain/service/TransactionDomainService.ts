@@ -67,7 +67,6 @@ export default class TransactionDomainService {
 
     static async PayTransactionDomain(params: TransactionParamsDto.PayTransactionRepositoryParams, query_runner: QueryRunner) {
         const paymentResult = await TransactionRepository.DBPayTransaction(params, query_runner)
-        console.log({ paymentResult })
         if (paymentResult.affectedRows < 1) {
             throw Error("Failed to Pay Transaction")
         }
