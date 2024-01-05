@@ -8,18 +8,17 @@ export class User {
     level: number
     authority: number[]
 
-    constructor() {
-        this.id = 0
-        this.name = ""
-        this.email = ""
-        this.level = 0
-        this.authority = []
+    constructor(id=0, name='', email='', level=0, authority=[]) {
+        this.id = id
+        this.name = name
+        this.email = email
+        this.level = level
+        this.authority = authority
     }
 
-    set(params: UserClaimsResponse) {
-        this.id = params.id
-        this.level = params.level
-        this.authority = params.authority
+    set(params: UserClaimsResponse): this {
+        ({ id: this.id, level: this.level, authority: this.authority } = params)
+        return this
     }
 
     get() {
@@ -31,6 +30,6 @@ export class User {
     }
 
     static async getUserData(id: number) {
-        return await UserDomainService.GetUserDataByIdDomain(id)
+        return UserDomainService.GetUserDataByIdDomain(id)
     }
 }
