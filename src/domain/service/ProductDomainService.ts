@@ -71,7 +71,7 @@ export default class ProductDomainService {
         return true
     }
 
-    static async CheckLowStockProductDomain(){
-        return await ProductRepository.DBGetLowStockProduct() 
+    static async CheckLowStockProductDomain() {
+        return await ProductRepository.DBGetLowStockProduct()
     }
 }

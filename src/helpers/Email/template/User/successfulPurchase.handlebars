@@ -1,0 +1,28 @@
+{{#> layout title="Successful Purchase Confirmation"}}
+   {{#*inline "body"}}
+       <div class="container" style="font-family: Arial, sans-serif;">
+           <p style="margin-top: 0;">Hello {{name}},</p>
+           <h1 style="color: #333;">Thank you for your purchase!</h1>
+           <p>We're thrilled to inform you that your recent order has been successfully processed.</p>
+           <p>Order ID: {{orderId}}</p>
+           <h1 style="color: #333;">Payment Summary</h1>
+           <p>Total Amount: ${{totalAmount}}</p>
+           <p>Payment Method: {{paymentMethod}}</p>
+           <p>Paid At: {{paidTime}} WIB</p>
+           <p>Items Purchased:</p>
+           <ul style="list-style-type: none; padding-left: 0;">
+               {{#each items}}
+                  <li style="padding: 5px 0; border-bottom: 1px solid #ddd;">{{this.productName}} - Quantity: {{this.quantity}}x</li>
+               {{/each}}
+           </ul>
+           <h1 style="color: #333;">Delivery Address</h1>
+           <p>{{address}}, {{city}}</p>
+           <p>{{province}} - {{postalCode}}</p>
+           <p>{{country}}</p>
+           <p>You can track your order status through our website.</p>
+           <p>Thank you again for shopping with us!</p>
+           <p>Best Regards,</p>
+           <b>Tokopaedi</b>
+       </div>
+   {{/inline}}
+{{/layout}}

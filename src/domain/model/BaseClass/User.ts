@@ -8,7 +8,7 @@ export class User {
     level: number
     authority: number[]
 
-    constructor(id=0, name='', email='', level=0, authority=[]) {
+    constructor(id = 0, name = "", email = "", level = 0, authority = []) {
         this.id = id
         this.name = name
         this.email = email
@@ -17,7 +17,7 @@ export class User {
     }
 
     set(params: UserClaimsResponse): this {
-        ({ id: this.id, level: this.level, authority: this.authority } = params)
+        ;({ id: this.id, level: this.level, authority: this.authority } = params)
         return this
     }
 

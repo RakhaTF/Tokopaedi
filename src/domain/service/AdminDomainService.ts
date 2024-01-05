@@ -30,7 +30,7 @@ export default class AdminDomainService {
 
     static async GetUserDetailProfileDomain(email: string) {
         const result = await AdminRepository.DBGetUserDetailProfile(email)
-        if(result.length < 1){
+        if (result.length < 1) {
             throw new Error("Profile not found")
         }
         return result[0]
@@ -105,7 +105,7 @@ export default class AdminDomainService {
 
     static async GetTransactionListDomain(paginationParams: RepoPaginationParams) {
         const txList = await AdminRepository.DBGetTransactionList(paginationParams)
-        if(txList.length < 1){
+        if (txList.length < 1) {
             throw new Error("No Transaction Found!")
         }
         return txList
@@ -113,7 +113,7 @@ export default class AdminDomainService {
 
     static async GetUserShippingAddressDomain(paginationParams: RepoPaginationParams) {
         const addressList = await AdminRepository.DBGetUserShippingAddress(paginationParams)
-        if(addressList.length < 1){
+        if (addressList.length < 1) {
             throw new Error("No Address Found!")
         }
         return addressList
@@ -142,13 +142,13 @@ export default class AdminDomainService {
         return true
     }
 
-    static async CheckExpiredAccountDomain(){
+    static async CheckExpiredAccountDomain() {
         return await AdminRepository.DBCheckExpiredAccount()
     }
 
-    static async HardDeleteUserDomain(userId: number, query_runner?: QueryRunner){
+    static async HardDeleteUserDomain(userId: number, query_runner?: QueryRunner) {
         const deleteUser = await AdminRepository.DBHardDeleteUser(userId, query_runner)
-        if(deleteUser.affectedRows < 1){
+        if (deleteUser.affectedRows < 1) {
             throw new Error("Failed to delete user!")
         }
     }

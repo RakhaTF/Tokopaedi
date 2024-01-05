@@ -66,6 +66,6 @@ export type GetUserShippingAddressResponse = {
 }
 
 export type CheckExpiredAccountResponse = {
-    id: number;
-    email_token: string;
+    id: number
+    email_token: string
 }

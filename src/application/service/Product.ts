@@ -23,7 +23,7 @@ export default class ProductAppService {
         let searchFilter = search || ""
         searchFilter = unicorn(searchFilter, {
             name: "p.name",
-            price: "p.price"
+            price: "p.price",
         })
 
         //Generate whereClause
@@ -144,13 +144,12 @@ export default class ProductAppService {
         }
     }
 
-    static async CheckLowStockProduct(){
-        const productList = await ProductDomainService.CheckLowStockProductDomain
-        ()
-        if(productList.length !== 0){
-            const lowStockProduct = productList.map((prod)=>({
+    static async CheckLowStockProduct() {
+        const productList = await ProductDomainService.CheckLowStockProductDomain()
+        if (productList.length !== 0) {
+            const lowStockProduct = productList.map((prod) => ({
                 name: prod.name,
-                stock: prod.stock
+                stock: prod.stock,
             }))
             //send email to admin to notify.
             emailer.notifyAdminForLowStockProduct(lowStockProduct)

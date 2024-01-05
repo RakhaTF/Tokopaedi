@@ -1,5 +1,5 @@
-import AdminAppService from "@application/service/Admin";
-import { IScheduler, Scheduler } from "cronJobs/Scheduler";
+import AdminAppService from "@application/service/Admin"
+import { IScheduler, Scheduler } from "cronJobs/Scheduler"
 
 export class UserScheduler extends Scheduler {
     constructor() {
@@ -21,5 +21,4 @@ export class UserScheduler extends Scheduler {
         console.log("USER CRON JOB HIT")
         return await this.CheckExpiredAccount()
     }
-    
 }

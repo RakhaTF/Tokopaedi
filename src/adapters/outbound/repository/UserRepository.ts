@@ -98,11 +98,11 @@ export default class UserRepository {
         return result
     }
 
-    static async DBFindUserByToken(token: string){
+    static async DBFindUserByToken(token: string) {
         return await db.query<UserResponseDto.FindUserByTokenResult[]>(`SELECT id, email, is_verified, email_token FROM user WHERE email_token = ?`, [token])
     }
 
-    static async DBVerifyEmail(email: string, query_runner: QueryRunner){
+    static async DBVerifyEmail(email: string, query_runner: QueryRunner) {
         return await db.query<ResultSetHeader>(`UPDATE user SET is_verified = 1, email_token = NULL WHERE email = ?`, [email], query_runner)
     }
 }

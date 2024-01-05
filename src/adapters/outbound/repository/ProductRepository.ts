@@ -44,7 +44,7 @@ export default class ProductRepository {
         return await db.query<{ id: number }[]>(`SELECT p.id FROM product p WHERE p.id = ? AND p.is_deleted <> 1`, [id])
     }
 
-    static async DBGetLowStockProduct(){
-        return await db.query<{ name: string, stock: number }[]>(`SELECT p.name, p.stock FROM product p WHERE p.stock <= 10`)
+    static async DBGetLowStockProduct() {
+        return await db.query<{ name: string; stock: number }[]>(`SELECT p.name, p.stock FROM product p WHERE p.stock <= 10`)
     }
 }

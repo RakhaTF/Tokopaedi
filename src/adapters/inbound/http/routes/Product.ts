@@ -13,11 +13,11 @@ const routes: RouteOptions[] = [
                 pic: "Rakha",
                 search: {
                     name: "string",
-                    price: "string"
+                    price: "string",
                 },
             }),
-            response: Schema.BasePaginationResultSchema
-        }
+            response: Schema.BasePaginationResultSchema,
+        },
     },
     {
         method: ["POST"],

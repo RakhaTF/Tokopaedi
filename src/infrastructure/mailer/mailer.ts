@@ -1,12 +1,11 @@
-
-import { notifyAdminLowStockProductEmailTemplate, notifyAdminNewUserEmailTemplate } from "@application/service/Email/Admin/Mailer";
-import { newUserEmailTemplate, payTransactionEmailTemplate } from "@application/service/Email/User/Mailer";
-import { EmailParamsDto } from "@domain/model/params";
-import * as nodemailer from "nodemailer";
-import { MailOptions } from "nodemailer/lib/json-transport";
+import { notifyAdminLowStockProductEmailTemplate, notifyAdminNewUserEmailTemplate } from "@application/service/Email/Admin/Mailer"
+import { newUserEmailTemplate, payTransactionEmailTemplate, successfulTransactionEmailTemplate } from "@application/service/Email/User/Mailer"
+import { EmailParamsDto } from "@domain/model/params"
+import * as nodemailer from "nodemailer"
+import { MailOptions } from "nodemailer/lib/json-transport"
 
 export class Emailer {
-    private readonly transporter: nodemailer.Transporter;
+    private readonly transporter: nodemailer.Transporter
 
     constructor() {
         this.transporter = nodemailer.createTransport({
@@ -17,7 +16,7 @@ export class Emailer {
                 user: process.env.SMTP_EMAIL,
                 pass: process.env.SMTP_PASS,
             },
-        });
+        })
 
         this.transporter.verify((err) => {
             if (err) {
@@ -29,18 +28,18 @@ export class Emailer {
     }
 
     public sendEmail(mailOptions: MailOptions) {
-        return this.transporter.sendMail(mailOptions);
+        return this.transporter.sendMail(mailOptions)
     }
 
     public async notifyAdminForNewUser(email: string, username: string) {
-        this.sendEmail(notifyAdminNewUserEmailTemplate(email, username));
+        this.sendEmail(notifyAdminNewUserEmailTemplate(email, username))
     }
 
     public async notifyUserForSignup(email: string, username: string, token: string) {
-        this.sendEmail(await newUserEmailTemplate(email, username, token));
+        this.sendEmail(await newUserEmailTemplate(email, username, token))
     }
 
-    public async notifyAdminForLowStockProduct(product: { name: string, stock: number }[]) {
+    public async notifyAdminForLowStockProduct(product: { name: string; stock: number }[]) {
         this.sendEmail(notifyAdminLowStockProductEmailTemplate(product))
     }
 
@@ -48,6 +47,10 @@ export class Emailer {
         const { email, products, total, username } = params
         this.sendEmail(await payTransactionEmailTemplate({ email, username, products, total }))
     }
+
+    public async notifyUserForSuccessfulTransaciton(params: EmailParamsDto.successfulTransactionEmailParams) {
+        this.sendEmail(successfulTransactionEmailTemplate(params))
+    }
 }
 
-export const emailer = new Emailer();
+export const emailer = new Emailer()

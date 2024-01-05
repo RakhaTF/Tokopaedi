@@ -40,7 +40,7 @@ export default class AuthAppService {
                 password: await hashPassword(password),
                 level,
                 created_at: moment().unix(),
-                email_token: email_token
+                email_token: email_token,
             }
 
             const { insertId } = await UserDomainService.CreateUserDomain(user, query_runner)
@@ -79,7 +79,7 @@ export default class AuthAppService {
                 throw new Error("Your account is deleted, please contact an admin")
             }
 
-            if(existingUser.is_verified === 0) {
+            if (existingUser.is_verified === 0) {
                 throw new Error("Please verify your email first!")
             }
 

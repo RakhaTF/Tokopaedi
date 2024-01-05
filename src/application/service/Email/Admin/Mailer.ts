@@ -1,9 +1,9 @@
-import * as fs from 'fs';
-import path from "path";
-import * as Handlebars from 'handlebars'
-import { MailOptions } from 'nodemailer/lib/json-transport';
+import * as fs from "fs"
+import path from "path"
+import * as Handlebars from "handlebars"
+import { MailOptions } from "nodemailer/lib/json-transport"
 
-const templatePath = path.join(__dirname, '../../../../helpers/Email/template/');
+const templatePath = path.join(__dirname, "../../../../helpers/Email/template/")
 
 export const notifyAdminNewUserEmailTemplate = (email: string, username: string) => {
     return {
@@ -15,12 +15,12 @@ export const notifyAdminNewUserEmailTemplate = (email: string, username: string)
       <h1>New User: ${username}</h1>
       <p>email: ${email}</p>
     `,
-    } as MailOptions;
-};
+    } as MailOptions
+}
 
-export const notifyAdminLowStockProductEmailTemplate = (product: { name: string, stock: number }[]) => {
-    const template = fs.readFileSync(templatePath + 'Admin/' + 'lowStockProduct.handlebars', 'utf8');
-    const compiledTemplate = Handlebars.compile(template);
+export const notifyAdminLowStockProductEmailTemplate = (product: { name: string; stock: number }[]) => {
+    const template = fs.readFileSync(templatePath + "Admin/" + "lowStockProduct.handlebars", "utf8")
+    const compiledTemplate = Handlebars.compile(template)
     const html = compiledTemplate({ products: product })
     return {
         from: process.env.GMAIL_SUPER_ADMIN,
@@ -28,5 +28,5 @@ export const notifyAdminLowStockProductEmailTemplate = (product: { name: string,
         subject: `Low Stock Product Notification`,
         text: `Low Stock Product Notification`,
         html,
-    } as MailOptions;
-};
+    } as MailOptions
+}

@@ -87,7 +87,7 @@ export default class UserDomainService {
 
     static async VerifyEmailDomain(email: string, query_runner: QueryRunner) {
         const verify = await UserRepository.DBVerifyEmail(email, query_runner)
-        if(verify.affectedRows < 1){
+        if (verify.affectedRows < 1) {
             throw new Error("Failed to verify email")
         }
     }

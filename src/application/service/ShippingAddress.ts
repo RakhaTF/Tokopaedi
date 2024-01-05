@@ -164,7 +164,7 @@ export default class ShippingAddressAppService {
         searchFilter = unicorn(searchFilter, {
             id: "s.id",
             city: "s.city",
-            isDeleted: "s.is_deleted"
+            isDeleted: "s.is_deleted",
         })
 
         //Generate whereClause

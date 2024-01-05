@@ -30,6 +30,6 @@ export default class AuthController {
             time: moment().unix(),
         })
 
-        return { message: verifyEmail}
+        return { message: verifyEmail }
     }
 }

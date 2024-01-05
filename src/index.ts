@@ -41,6 +41,5 @@ server.listen({ port: 8080 }, (err, address) => {
 })
 
 server.get("/", async () => {
-    console.log("test")
     return "hello"
 })
