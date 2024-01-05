@@ -17,7 +17,7 @@ fs.readdirSync(partialsDir).forEach((file) => {
 export const newUserEmailTemplate = async (email: string, username: string, token: string) => {
     const template = fs.readFileSync(templatePath + "User/" + "register.handlebars", "utf8")
     const compiledTemplate = Handlebars.compile(template)
-    const html = compiledTemplate({ username, email, link: `${process.env.host}/auth/verify-email/${token}` })
+    const html = compiledTemplate({ username, email, link: `${process.env.host}/auth/verify-email/?=${token}` })
 
     return {
         from: process.env.GMAIL_SUPER_ADMIN,
