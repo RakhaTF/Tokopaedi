@@ -22,7 +22,8 @@ const server = fastify({
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
 });
 
 AppDataSource.initialize()
@@ -50,7 +51,7 @@ server.listen({ port: 8080 }, (err, address) => {
     new ProductScheduler()
 })
 
-async function uploadImage(request: FastifyRequest): Promise<any> {
+async function uploadImage(request: FastifyRequest) {
     // Get the file from the request
     const file = await request.file();
 
@@ -68,14 +69,18 @@ async function uploadImage(request: FastifyRequest): Promise<any> {
 
     // Now that the file is saved locally, we can upload it to Cloudinary
     const buffer = fs.readFileSync(destPath);
-
+    
     return new Promise((resolve, reject) => {
+        //extracting filename and removing the file extension.
+        const filename = file.filename.split('.')[0]
         cloudinary.uploader.upload_stream(
-            { resource_type: 'auto' },
+            { resource_type: 'auto', folder: "tokopaedi/products", upload_preset: "tokopaedi", public_id: filename },
             (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
+                    //will delete the file after every successful upload.
+                    fs.unlinkSync(destPath);
                     resolve(result);
                 }
             }

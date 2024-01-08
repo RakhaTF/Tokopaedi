@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class AddEmailVerification1704271925558 implements MigrationInterface {
+export class AddEmailVerification1701844827200 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE user
         ADD COLUMN is_verified BOOLEAN DEFAULT FALSE,
