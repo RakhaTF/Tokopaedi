@@ -1,4 +1,4 @@
-import fastify from "fastify"
+import fastify, { FastifyReply, FastifyRequest } from "fastify"
 import FastifyBaseAddon from "./application/boot/fastify/base"
 import FastifyRouteAddon from "@application/boot/fastify/route"
 import FastifySwaggerAddon from "@application/boot/fastify/swagger"
@@ -6,6 +6,9 @@ import { AppDataSource } from "@infrastructure/mysql/connection"
 import { TransactionScheduler } from "cronJobs/transaction-scheduler/Transaction"
 import { UserScheduler } from "cronJobs/user-scheduler/User"
 import { ProductScheduler } from "cronJobs/product-scheduler/Product"
+import { v2 as cloudinary } from 'cloudinary'
+import path from "path"
+import fs from 'fs';
 
 const server = fastify({
     logger: {
@@ -14,6 +17,13 @@ const server = fastify({
         },
     },
 })
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 AppDataSource.initialize()
     .then(() => {
@@ -40,6 +50,44 @@ server.listen({ port: 8080 }, (err, address) => {
     new ProductScheduler()
 })
 
-server.get("/", async () => {
-    return "hello"
+async function uploadImage(request: FastifyRequest): Promise<any> {
+    // Get the file from the request
+    const file = await request.file();
+
+    // Define the destination path for the uploaded file
+    const destPath = path.join(__dirname, '../src/uploads', file.filename);
+    // Create a write stream to save the file locally
+    const writeStream = fs.createWriteStream(destPath);
+
+    // Pipe the file data to the write stream
+    await new Promise((resolve, reject) => {
+        file.file.pipe(writeStream);
+        writeStream.on('finish', resolve);
+        writeStream.on('error', reject);
+    });
+
+    // Now that the file is saved locally, we can upload it to Cloudinary
+    const buffer = fs.readFileSync(destPath);
+
+    return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+            { resource_type: 'auto' },
+            (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
+            }
+        ).end(buffer);
+    });
+}
+
+server.post("/", async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+        const result = await uploadImage(request);
+        reply.send(result);
+    } catch (error) {
+        reply.send(error);
+    }
 })
