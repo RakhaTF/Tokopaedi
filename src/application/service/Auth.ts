@@ -9,9 +9,10 @@ import { UserResponseDto } from "@domain/model/response"
 import LogDomainService from "@domain/service/LogDomainService"
 import { Profanity } from "indonesian-profanity"
 import { emailer } from "@infrastructure/mailer/mailer"
+import { UserRequestDto } from "@domain/model/request"
 
 export default class AuthAppService {
-    static async Register({ level = 3, name, email, password }) {
+    static async Register({ level, name, email, password }: UserRequestDto.RegisterRequest) {
         await UserSchema.Register.validateAsync({ level, name, email, password })
 
         if (name === "SuperAdmin") {
@@ -33,6 +34,8 @@ export default class AuthAppService {
             await UserDomainService.GetEmailExistDomain(email)
 
             const expiresIn = process.env.EXPIRES_IN || "1h"
+
+            //Create an email token used to verify email.
             const email_token: string = await signJWT({ email: email }, process.env.JWT_SECRET, { expiresIn })
             const user = {
                 name,

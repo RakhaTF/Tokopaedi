@@ -23,7 +23,7 @@ export default class AdminAppService {
         return admin
     }
 
-    static async CreateUserService({ id, level = 3, name, email, password }, logData: LogParamsDto.CreateLogParams) {
+    static async CreateUserService({ id, level, name, email, password }: AdminParamsDto.CreateUserParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.CreateUser.validateAsync({ id, level, name, email, password })
 
         //Add name checking, can not use bad words for the product name
@@ -33,10 +33,11 @@ export default class AdminAppService {
 
         await UserDomainService.GetEmailExistDomain(email)
 
-        const email_token: string = await signJWT(email, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRES_IN })
+        //Create an email token used to verify email.
+        const email_token: string = await signJWT({ email }, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRES_IN })
         const user = {
-            name: name,
-            email: email,
+            name,
+            email,
             password: await hashPassword(password),
             level,
             created_at: moment().unix(),

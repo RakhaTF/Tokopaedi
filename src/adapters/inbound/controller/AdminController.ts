@@ -24,6 +24,7 @@ export default class AdminController {
                 name,
                 email,
                 password,
+                level: 3
             },
             {
                 user_id: jwt.id,

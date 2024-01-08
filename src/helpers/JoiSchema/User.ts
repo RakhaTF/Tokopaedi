@@ -22,10 +22,13 @@ export const Name = Joi.string()
         "string.min": "name must be at least 3 characters long",
     })
 
-export const Email = Joi.string().email().required().messages({
-    "any.required": "Email is required",
-    "string.email": "Email must be a valid email",
-})
+export const Email = Joi.string()
+    .pattern(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/)
+    .required()
+    .messages({
+        "any.required": "Email is required",
+        "string.pattern.base": "Email must be a valid email",
+    });
 
 export const Register = Joi.object({
     name: Name,

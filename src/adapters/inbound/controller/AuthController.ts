@@ -5,7 +5,8 @@ import moment from "moment"
 
 export default class AuthController {
     static async Register(request: FastifyRequest) {
-        const register = await AuthService.Register(request.body as UserRequestDto.RegisterRequest)
+        const { name, email, password } = request.body as UserRequestDto.RegisterRequest
+        const register = await AuthService.Register({ email, name, password, level: 3 })
         return { message: register }
     }
 
