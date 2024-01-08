@@ -1,8 +1,8 @@
-import { DataSource } from "typeorm"
 import "dotenv/config"
+import { DataSource } from "typeorm"
 
 export const AppDataSource = new DataSource({
-    type: process.env.DB_IDENTIFIER as "mysql",
+    type: process.env.DB_IDENTIFIER as "mysql" || "mysql",
     host: process.env.DB_HOST,
     port: Number(process.env.DB_MYSQL_PORT),
     username: process.env.DB_USER,

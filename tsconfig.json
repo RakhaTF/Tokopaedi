@@ -20,6 +20,6 @@
       "@adapters/*": ["./adapters/*"]
     }
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "src/helpers/Email/template/Admin/**/*.handlebars"],
   "exclude": ["node_modules"]
 }

@@ -3,7 +3,7 @@ import path from "path"
 import * as Handlebars from "handlebars"
 import { MailOptions } from "nodemailer/lib/json-transport"
 
-const templatePath = path.join(__dirname, "../../../../helpers/Email/template/")
+const templatePath = path.resolve(__dirname, "../../../../helpers/Email/template/")
 
 export const notifyAdminNewUserEmailTemplate = (email: string, username: string) => {
     return {
@@ -19,7 +19,7 @@ export const notifyAdminNewUserEmailTemplate = (email: string, username: string)
 }
 
 export const notifyAdminLowStockProductEmailTemplate = (product: { name: string; stock: number }[]) => {
-    const template = fs.readFileSync(templatePath + "Admin/" + "lowStockProduct.handlebars", "utf8")
+    const template = fs.readFileSync(templatePath + "/Admin/" + "lowStockProduct.handlebars", "utf8")
     const compiledTemplate = Handlebars.compile(template)
     const html = compiledTemplate({ products: product })
     return {

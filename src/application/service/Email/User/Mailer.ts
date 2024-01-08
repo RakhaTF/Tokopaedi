@@ -4,18 +4,18 @@ import * as Handlebars from "handlebars"
 import { MailOptions } from "nodemailer/lib/json-transport"
 import { EmailParamsDto } from "@domain/model/params"
 
-const templatePath = path.join(__dirname, "../../../../helpers/Email/template/")
-const partialsDir = path.join(__dirname, "../../../../helpers/Email/template/partials/")
+const templatePath = path.resolve(__dirname, "../../../../helpers/Email/template/")
+const partialsDir = path.resolve(__dirname, "../../../../helpers/Email/template/partials/")
 
 // Register partials
 fs.readdirSync(partialsDir).forEach((file) => {
-    const source = fs.readFileSync(path.join(partialsDir, file)).toString()
+    const source = fs.readFileSync(path.resolve(partialsDir, file)).toString()
     const partialName = path.basename(file, ".handlebars")
     Handlebars.registerPartial(partialName, source)
 })
 
 export const newUserEmailTemplate = async (email: string, username: string, token: string) => {
-    const template = fs.readFileSync(templatePath + "User/" + "register.handlebars", "utf8")
+    const template = fs.readFileSync(templatePath + "/User/" + "register.handlebars", "utf8")
     const compiledTemplate = Handlebars.compile(template)
     const html = compiledTemplate({ username, email, link: `${process.env.host}/auth/verify-email/?=${token}` })
 
@@ -30,7 +30,7 @@ export const newUserEmailTemplate = async (email: string, username: string, toke
 
 export const payTransactionEmailTemplate = async (params: EmailParamsDto.PayTransactionEmailParams) => {
     const { email, products, total, username } = params
-    const template = fs.readFileSync(templatePath + "User/" + "payTransaction.handlebars", "utf8")
+    const template = fs.readFileSync(templatePath + "/User/" + "payTransaction.handlebars", "utf8")
     const compiledTemplate = Handlebars.compile(template)
     const html = compiledTemplate({ username, products, totalPrice: total, email })
 
@@ -45,7 +45,7 @@ export const payTransactionEmailTemplate = async (params: EmailParamsDto.PayTran
 
 export const successfulTransactionEmailTemplate = (params: EmailParamsDto.successfulTransactionEmailParams) => {
     const { address, email, items, name, orderId, paidTime, paymentMethod, totalAmount, city, country, postalCode, province } = params
-    const template = fs.readFileSync(templatePath + "User/" + "successfulPurchase.handlebars", "utf8")
+    const template = fs.readFileSync(templatePath + "/User/" + "successfulPurchase.handlebars", "utf8")
     const compiledTemplate = Handlebars.compile(template)
     const html = compiledTemplate({ address, items, name, orderId, paidTime, paymentMethod, totalAmount, city, country, postalCode, province })
 

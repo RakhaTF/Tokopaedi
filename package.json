@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon -e ts --exec \"ts-node -r tsconfig-paths/register -r ./src/index.ts\"",
     "migrate": "npx typeorm-ts-node-commonjs migration:run -d src/infrastructure/mysql/connection.ts",
-    "lint": "eslint \"**/*.{js,ts}\" --quiet --fix"
+    "lint": "eslint \"**/*.{js,ts}\" --quiet --fix",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node copy-templates.js"
   },
   "dependencies": {
     "@fastify/formbody": "7.4.0",
@@ -42,6 +43,7 @@
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",
+    "fs-extra": "^11.2.0",
     "ts-node": "^10.9.2",
     "tsc-alias": "1.8.8",
     "tsconfig-paths": "4.2.0",
