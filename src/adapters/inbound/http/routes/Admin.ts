@@ -5,20 +5,39 @@ import { Rules } from "@domain/model/Rules"
 import * as Schema from "helpers/ApiSchema/ApiSchema"
 import AdminController from "@adapters/inbound/controller/AdminController"
 import LogController from "@adapters/inbound/controller/LogController"
+import fastifyMulter from "fastify-multer"
+import moment from "moment"
+import path from "path"
 
+const multer = fastifyMulter;
+const storage = multer.diskStorage({
+    destination: path.resolve(__dirname, "../../../../uploads/"),
+    filename: (_req, file, cb) => {
+        // Format the current date and time as a string in the desired format
+        // For example, 'YYYYMMDDHHmmss' will format the date as '20230415123045' for April 15, 2023, at 12:30:45
+        const dateNow = moment().format('YYYYMMDDHHmmss');
+        const filename = `${dateNow}-${file.originalname.trim()}`;
+        cb(null, filename);
+    }
+});
+
+const upload = multer({ storage })
 const routes: RouteOptions[] = [
     {
         method: ["POST"],
         url: "product/create",
         preHandler: CheckAuthAdmin({ rules: Rules.CREATE_PRODUCT }),
         handler: ProductController.CreateProduct,
+        preValidation: [upload.fields([{ name: "image", maxCount: 1 }])],
         schema: {
             tags: ["Admin"],
+            consumes: ['multipart/form-data'],
             body: Schema.BaseRequestSchema("Rakha", {
                 name: { type: "string" },
                 description: { type: "string" },
                 price: { type: "integer" },
                 stock: { type: "integer" },
+                image: { type: "file" },
             }),
             response: Schema.BaseResponse({ type: "Boolean" }),
         },

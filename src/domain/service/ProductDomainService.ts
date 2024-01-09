@@ -1,5 +1,6 @@
 import ProductRepository from "@adapters/outbound/repository/ProductRepository"
 import { Product } from "@domain/model/BaseClass/Product"
+import { ProductParamsDto } from "@domain/model/params"
 import { ProductRequestDto } from "@domain/model/request"
 import { RepoPaginationParams } from "key-pagination-sql"
 import { QueryRunner } from "typeorm"
@@ -28,7 +29,7 @@ export default class ProductDomainService {
         }
     }
 
-    static async CreateProductDomain(product: ProductRequestDto.CreateProductRequest, query_runner?: QueryRunner) {
+    static async CreateProductDomain(product: ProductParamsDto.CreateProductParams, query_runner?: QueryRunner) {
         const newProduct = await ProductRepository.DBCreateProduct(product, query_runner)
         if (newProduct.affectedRows < 1) {
             throw new Error("Create Product Failed!")

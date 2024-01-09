@@ -17,7 +17,7 @@ export class User {
     }
 
     set(params: UserClaimsResponse): this {
-        ;({ id: this.id, level: this.level, authority: this.authority } = params)
+        ({ id: this.id, level: this.level, authority: this.authority } = params)
         return this
     }
 

@@ -1,3 +1,4 @@
+import { ProductParamsDto } from "@domain/model/params"
 import { ProductRequestDto } from "@domain/model/request"
 import { ProductResponseDto } from "@domain/model/response"
 import { AppDataSource } from "@infrastructure/mysql/connection"
@@ -30,9 +31,9 @@ export default class ProductRepository {
         return await db.query<ResultSetHeader>(`UPDATE product SET is_deleted = 1 WHERE id = ?`, [id], query_runner)
     }
 
-    static async DBCreateProduct(product: ProductRequestDto.CreateProductRequest, query_runner?: QueryRunner) {
-        const { name, description, price, stock } = product
-        return await db.query<ResultSetHeader>(`INSERT INTO product(name, description, price, stock) VALUES(?, ?, ?, ?)`, [name, description, price, stock], query_runner)
+    static async DBCreateProduct(product: ProductParamsDto.CreateProductParams, query_runner?: QueryRunner) {
+        const { name, description, price, stock, img_src, public_id } = product
+        return await db.query<ResultSetHeader>(`INSERT INTO product(name, description, price, stock, img_src, public_id) VALUES(?, ?, ?, ?, ?, ?)`, [name, description, price, stock, img_src, public_id], query_runner)
     }
 
     static async DBUpdateProduct(product: ProductRequestDto.UpdateProductRequest, query_runner?: QueryRunner) {

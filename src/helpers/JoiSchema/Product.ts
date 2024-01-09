@@ -13,7 +13,7 @@ const Price = Joi.number().min(1).messages({
 
 const Description = Joi.string()
     .max(100)
-    .pattern(/^[a-zA-Z0-9 ]*$/)
+    .pattern(/^[a-zA-Z0-9 _-]*$/)
     .messages({
         "string.base": "Description must be a string",
         "string.max": "Description must be no more than 100 characters long",
@@ -41,7 +41,7 @@ export const CreateProduct = Joi.object({
     stock: Stock.required().messages({
         "any.required": "Stock is required",
     }),
-}).options({ abortEarly: false })
+}).options({ abortEarly: false }).unknown(true)
 
 export const UpdateProduct = Joi.object({
     id: ProductId,
