@@ -57,7 +57,9 @@ export default class ProductController {
 
     static async UpdateProduct(request: FastifyRequest) {
         const jwt = request.user
-        const updateProduct = await ProductAppService.UpdateProduct(request.body as ProductRequestDto.UpdateProductRequest, {
+        const files = request.files
+        const productUpdate = request.body as ProductRequestDto.UpdateProductRequest
+        const updateProduct = await ProductAppService.UpdateProduct(productUpdate, files, {
             user_id: jwt.id,
             action: `Update Product ${jwt.id}`,
             ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),

@@ -1,7 +1,6 @@
 import ProductRepository from "@adapters/outbound/repository/ProductRepository"
 import { Product } from "@domain/model/BaseClass/Product"
 import { ProductParamsDto } from "@domain/model/params"
-import { ProductRequestDto } from "@domain/model/request"
 import { RepoPaginationParams } from "key-pagination-sql"
 import { QueryRunner } from "typeorm"
 
@@ -36,7 +35,7 @@ export default class ProductDomainService {
         }
     }
 
-    static async UpdateProductDomain(product: ProductRequestDto.UpdateProductRequest, query_runner?: QueryRunner) {
+    static async UpdateProductDomain(product: ProductParamsDto.UpdateProductParams, query_runner?: QueryRunner) {
         const newProduct = await ProductRepository.DBUpdateProduct(product, query_runner)
         if (newProduct.affectedRows < 1) {
             throw new Error("Update Product Failed!")

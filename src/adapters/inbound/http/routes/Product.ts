@@ -34,6 +34,8 @@ const routes: RouteOptions[] = [
                     description: { type: "string" },
                     price: { type: "integer" },
                     stock: { type: "integer" },
+                    public_id: { type: "string" },
+                    img_src: { type: "string" }
                 },
             }),
         },

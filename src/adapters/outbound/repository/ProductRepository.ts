@@ -1,5 +1,4 @@
 import { ProductParamsDto } from "@domain/model/params"
-import { ProductRequestDto } from "@domain/model/request"
 import { ProductResponseDto } from "@domain/model/response"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import { RepoPaginationParams } from "key-pagination-sql"
@@ -13,7 +12,7 @@ export default class ProductRepository {
         const { limit, sort, whereClause } = params
         return await db.query<ProductResponseDto.ProductListResponse>(
             `
-        SELECT p.id, p.name, p.description, p.price, p.stock
+        SELECT p.id, p.name, p.description, p.price, p.stock, p.public_id, p.img_src
         FROM product p
         ${whereClause}
         AND p.is_deleted <> 1
@@ -24,7 +23,7 @@ export default class ProductRepository {
     }
 
     static async DBGetProductDetail(id: number, query_runner?: QueryRunner) {
-        return await db.query<ProductResponseDto.ProductDetailResponse[]>(`SELECT id, name, description, price, stock FROM product WHERE id = ?`, [id], query_runner)
+        return await db.query<ProductResponseDto.ProductDetailResponse[]>(`SELECT p.id, p.name, p.description, p.price, p.stock, p.public_id, p.img_src FROM product p WHERE id = ?`, [id], query_runner)
     }
 
     static async DBSoftDeleteProduct(id: number, query_runner?: QueryRunner) {
@@ -36,9 +35,9 @@ export default class ProductRepository {
         return await db.query<ResultSetHeader>(`INSERT INTO product(name, description, price, stock, img_src, public_id) VALUES(?, ?, ?, ?, ?, ?)`, [name, description, price, stock, img_src, public_id], query_runner)
     }
 
-    static async DBUpdateProduct(product: ProductRequestDto.UpdateProductRequest, query_runner?: QueryRunner) {
-        const { id, name, description, price, stock } = product
-        return await db.query<ResultSetHeader>(`UPDATE product SET name = ?, description = ?, price = ?, stock = ? WHERE id = ?`, [name, description, price, stock, id], query_runner)
+    static async DBUpdateProduct(product: ProductParamsDto.UpdateProductParams, query_runner?: QueryRunner) {
+        const { id, name, description, price, stock, img_src, public_id } = product
+        return await db.query<ResultSetHeader>(`UPDATE product SET name = ?, description = ?, price = ?, stock = ?, img_src = ?, public_id = ? WHERE id = ?`, [name, description, price, stock, img_src, public_id, id], query_runner)
     }
 
     static async DBCheckIsProductAlive(id: number) {

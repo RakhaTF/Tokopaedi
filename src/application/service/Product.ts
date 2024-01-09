@@ -123,7 +123,7 @@ export default class ProductAppService {
             await ProductDomainService.CreateProductDomain({ ...product, img_src: secure_url, public_id }, query_runner)
 
             //Insert into log, to track user action.
-            await LogDomainService.CreateLogDomain({...logData, action: `Create Product #${product.name}`}, query_runner)
+            await LogDomainService.CreateLogDomain({ ...logData, action: `Create Product #${product.name}` }, query_runner)
 
             await query_runner.commitTransaction()
             await query_runner.release()
@@ -140,7 +140,7 @@ export default class ProductAppService {
         }
     }
 
-    static async UpdateProduct(product: ProductRequestDto.UpdateProductRequest, logData: LogParamsDto.CreateLogParams) {
+    static async UpdateProduct(product: ProductRequestDto.UpdateProductRequest, files: FilesObject, logData: LogParamsDto.CreateLogParams) {
         await ProductSchema.UpdateProduct.validateAsync(product)
         const { id, description, name, price, stock } = product
 
@@ -155,7 +155,7 @@ export default class ProductAppService {
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
-
+        let img_public_id: string;
         try {
             await query_runner.startTransaction()
 
@@ -169,7 +169,41 @@ export default class ProductAppService {
                 if (stock) updateProductData.stock = stock
             }
 
-            await ProductDomainService.UpdateProductDomain({ ...updateProductData, id }, query_runner)
+            const imageObjects: Partial<File[]> = [];
+
+            for (const key in files) {
+                if (files && Object.prototype.hasOwnProperty.call(files, key)) {
+                    const fileArray = files[key];
+                    if (Array.isArray(fileArray) && fileArray.length > 0) {
+                        const imageFile = fileArray[0]; // Assuming each key in files is an array and you want the first file
+                        const imageFileType = imageFile.mimetype;
+                        const imageMimeTypes = ['image/gif', 'image/jpeg', 'image/png'];
+                        const imageSize = imageFile.size / 1000; // Size in kilobytes
+
+                        // Validate files mimetype and size
+                        if (!imageMimeTypes.includes(imageFileType)) throw new Error("INVALID_FILE_TYPE")
+                        if (imageSize > 2048) throw new Error(`${imageFile.fieldname?.toUpperCase()}_FILE_SIZE_TOO_BIG. MAX_2_MB`)
+
+                        imageObjects.push({
+                            fieldname: imageFile.fieldname,
+                            encoding: imageFile.encoding,
+                            mimetype: imageFile.mimetype,
+                            originalname: imageFile.originalname,
+                            filename: imageFile.filename,
+                        });
+                    }
+                }
+            }
+
+            //upload image to cloudinary and extract the url & public_id.
+            const { secure_url, public_id } = await UploadImage(imageObjects[0])
+            //assign public_id to img_public_id for use in catch.
+            img_public_id = public_id
+
+            await ProductDomainService.UpdateProductDomain({ ...updateProductData, id, img_src: secure_url, public_id }, query_runner)
+            
+            //delete the old image from cloudinary
+            await DeleteImage(existingProduct.public_id)
 
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
@@ -180,6 +214,8 @@ export default class ProductAppService {
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
+            //delete the image from cloudinary, in case there is an error.
+            await DeleteImage(img_public_id, {}, () => console.log("Successfully deleted image"))
             throw error
         }
     }
