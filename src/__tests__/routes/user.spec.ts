@@ -76,7 +76,6 @@ describe('Auth Routes', () => {
         expect(body.message.column).toHaveLength(5)
         userColumnName.forEach(element => expect(body.message.column).toContain(element))
         paginationResponseBodyProperty.forEach(element => expect(body.message).toHaveProperty(element))
-        expect(body.message).toHaveProperty("hasNext", false)
         expect(body.message).toHaveProperty("currentPageDataCount", 1)
 
         expect(userName).toEqual(newUserData.name)

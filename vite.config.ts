@@ -7,7 +7,7 @@ export default defineConfig({
             provider: 'istanbul',
         },
         clearMocks: true,
-        exclude: [...configDefaults.exclude, './src/migration/**/*'],
+        exclude: [...configDefaults.exclude, './src/migration/**/*', 'build'],
     },
     plugins: [tsconfigPaths()],
  })
