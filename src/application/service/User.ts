@@ -1,13 +1,13 @@
 import { LogParamsDto, UserParamsDto } from "@domain/model/params"
 import UserDomainService from "@domain/service/UserDomainService"
-import * as UserSchema from "helpers/JoiSchema/User"
-import { checkPassword, hashPassword } from "helpers/Password/Password"
+import * as UserSchema from "@helpers/JoiSchema/User"
+import { checkPassword, hashPassword } from "@helpers/Password/Password"
 import LogDomainService from "@domain/service/LogDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import { Profanity } from "indonesian-profanity"
 export default class UserAppService {
-    static async GetUserProfileService({ id }) {
-        await UserSchema.GetUserProfile.validateAsync({ id })
+    static async GetUserProfileService(id) {
+        await UserSchema.GetUserProfile.validateAsync(id)
 
         const user = await UserDomainService.GetUserDataByIdDomain(id)
 

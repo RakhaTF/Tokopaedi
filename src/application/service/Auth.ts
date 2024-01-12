@@ -1,8 +1,8 @@
-import * as UserSchema from "helpers/JoiSchema/User"
+import * as UserSchema from "@helpers/JoiSchema/User"
 import UserDomainService from "@domain/service/UserDomainService"
 import moment from "moment"
-import { checkPassword, hashPassword } from "helpers/Password/Password"
-import { signJWT, verifyJWT } from "helpers/jwt/jwt"
+import { checkPassword, hashPassword } from "@helpers/Password/Password"
+import { signJWT, verifyJWT } from "@helpers/jwt/jwt"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import { LogParamsDto, UserParamsDto } from "@domain/model/params"
 import { UserResponseDto } from "@domain/model/response"
@@ -118,7 +118,7 @@ export default class AuthAppService {
             }
 
             //Insert into log, to track user action.
-            await LogDomainService.CreateLogDomain({ ...logData, user_id: user_data.id, action: `Login ${user_data.id}` })
+            await LogDomainService.CreateLogDomain({ ...logData, user_id: user_data.id })
 
             await query_runner.commitTransaction()
 

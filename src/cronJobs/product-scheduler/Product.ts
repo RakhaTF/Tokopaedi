@@ -1,11 +1,11 @@
 import ProductAppService from "@application/service/Product"
-import { IScheduler, Scheduler } from "cronJobs/Scheduler"
+import { IScheduler, Scheduler } from "@cronJobs/Scheduler"
 
 export class ProductScheduler extends Scheduler {
     constructor() {
         super("0 */5 * * * *")
     }
-    private async CHeckLowStockProduct() {
+    private async CheckLowStockProduct() {
         const lowStockProduct = await ProductAppService.CheckLowStockProduct()
         if (lowStockProduct) {
             return {
@@ -17,6 +17,6 @@ export class ProductScheduler extends Scheduler {
 
     async executeJob(): Promise<IScheduler> {
         console.log("PRODUCT CRON JOB HIT")
-        return await this.CHeckLowStockProduct()
+        return await this.CheckLowStockProduct()
     }
 }

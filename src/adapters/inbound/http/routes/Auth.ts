@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
 import AuthController from "../../controller/AuthController"
-import * as Schema from "helpers/ApiSchema/ApiSchema"
+import * as Schema from "@helpers/ApiSchema/ApiSchema"
 
 const routes: RouteOptions[] = [
     {

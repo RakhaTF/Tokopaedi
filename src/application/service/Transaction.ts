@@ -1,12 +1,12 @@
 import { LogParamsDto, TransactionParamsDto } from "@domain/model/params"
-import * as TransactionSchema from "helpers/JoiSchema/Transaction"
+import * as TransactionSchema from "@helpers/JoiSchema/Transaction"
 import TransactionDomainService from "@domain/service/TransactionDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import ProductDomainService from "@domain/service/ProductDomainService"
 import { CommonRequestDto, TransactionRequestDto } from "@domain/model/request"
 import { TransactionResponseDto } from "@domain/model/response"
 import moment from "moment-timezone"
-import * as CommonSchema from "helpers/JoiSchema/Common"
+import * as CommonSchema from "@helpers/JoiSchema/Common"
 import unicorn from "format-unicorn/safe"
 import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import LogDomainService from "@domain/service/LogDomainService"
@@ -15,6 +15,7 @@ import { QueryRunner } from "typeorm"
 import { emailer } from "@infrastructure/mailer/mailer"
 import UserDomainService from "@domain/service/UserDomainService"
 import ShippingAddressDomainService from "@domain/service/ShippingAddressDomainService"
+import { CalculateShippingPrice, CalculateTotalPrice } from "@helpers/utils/transaction/transactionHelper"
 
 export default class TransactionAppService {
     static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams, logData: LogParamsDto.CreateLogParams) {
@@ -225,13 +226,13 @@ export default class TransactionAppService {
             update payment method: Cash | Credit Card | Debit Catd
             update paid_at & updated_at
             **/
-            const SHIPPING_PRICE = Math.random() * 10000 * shipping_address_id //Use random number to generate dummy shippinng_price
+           const shipping_price = CalculateShippingPrice({expedition_name, shipping_address_id})
             const payTransactionObject: TransactionParamsDto.PayTransactionRepositoryParams = {
                 is_paid: 1,
                 paid_at: now,
                 payment_method,
                 shipping_address_id,
-                shipping_price: SHIPPING_PRICE,
+                shipping_price,
                 updated_at: now,
                 user_id,
                 transaction_id,
@@ -275,12 +276,15 @@ export default class TransactionAppService {
             //Get the shipping address detail as a delivery address
             const { address, city, country, id, postal_code, province } = await ShippingAddressDomainService.GetShippingAddressDetailDomain(shipping_address_id)
 
+            //calculate total amount/price
+            const totalAmount = CalculateTotalPrice({items_price: transactionDetail.items_price, shipping_price})
+
             //const initialize data to send using email.
             const dataToEmail = {
                 name,
                 email,
                 orderId: transaction_id,
-                totalAmount: (parseFloat(transactionDetail.items_price) + SHIPPING_PRICE).toFixed(2),
+                totalAmount,
                 paymentMethod: payment_method,
                 paidTime: moment.unix(now).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss"),
                 items: productToEmail,

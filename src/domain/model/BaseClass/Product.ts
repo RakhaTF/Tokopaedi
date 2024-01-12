@@ -4,4 +4,6 @@ export class Product {
     description: string
     price: number
     stock: number
+    public_id: string
+    img_src: string
 }

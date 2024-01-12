@@ -1,7 +1,7 @@
 import { User } from "@domain/model/BaseClass/User"
 import { UserClaimsResponse } from "@domain/model/response/UserResponse"
 import { FastifyRequest } from "fastify"
-import { verifyJWT } from "helpers/jwt/jwt"
+import { verifyJWT } from "@helpers/jwt/jwt"
 import Joi from "joi"
 
 declare module "fastify" {

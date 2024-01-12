@@ -54,6 +54,8 @@ export default class ProductDomainService {
                     price: product[0].price,
                     stock: product[0].stock,
                     description: product[0].description,
+                    img_src: product[0].img_src,
+                    public_id: product[0].public_id,
                 })
             }
         }

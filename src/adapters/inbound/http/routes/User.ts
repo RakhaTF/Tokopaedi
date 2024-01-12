@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
-import { AuthValidate } from "helpers/prehandler/AuthValidate"
+import { AuthValidate } from "@helpers/prehandler/AuthValidate"
 import UserController from "@adapters/inbound/controller/UserController"
-import * as Schema from "helpers/ApiSchema/ApiSchema"
+import * as Schema from "@helpers/ApiSchema/ApiSchema"
 import ShippingAddressController from "@adapters/inbound/controller/ShippingAddressController"
 import TransactionController from "@adapters/inbound/controller/TransactionController"
 

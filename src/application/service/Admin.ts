@@ -1,19 +1,19 @@
-import * as AdminSchema from "helpers/JoiSchema/Admin"
+import * as AdminSchema from "@helpers/JoiSchema/Admin"
 import AdminDomainService from "@domain/service/AdminDomainService"
 import UserDomainService from "@domain/service/UserDomainService"
-import { checkPassword, hashPassword } from "helpers/Password/Password"
+import { checkPassword, hashPassword } from "@helpers/Password/Password"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import moment from "moment"
 import { AdminParamsDto, LogParamsDto, UserParamsDto } from "@domain/model/params"
 import { AdminResponseDto } from "@domain/model/response"
 import LogDomainService from "@domain/service/LogDomainService"
 import { CommonRequestDto } from "@domain/model/request"
-import * as CommonSchema from "helpers/JoiSchema/Common"
+import * as CommonSchema from "@helpers/JoiSchema/Common"
 import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import unicorn from "format-unicorn/safe"
 import { Profanity } from "indonesian-profanity"
 import jwt, { JwtPayload } from "jsonwebtoken"
-import { signJWT } from "helpers/jwt/jwt"
+import { signJWT } from "@helpers/jwt/jwt"
 export default class AdminAppService {
     static async GetAdminProfileService(id: number) {
         await AdminSchema.GetAdminProfile.validateAsync(id)

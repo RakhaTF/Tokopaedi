@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
 import ProductController from "@adapters/inbound/controller/ProductController"
-import * as Schema from "helpers/ApiSchema/ApiSchema"
+import * as Schema from "@helpers/ApiSchema/ApiSchema"
 
 const routes: RouteOptions[] = [
     {

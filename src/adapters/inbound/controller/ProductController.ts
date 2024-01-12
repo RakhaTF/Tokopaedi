@@ -19,9 +19,10 @@ export default class ProductController {
 
     static async DeleteProduct(request: FastifyRequest) {
         const { id } = request.body as { id: number }
+        const user = request.user
         const deleteProduct = await ProductAppService.SoftDeleteProduct(id, {
-            user_id: id,
-            action: `Delete Product ${id}`,
+            user_id: user.id,
+            action: `Delete Product #${id}`,
             ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
             browser: request.headers["user-agent"],
             time: moment().unix(),
@@ -61,7 +62,7 @@ export default class ProductController {
         const productUpdate = request.body as ProductRequestDto.UpdateProductRequest
         const updateProduct = await ProductAppService.UpdateProduct(productUpdate, files, {
             user_id: jwt.id,
-            action: `Update Product ${jwt.id}`,
+            action: `Update Product`,
             ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
             browser: request.headers["user-agent"],
             time: moment().unix(),

@@ -1,5 +1,5 @@
 import TransactionAppService from "@application/service/Transaction"
-import { IScheduler, Scheduler } from "cronJobs/Scheduler"
+import { IScheduler, Scheduler } from "@cronJobs/Scheduler"
 
 export class TransactionScheduler extends Scheduler {
     constructor() {

@@ -1,5 +1,5 @@
 import AdminAppService from "@application/service/Admin"
-import { IScheduler, Scheduler } from "cronJobs/Scheduler"
+import { IScheduler, Scheduler } from "@cronJobs/Scheduler"
 
 export class UserScheduler extends Scheduler {
     constructor() {
