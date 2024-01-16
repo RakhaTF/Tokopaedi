@@ -364,7 +364,7 @@ export default class TransactionAppService {
         return transaction
     }
 
-    static async GetUserTransactionListByIdService({ userid }: TransactionParamsDto.GetUserTransactionListByIdParams, paginationParams: CommonRequestDto.PaginationRequest) {
+    static async GetUserTransactionListByIdService({ user_id }: TransactionParamsDto.GetUserTransactionListByIdParams, paginationParams: CommonRequestDto.PaginationRequest) {
         await CommonSchema.Pagination.validateAsync(paginationParams)
         const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
 
@@ -386,7 +386,7 @@ export default class TransactionAppService {
         //Generate whereClause
         const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "t", tablePK: "id" })
 
-        const transactionList = await TransactionDomainService.GetUserTransactionListByIdDomain(userid, { whereClause, limit: Number(limit), sort })
+        const transactionList = await TransactionDomainService.GetUserTransactionListByIdDomain(user_id, { whereClause, limit: Number(limit), sort })
 
         //Generate pagination
         const result = Paginate({ data: transactionList, limit })

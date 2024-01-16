@@ -20,7 +20,7 @@ export default class AuthAppService {
         }
 
         //Add name checking, can not use bad words for the product name
-        if (Profanity.flag(name)) {
+        if (Profanity.flag(name.toLowerCase())) {
             throw new Error("You can't use this name!")
         }
 
@@ -36,14 +36,14 @@ export default class AuthAppService {
             const expiresIn = process.env.EXPIRES_IN || "1h"
 
             //Create an email token used to verify email.
-            const email_token: string = await signJWT({ email: email }, process.env.JWT_SECRET, { expiresIn })
+            const email_token: string = await signJWT({ email: email }, process.env.JWT_SECRET, { expiresIn, noTimestamp: true })
             const user = {
                 name,
                 email,
                 password: await hashPassword(password),
                 level,
                 created_at: moment().unix(),
-                email_token: email_token,
+                email_token,
             }
 
             const { insertId } = await UserDomainService.CreateUserDomain(user, query_runner)

@@ -24,7 +24,7 @@ export async function UploadImage(request: File): Promise<UploadApiResponse> {
         //extracting filename and removing the file extension.
         const filename = file.filename.split('.')[0]
         cloudinary.uploader.upload_stream(
-            { resource_type: 'auto', folder: "tokopaedi/products", upload_preset: "tokopaedi", public_id: filename },
+            { resource_type: 'auto', folder: "tokopaedi/products", upload_preset: "tokopaedi", public_id: filename, overwrite: true, invalidate: true },
             (error, result) => {
                 if (error) {
                     reject(error);
@@ -39,5 +39,6 @@ export async function UploadImage(request: File): Promise<UploadApiResponse> {
 }
 
 export async function DeleteImage(public_id: string, options?: { resource_type?: ResourceType; type?: DeliveryType; invalidate?: boolean; }, callback?: ResponseCallback) {
-    cloudinary.uploader.destroy(public_id, options, callback).then(callback)
+    console.log({inside: public_id})
+    cloudinary.uploader.destroy(public_id, { ...options, invalidate: true }, callback).then(callback)
 }

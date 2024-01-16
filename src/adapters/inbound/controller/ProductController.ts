@@ -47,7 +47,7 @@ export default class ProductController {
         } catch (error) {
             // Delete tmp files when error occured
             for (const file in files) {
-                const imagePath = files[file][0].path as string
+                const imagePath = files[file][0].path
                 if (fs.existsSync(imagePath)) {
                     fs.unlinkSync(imagePath)
                 }

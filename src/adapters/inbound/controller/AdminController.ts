@@ -256,11 +256,11 @@ export default class AdminController {
     }
 
     static async GetUserTransactionListById(request: FastifyRequest) {
-        const { userid } = request.body as TransactionRequestDto.GetUserTransactionListByIdRequest
+        const { user_id } = request.body as TransactionRequestDto.GetUserTransactionListByIdRequest
         const paginationRequest = request.body as CommonRequestDto.PaginationRequest
         const getUserTransactionListById = await TransactionAppService.GetUserTransactionListByIdService(
             {
-                userid,
+                user_id,
             },
             paginationRequest
         )

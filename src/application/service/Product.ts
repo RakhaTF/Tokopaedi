@@ -76,14 +76,13 @@ export default class ProductAppService {
         await ProductSchema.CreateProduct.validateAsync(product)
 
         //checking if the product name contains bad word.
-        if (Profanity.flag(product.name)) {
+        if (Profanity.flag(product.name.toLowerCase())) {
             throw new Error("You can't use this name!")
         }
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
-        let img_public_id: string;
         try {
             await query_runner.startTransaction()
 
@@ -100,7 +99,7 @@ export default class ProductAppService {
 
                         // Validate files mimetype and size
                         if (!imageMimeTypes.includes(imageFileType)) throw new Error("INVALID_FILE_TYPE")
-                        if (imageSize > 2048) throw new Error(`${imageFile.fieldname?.toUpperCase()}_FILE_SIZE_TOO_BIG. MAX_2_MB`)
+                        if (imageSize > 2048) throw new Error(`${imageFile.fieldname?.toUpperCase()}_FILE_SIZE_TOO_BIG._MAX_2_MB`)
 
                         imageObjects.push({
                             fieldname: imageFile.fieldname,
@@ -116,9 +115,6 @@ export default class ProductAppService {
             //upload image to cloudinary and extract the url & public_id.
             const { secure_url, public_id } = await UploadImage(imageObjects[0])
 
-            //assign public_id to img_public_id for use in catch.
-            img_public_id = public_id
-
             //create the product, insert into database.
             await ProductDomainService.CreateProductDomain({ ...product, img_src: secure_url, public_id }, query_runner)
 
@@ -132,10 +128,6 @@ export default class ProductAppService {
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
-
-            //delete the image from cloudinary, in case there is an error.
-            await DeleteImage(img_public_id, {}, () => console.log("Successfully deleted image"))
-
             throw error
         }
     }
@@ -150,7 +142,6 @@ export default class ProductAppService {
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
-        let img_public_id: string;
         try {
             await query_runner.startTransaction()
 
@@ -160,7 +151,7 @@ export default class ProductAppService {
             if (name || description || price || stock || files) {
                 if (name) {
                     //Add name checking, can not use bad words for the product name
-                    if (Profanity.flag(product.name)) {
+                    if (Profanity.flag(product.name.toLowerCase())) {
                         throw new Error("You can't use this name!")
                     }
                     updateProductData.name = name
@@ -199,9 +190,6 @@ export default class ProductAppService {
                                 //upload new image to cloudinary and extract the url & public_id.
                                 const { secure_url, public_id } = await UploadImage(imageObjects[0])
 
-                                //assign public_id to img_public_id for use in catch to delete the image incase there's an error happened.
-                                img_public_id = public_id
-
                                 updateProductData.public_id = public_id
                                 updateProductData.img_src = secure_url
 
@@ -222,8 +210,6 @@ export default class ProductAppService {
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
-            //delete the image from cloudinary, in case there is an error.
-            await DeleteImage(img_public_id, {}, () => console.log("Successfully deleted image"))
             throw error
         }
     }

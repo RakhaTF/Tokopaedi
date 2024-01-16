@@ -62,7 +62,7 @@ export default class UserController {
     static async TransactionList(request: FastifyRequest) {
         const { id } = request.user
         const paginationRequest = request.body as CommonRequestDto.PaginationRequest
-        const transactionList = await TransactionAppService.GetUserTransactionListByIdService({ userid: id }, paginationRequest)
+        const transactionList = await TransactionAppService.GetUserTransactionListByIdService({ user_id: id }, paginationRequest)
         return { message: transactionList }
     }
 

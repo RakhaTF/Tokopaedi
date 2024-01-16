@@ -21,7 +21,7 @@ export type PayTransactionRequest = {
 }
 
 export type GetUserTransactionListByIdRequest = {
-    userid: number
+    user_id: number
 }
 
 export type UpdateDeliveryStatusRequest = {

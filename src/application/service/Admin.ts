@@ -27,7 +27,7 @@ export default class AdminAppService {
         await AdminSchema.CreateUser.validateAsync({ id, level, name, email, password })
 
         //Add name checking, can not use bad words for the product name
-        if (Profanity.flag(name)) {
+        if (Profanity.flag(name.toLowerCase())) {
             throw new Error("You can't use this name!")
         }
 
@@ -75,7 +75,7 @@ export default class AdminAppService {
         //Add name checking, can not use bad words for the product name
         const banned = ["SuperAdmin", "Product Management Staff", "User Management Staff", "Shipping and Transaction Management Staff"]
 
-        if (banned.includes(params.name) || Profanity.flag(params.name)) {
+        if (banned.includes(params.name) || Profanity.flag(params.name.toLowerCase())) {
             throw new Error("Banned words name")
         }
 
@@ -130,9 +130,7 @@ export default class AdminAppService {
             }
         }
 
-        const banned = ["SuperAdmin", "Admin", "Product Manager", "User Manager", "Transaction Manager"]
-
-        if (banned.includes(params.name) || Profanity.flag(params.name)) {
+        if (Profanity.flag(params.name.toLowerCase())) {
             throw new Error("Banned words name")
         }
 

@@ -20,7 +20,7 @@ export default class UserAppService {
         //Additional name checking
         const banned = ["SuperAdmin", "Product Management Staff", "User Management Staff", "Shipping and Transaction Management Staff"]
 
-        if (banned.includes(params.name) || Profanity.flag(params.name)) {
+        if (banned.includes(params.name) || Profanity.flag(params.name.toLowerCase())) {
             throw new Error("Banned words name")
         }
 
