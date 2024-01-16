@@ -39,6 +39,5 @@ export async function UploadImage(request: File): Promise<UploadApiResponse> {
 }
 
 export async function DeleteImage(public_id: string, options?: { resource_type?: ResourceType; type?: DeliveryType; invalidate?: boolean; }, callback?: ResponseCallback) {
-    console.log({inside: public_id})
     cloudinary.uploader.destroy(public_id, { ...options, invalidate: true }, callback).then(callback)
 }

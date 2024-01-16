@@ -103,7 +103,6 @@ describe('List of routes accessible to super admin', () => {
             //extract the data
             const data = body.message.data
             const columns = body.message.column
-            console.log({ add: data })
             newlyCreatedAddressId = data[0][0]
 
             expect(body.message).toHaveProperty("data")
@@ -163,7 +162,6 @@ describe('List of routes accessible to super admin', () => {
             const data = body.message.data
 
             newlyCreatedTxId = data[0][0]
-            console.log({ tx: data })
             expect(data).toHaveLength(1)
 
             expect(body.message).toHaveProperty("currentPageDataCount", 1)
@@ -188,11 +186,6 @@ describe('List of routes accessible to super admin', () => {
                 .set('user-agent', "Test")
                 .send(reqBody)
 
-            //extract the data
-            const data = body.message.data
-            console.log({ body })
-            console.log({ data })
-            // expect(data).toHaveLength(1)
             expect(body.message).toHaveProperty("currentPageDataCount", 1)
             expect(body.message).toHaveProperty("lastId")
 
@@ -208,8 +201,6 @@ describe('List of routes accessible to super admin', () => {
                 shipping_address_id: newlyCreatedAddressId,
                 expedition_name: "JNE",
             }
-
-            console.log({ newlyCreatedAddressId, newlyCreatedTxId })
 
             const { body } = await supertest(app.server)
                 .post('/api/v1/user/transaction/pay')

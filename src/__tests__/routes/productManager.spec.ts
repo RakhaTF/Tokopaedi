@@ -345,8 +345,6 @@ describe('Lists of routes accessible to product manager', () => {
 
             public_id = body.message.public_id
 
-            console.log({newlyCreatedProduct, public_id})
-
             productColumnName.forEach(element => expect(body.message).toHaveProperty(element))
         });
 

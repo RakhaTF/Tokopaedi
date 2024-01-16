@@ -134,8 +134,6 @@ describe('Lists of routes accessible to regular user (level 3)', () => {
             //Create an email token used to verify email.
             const email_token: string = await signJWT({ email: newlyRegisteredUserData.email }, process.env.JWT_SECRET as string, { expiresIn, noTimestamp: true })
 
-            console.log({newlyRegisteredUserData})
-
             const { body } = await supertest(app.server)
                 .get(`/api/v1/auth/verify-email/?token=${email_token}`)
                 .set('user-agent', "Test")
@@ -621,7 +619,6 @@ describe('Lists of routes accessible to regular user (level 3)', () => {
 
             //hard delete, delete the account from database entirely, including data in the other table that has relation to the account (transaction, shipping address, etc.)
             await AdminDomainService.HardDeleteUserDomain(newlyRegisteredUserId)
-            console.log({ successUser: newlyRegisteredUserId })
         });
     })
 })
