@@ -76,6 +76,21 @@ describe('Lists of routes accessible to admin', () => {
         expect(body.message).toEqual(true)
     });
 
+    it('Should revert update user level', async () => {
+        const updateUserLevelRequest = {
+            user_id: 3,
+            level: 5
+        }
+
+        const { body } = await supertest(app.server)
+            .post('/api/v1/admin/update-user-level')
+            .set('Authorization', superAdminJwt)
+            .set('user-agent', "Test")
+            .send(updateUserLevelRequest)
+
+        expect(body.message).toEqual(true)
+    });
+
     it('Should return the list of system log', async () => {
 
         const getSystemLogRequest = {

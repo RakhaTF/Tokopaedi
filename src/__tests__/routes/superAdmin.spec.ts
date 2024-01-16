@@ -73,22 +73,14 @@ describe('List of routes accessible to super admin', () => {
                 {
                     "name": "Product Manager",
                     "rights": [
-                        "CREATE_USER",
-                        "VIEW_USER_PROFILE",
-                        "UPDATE_USER_PROFILE",
-                        "VIEW_USER_LIST",
-                        "DELETE_USER",
-                        "VIEW_DELETED_USER_LIST",
-                        "RESTORE_DELETED_USER"
+                        "CHANGE_USER_PASSWORD",
+                        "CREATE_PRODUCT",
+                        "UPDATE_PRODUCT"
                     ],
                     "rules_id": [
-                        108,
-                        109,
-                        110,
-                        111,
-                        112,
-                        113,
-                        114
+                        115,
+                        116,
+                        117
                     ]
                 },
                 {
