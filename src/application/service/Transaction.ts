@@ -1,17 +1,21 @@
 import { LogParamsDto, TransactionParamsDto } from "@domain/model/params"
-import * as TransactionSchema from "helpers/JoiSchema/Transaction"
+import * as TransactionSchema from "@helpers/JoiSchema/Transaction"
 import TransactionDomainService from "@domain/service/TransactionDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import ProductDomainService from "@domain/service/ProductDomainService"
 import { CommonRequestDto, TransactionRequestDto } from "@domain/model/request"
 import { TransactionResponseDto } from "@domain/model/response"
 import moment from "moment-timezone"
-import * as CommonSchema from "helpers/JoiSchema/Common"
+import * as CommonSchema from "@helpers/JoiSchema/Common"
 import unicorn from "format-unicorn/safe"
 import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import LogDomainService from "@domain/service/LogDomainService"
 import { Product } from "@domain/model/BaseClass/Product"
 import { QueryRunner } from "typeorm"
+import { emailer } from "@infrastructure/mailer/mailer"
+import UserDomainService from "@domain/service/UserDomainService"
+import ShippingAddressDomainService from "@domain/service/ShippingAddressDomainService"
+import { CalculateShippingPrice, CalculateTotalPrice } from "@helpers/utils/transaction/transactionHelper"
 
 export default class TransactionAppService {
     static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams, logData: LogParamsDto.CreateLogParams) {
@@ -94,15 +98,28 @@ export default class TransactionAppService {
 
             await Promise.all(updateProductPromises)
 
-            const getOrderItem = await TransactionDomainService.GetOrderItemByOrderIdDomain(insertId, query_runner)
-
             //Insert into log, to track user action.
             await LogDomainService.CreateLogDomain(logData, query_runner)
+
+            //create a variable to hold product detail to email to user after creating a transaction/cart
+            const productToEmail = products.map((prod, index) => {
+                return {
+                    productName: prod.name,
+                    quantity: orderItem[index].qty,
+                    price: prod.price,
+                }
+            })
+
+            //get user info
+            const { email, name } = await UserDomainService.GetUserDataByIdDomain(id)
+
+            //send email to notify user
+            emailer.notifyUserToPayTransaction({ email, products: productToEmail, total: items_price, username: name })
 
             await query_runner.commitTransaction()
             await query_runner.release()
 
-            return getOrderItem
+            return orderItem
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
@@ -179,12 +196,18 @@ export default class TransactionAppService {
         //additional checking to prevent mutate deleted transaction.
         await TransactionDomainService.CheckIsTransactionAliveDomain(transaction_id)
 
+        //check if the transaction is already paid.
+        await TransactionDomainService.CheckIsTransactionPaidDomain(transaction_id)
+
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
         await query_runner.connect()
 
         try {
             await query_runner.startTransaction()
+
+            //initialize a variable to hold current unix timestamp
+            const now = moment().unix()
 
             //create delivery_status with pending status. 0 = pending, 1 = on delivery, 2 = delivered
             const deliveryStatus: TransactionParamsDto.CreateDeliveryStatusParams = {
@@ -203,14 +226,14 @@ export default class TransactionAppService {
             update payment method: Cash | Credit Card | Debit Catd
             update paid_at & updated_at
             **/
-            const SHIPPING_PRICE = Math.random() * 10000 * shipping_address_id //Use random number to generate dummy shippinng_price
+           const shipping_price = CalculateShippingPrice({expedition_name, shipping_address_id})
             const payTransactionObject: TransactionParamsDto.PayTransactionRepositoryParams = {
                 is_paid: 1,
-                paid_at: moment().unix(),
+                paid_at: now,
                 payment_method,
                 shipping_address_id,
-                shipping_price: SHIPPING_PRICE,
-                updated_at: moment().unix(),
+                shipping_price,
+                updated_at: now,
                 user_id,
                 transaction_id,
             }
@@ -219,13 +242,72 @@ export default class TransactionAppService {
             //insert to log to track user action
             await LogDomainService.CreateLogDomain(logData, query_runner)
 
+            /**
+             * EMAILING SECTION
+             */
+
+            //get user info
+            const { email, name } = await UserDomainService.GetUserDataByIdDomain(user_id)
+
+            //get user transaction detail
+            const transactionDetail = await TransactionDomainService.GetTransactionDetailDomain(transaction_id)
+
+            //create a variable to hold product detail to email
+            //extract product name & qty
+            const productId = transactionDetail.product_bought_id.split(",")
+            const productName = transactionDetail.product_bought.split(",")
+            const qty = transactionDetail.qty.split(",")
+
+            const product_bought = productName.map((prod, index) => {
+                return {
+                    product_id: productId,
+                    product_name: prod,
+                    qty: qty[index],
+                }
+            })
+
+            const productToEmail = product_bought.map((prod) => {
+                return {
+                    productName: prod.product_name,
+                    quantity: Number(prod.qty),
+                }
+            })
+
+            //Get the shipping address detail as a delivery address
+            const { address, city, country, id, postal_code, province } = await ShippingAddressDomainService.GetShippingAddressDetailDomain(shipping_address_id)
+
+            //calculate total amount/price
+            const totalAmount = CalculateTotalPrice({items_price: transactionDetail.items_price, shipping_price})
+
+            //const initialize data to send using email.
+            const dataToEmail = {
+                name,
+                email,
+                orderId: transaction_id,
+                totalAmount,
+                paymentMethod: payment_method,
+                paidTime: moment.unix(now).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss"),
+                items: productToEmail,
+                address,
+                city,
+                country,
+                id,
+                postalCode: postal_code,
+                province,
+            }
+            emailer.notifyUserForSuccessfulTransaciton(dataToEmail)
+
+            /**
+             * END OF EMAILING SECTION
+             */
+
+            await query_runner.commitTransaction()
             return true
         } catch (error) {
             await query_runner.rollbackTransaction()
             await query_runner.release()
             throw error
         } finally {
-            await query_runner.commitTransaction()
             await query_runner.release()
         }
     }
@@ -248,7 +330,7 @@ export default class TransactionAppService {
         })
 
         //If the transaction is paid, convert the time.
-        let paid_at;
+        let paid_at
         if (txnDetail.is_paid == "Paid") {
             paid_at = moment.unix(txnDetail.paid_at).tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
         } else {
@@ -277,12 +359,12 @@ export default class TransactionAppService {
                 country: txnDetail.country,
             },
             created_at,
-            expire_at
+            expire_at,
         }
         return transaction
     }
 
-    static async GetUserTransactionListByIdService({ userid }: TransactionParamsDto.GetUserTransactionListByIdParams, paginationParams: CommonRequestDto.PaginationRequest) {
+    static async GetUserTransactionListByIdService({ user_id }: TransactionParamsDto.GetUserTransactionListByIdParams, paginationParams: CommonRequestDto.PaginationRequest) {
         await CommonSchema.Pagination.validateAsync(paginationParams)
         const { lastId = 0, limit = 100, search, sort = "ASC" } = paginationParams
 
@@ -304,7 +386,7 @@ export default class TransactionAppService {
         //Generate whereClause
         const whereClause = GenerateWhereClause({ lastId, searchFilter, sort, tableAlias: "t", tablePK: "id" })
 
-        const transactionList = await TransactionDomainService.GetUserTransactionListByIdDomain(userid, { whereClause, limit: Number(limit), sort })
+        const transactionList = await TransactionDomainService.GetUserTransactionListByIdDomain(user_id, { whereClause, limit: Number(limit), sort })
 
         //Generate pagination
         const result = Paginate({ data: transactionList, limit })

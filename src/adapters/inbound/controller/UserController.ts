@@ -6,10 +6,8 @@ import moment from "moment"
 
 export default class UserController {
     static async GetUserProfile(request: FastifyRequest) {
-        const jwt = request.user
-        const getUserProfile = await UserAppService.GetUserProfileService({
-            id: jwt.id,
-        })
+        const {id} = request.user
+        const getUserProfile = await UserAppService.GetUserProfileService(id)
 
         const result = { message: getUserProfile }
         return result
@@ -64,7 +62,7 @@ export default class UserController {
     static async TransactionList(request: FastifyRequest) {
         const { id } = request.user
         const paginationRequest = request.body as CommonRequestDto.PaginationRequest
-        const transactionList = await TransactionAppService.GetUserTransactionListByIdService({ userid: id }, paginationRequest)
+        const transactionList = await TransactionAppService.GetUserTransactionListByIdService({ user_id: id }, paginationRequest)
         return { message: transactionList }
     }
 

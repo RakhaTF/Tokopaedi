@@ -2,3 +2,6 @@ node_modules
 .env
 ormlogs.log
 package-lock.json
+build
+coverage
+dist

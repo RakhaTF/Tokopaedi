@@ -41,7 +41,7 @@ export default class ShippingAddressController {
         const user = request.user
         const { id } = request.body as { id: number }
         const result = await ShippingAddressAppService.SoftDeleteShippingAddress(id, user.id, {
-            user_id: id,
+            user_id: user.id,
             action: `Delete Shipping Address ${id}`,
             ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
             browser: request.headers["user-agent"],
@@ -59,7 +59,7 @@ export default class ShippingAddressController {
             },
             {
                 user_id: id,
-                action: `Update Shipping Address ${updateData.id}`,
+                action: `Update Shipping Address #${updateData.id}`,
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
                 browser: request.headers["user-agent"],
                 time: moment().unix(),

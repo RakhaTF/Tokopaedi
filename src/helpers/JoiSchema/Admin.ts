@@ -53,11 +53,14 @@ export const RulesId = Joi.number().integer().greater(100).required().messages({
 })
 
 //Rules can only be alphabets, upppercase and separated by underscore.
-export const Rules = Joi.string().pattern(/^[A-Z_]*$/).required().messages({
-    "string.base": "rule must be a string",
-    "string.pattern.base": "rule must be uppercased and separated with underscore",
-    "any.required": "rule is required",
-});
+export const Rules = Joi.string()
+    .pattern(/^[A-Z_]*$/)
+    .required()
+    .messages({
+        "string.base": "rule must be a string",
+        "string.pattern.base": "rule must be uppercased and separated with underscore",
+        "any.required": "rule is required",
+    })
 
 export const GroupId = Joi.number().integer().greater(0).max(6).required().messages({
     "any.required": "group_id is required",

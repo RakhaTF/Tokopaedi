@@ -2,18 +2,38 @@ import fastify from "fastify"
 import FastifyBaseAddon from "./application/boot/fastify/base"
 import FastifyRouteAddon from "@application/boot/fastify/route"
 import FastifySwaggerAddon from "@application/boot/fastify/swagger"
+import Ajv from 'ajv'
 import { AppDataSource } from "@infrastructure/mysql/connection"
-import { TransactionScheduler } from "cronJobs/transaction-scheduler/Transaction"
 
-const server = fastify({
-    logger: {
-        transport: {
-            target: "pino-pretty",
+//Ajv file plugin, so fastify could know what is isFile used in multer.
+function ajvFilePlugin(ajv: Ajv) {
+    return ajv.addKeyword({
+        keyword: 'isFile',
+        compile: (_schema, parent) => {
+            // Updates the schema to match the file type
+            parent.type = 'file'
+            parent.format = 'binary'
+            delete parent.isFile
+
+            return (field /* MultipartFile */) => !!field.file
         },
-    },
-})
+        error: {
+            message: 'should be a file'
+        }
+    })
+}
 
-AppDataSource.initialize()
+function buildServer() {
+    const server = fastify({
+        logger: {
+            transport: {
+                target: "pino-pretty",
+            },
+        },
+        ajv: { plugins: [ajvFilePlugin] }
+    });
+
+    AppDataSource.initialize()
     .then(() => {
         console.log("Data Source has been initialized!")
     })
@@ -22,21 +42,24 @@ AppDataSource.initialize()
         throw new Error("Failed to initialize database") // Throw an error if initialization fails
     })
 
-server.register(FastifyBaseAddon)
-server.register(FastifySwaggerAddon)
-server.register(FastifyRouteAddon)
+    server.register(FastifyBaseAddon)
+    server.register(FastifySwaggerAddon)
+    server.register(FastifyRouteAddon)
 
-server.listen({ port: 8080 }, (err, address) => {
-    if (err) {
-        console.error(err)
-        process.exit(1)
-    }
-    console.log(`Server listening at ${address}`)
-    //CronJob to check if there is an expire transaction
-    new TransactionScheduler()
-})
+    server.post("/", async () => {
+        return { hello: "world" }
+    })
+    
+    return server
+}
 
-server.get("/", () => {
-    console.log("test")
-    return "hello"
-})
+export const server = fastify({
+    logger: {
+        transport: {
+            target: "pino-pretty",
+        },
+    },
+    ajv: { plugins: [ajvFilePlugin] }
+});
+
+export default buildServer;

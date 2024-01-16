@@ -42,4 +42,12 @@ export type CheckUserExistResult = {
     level: number
     created_at: number
     is_deleted: number
+    is_verified: number
+}
+
+export type FindUserByTokenResult = {
+    id: number
+    email: string
+    is_verified: number
+    email_token: string
 }

@@ -17,9 +17,12 @@
       "@infrastructure/*": ["./infrastructure/*"],
       "@domain/*": ["./domain/*"],
       "@application/*": ["./application/*"],
-      "@adapters/*": ["./adapters/*"]
-    }
+      "@adapters/*": ["./adapters/*"],
+      "@helpers/*": ["./helpers/*"],
+      "@cronJobs/*": ["./cronJobs/*"]
+    },
+    "skipLibCheck": true
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules"]
-}
+  "include": ["./src/**/*", "src/helpers/Email/template/**/*.handlebars"],
+  "exclude": ["node_modules", "./src/__tests__", "./src/__mocks__"],
+ }

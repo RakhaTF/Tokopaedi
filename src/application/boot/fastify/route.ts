@@ -1,9 +1,9 @@
 import { AdminRoute, AuthRoute, ProductRoute, UserRoute } from "@adapters/inbound/http/routes"
 import fp from "fastify-plugin"
 
-export default fp(async (fastify, options) => {
-    await fastify.register(AuthRoute, options)
-    await fastify.register(UserRoute, options)
-    await fastify.register(ProductRoute, options)
-    await fastify.register(AdminRoute, options)
+export default fp(async (fastify) => {
+    await fastify.register(AuthRoute, { prefix: "/api/v1/auth/" })
+    await fastify.register(UserRoute, { prefix: "/api/v1/user/" })
+    await fastify.register(ProductRoute, { prefix: "/api/v1/product/" })
+    await fastify.register(AdminRoute, { prefix: "/api/v1/admin/" })
 })

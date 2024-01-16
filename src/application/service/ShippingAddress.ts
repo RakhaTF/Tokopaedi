@@ -1,11 +1,11 @@
 import { ShippingAddress } from "@domain/model/BaseClass/ShippingAddress"
 import { ShippingAddressParamsDto, LogParamsDto } from "@domain/model/params"
 import ShippingAddressDomainService from "@domain/service/ShippingAddressDomainService"
-import * as ShippingAddressSchema from "helpers/JoiSchema/ShippingAddress"
+import * as ShippingAddressSchema from "@helpers/JoiSchema/ShippingAddress"
 import LogDomainService from "@domain/service/LogDomainService"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import { CommonRequestDto } from "@domain/model/request"
-import * as CommonSchema from "helpers/JoiSchema/Common"
+import * as CommonSchema from "@helpers/JoiSchema/Common"
 import unicorn from "format-unicorn/safe"
 import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 
@@ -164,7 +164,7 @@ export default class ShippingAddressAppService {
         searchFilter = unicorn(searchFilter, {
             id: "s.id",
             city: "s.city",
-            isDeleted: "s.is_deleted"
+            isDeleted: "s.is_deleted",
         })
 
         //Generate whereClause

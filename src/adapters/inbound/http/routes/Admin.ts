@@ -1,31 +1,50 @@
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
 import ProductController from "@adapters/inbound/controller/ProductController"
-import { AuthValidate, CheckAuthAdmin } from "helpers/prehandler/AuthValidate"
+import { AuthValidate, CheckAuthAdmin } from "@helpers/prehandler/AuthValidate"
 import { Rules } from "@domain/model/Rules"
-import * as Schema from "helpers/ApiSchema/ApiSchema"
+import * as Schema from "@helpers/ApiSchema/ApiSchema"
 import AdminController from "@adapters/inbound/controller/AdminController"
 import LogController from "@adapters/inbound/controller/LogController"
+import fastifyMulter from "fastify-multer"
+import moment from "moment"
+import path from "path"
 
+const multer = fastifyMulter;
+const storage = multer.diskStorage({
+    destination: path.resolve(__dirname, "../../../../uploads/"),
+    filename: (_req, file, cb) => {
+        // Format the current date and time as a string in the desired format
+        // For example, 'YYYYMMDDHHmmss' will format the date as '20230415123045' for April 15, 2023, at 12:30:45
+        const dateNow = moment().format('YYYYMMDDHHmmss');
+        const filename = `${dateNow}-${file.originalname.trim()}`;
+        cb(null, filename);
+    }
+});
+
+const upload = multer({ storage })
 const routes: RouteOptions[] = [
     {
         method: ["POST"],
-        url: "/api/v1/admin/product/create",
+        url: "product/create",
         preHandler: CheckAuthAdmin({ rules: Rules.CREATE_PRODUCT }),
         handler: ProductController.CreateProduct,
+        preValidation: [upload.fields([{ name: "image", maxCount: 1 }])],
         schema: {
             tags: ["Admin"],
+            consumes: ['multipart/form-data'],
             body: Schema.BaseRequestSchema("Rakha", {
                 name: { type: "string" },
                 description: { type: "string" },
                 price: { type: "integer" },
                 stock: { type: "integer" },
+                image: { type: "file" },
             }),
             response: Schema.BaseResponse({ type: "Boolean" }),
         },
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/product/delete",
+        url: "product/delete",
         preHandler: CheckAuthAdmin({ rules: Rules.DELETE_PRODUCT }),
         handler: ProductController.DeleteProduct,
         schema: {
@@ -36,24 +55,27 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/product/update",
+        url: "product/update",
         preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_PRODUCT }),
         handler: ProductController.UpdateProduct,
+        preValidation: [upload.fields([{ name: "image", maxCount: 1 }])],
         schema: {
             tags: ["Admin"],
+            consumes: ['multipart/form-data'],
             body: Schema.BaseRequestSchema("Rakha", {
                 id: { type: "integer" },
                 name: { type: "string" },
                 description: { type: "string" },
                 price: { type: "integer" },
                 stock: { type: "integer" },
+                image: { type: "file" },
             }),
             response: Schema.BaseResponse({ type: "Boolean" }),
         },
     },
     {
         method: ["GET"],
-        url: "/api/v1/admin/profile",
+        url: "profile",
         handler: AdminController.GetAdminProfile,
         schema: {
             tags: ["Admin"],
@@ -72,7 +94,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/create-user",
+        url: "create-user",
         preHandler: CheckAuthAdmin({ rules: Rules.CREATE_USER }),
         handler: AdminController.CreateUser,
         schema: {
@@ -96,7 +118,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/update-user",
+        url: "update-user",
         preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_USER_PROFILE }),
         handler: AdminController.UpdateProfileUser,
         schema: {
@@ -118,7 +140,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/update-profile",
+        url: "update-profile",
         handler: AdminController.UpdateProfile,
         schema: {
             tags: ["Admin"],
@@ -138,7 +160,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/delete-user",
+        url: "delete-user",
         preHandler: CheckAuthAdmin({ rules: Rules.DELETE_USER }),
         handler: AdminController.SoftDeleteUser,
         schema: {
@@ -153,7 +175,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/user-list",
+        url: "user-list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_LIST }),
         handler: AdminController.GetUserList,
         schema: {
@@ -172,7 +194,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/user-detail",
+        url: "user-detail",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_PROFILE }),
         handler: AdminController.GetUserDetailProfile,
         schema: {
@@ -193,7 +215,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["GET"],
-        url: "/api/v1/admin/admin-list",
+        url: "admin-list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_RULES_LIST }),
         handler: AdminController.GetAdminList,
         schema: {
@@ -210,7 +232,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["GET"],
-        url: "/api/v1/admin/rules/list",
+        url: "rules/list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_RULES_LIST }),
         handler: AdminController.GetRulesList,
         schema: {
@@ -227,7 +249,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/rules/create",
+        url: "rules/create",
         preHandler: CheckAuthAdmin({ rules: Rules.CREATE_RULES }),
         handler: AdminController.CreateRule,
         schema: {
@@ -238,7 +260,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/rules/update",
+        url: "rules/update",
         preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_RULES }),
         handler: AdminController.UpdateRule,
         schema: {
@@ -252,7 +274,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/rules/delete",
+        url: "rules/delete",
         preHandler: CheckAuthAdmin({ rules: Rules.DELETE_RULES }),
         handler: AdminController.DeleteRule,
         schema: {
@@ -265,7 +287,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/rules/assign",
+        url: "rules/assign",
         preHandler: CheckAuthAdmin({ rules: Rules.ASSIGN_RULES_TO_ADMIN }),
         handler: AdminController.AssignRule,
         schema: {
@@ -279,7 +301,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/rules/revoke",
+        url: "rules/revoke",
         preHandler: CheckAuthAdmin({ rules: Rules.REVOKE_RULES_FROM_ADMIN }),
         handler: AdminController.RevokeRule,
         schema: {
@@ -293,7 +315,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/change-user-pass",
+        url: "change-user-pass",
         preHandler: CheckAuthAdmin({ rules: Rules.CHANGE_USER_PASSWORD }),
         handler: AdminController.ChangeUserPass,
         schema: {
@@ -310,7 +332,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/change-pass",
+        url: "change-pass",
         handler: AdminController.ChangePass,
         schema: {
             tags: ["Admin"],
@@ -325,7 +347,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/transaction/list",
+        url: "transaction/list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_TRANSACTION_LIST }),
         handler: AdminController.GetTransactionList,
         schema: {
@@ -346,7 +368,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/user/transaction/list",
+        url: "user/transaction/list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_TRANSACTION_LIST }),
         handler: AdminController.GetUserTransactionListById,
         schema: {
@@ -370,7 +392,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/transaction/update-delivery-status",
+        url: "transaction/update-delivery-status",
         preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_TRANSACTION_DELIVERY_STATUS }),
         handler: AdminController.UpdateDeliveryStatus,
         schema: {
@@ -385,7 +407,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/user/shipping-address",
+        url: "user/shipping-address",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_SHIPPING_ADDRESS }),
         handler: AdminController.GetUserShippingAddress,
         schema: {
@@ -403,7 +425,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/user/transaction/approve",
+        url: "user/transaction/approve",
         preHandler: CheckAuthAdmin({ rules: Rules.APPROVE_TRANSACTION }),
         handler: AdminController.ApproveTransaction,
         schema: {
@@ -416,7 +438,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/user/shipping-address/list",
+        url: "user/shipping-address/list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_SHIPPING_ADDRESS_LIST }),
         handler: AdminController.GetUserShippingAddressById,
         schema: {
@@ -433,7 +455,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/user/transaction/reject",
+        url: "user/transaction/reject",
         preHandler: CheckAuthAdmin({ rules: Rules.REJECT_TRANSACTION }),
         handler: AdminController.RejectTransaction,
         schema: {
@@ -446,7 +468,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/user/transaction/detail",
+        url: "user/transaction/detail",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_USER_TRANSACTION_DETAIL }),
         handler: AdminController.GetUserTransactionDetail,
         schema: {
@@ -493,7 +515,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/update-user-level",
+        url: "update-user-level",
         preHandler: CheckAuthAdmin({ rules: Rules.UPDATE_USER_LEVEL }),
         handler: AdminController.UpdateUserLevel,
         schema: {
@@ -509,7 +531,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/transaction/delete",
+        url: "transaction/delete",
         preHandler: CheckAuthAdmin({ rules: Rules.DELETE_TRANSACTION }),
         handler: AdminController.DeleteUserTransaction,
         schema: {
@@ -520,7 +542,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/log/list",
+        url: "log/list",
         preHandler: CheckAuthAdmin({ rules: Rules.VIEW_SYSTEM_LOG }),
         handler: LogController.GetSystemLog,
         schema: {
@@ -539,7 +561,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/admin/restore-deleted-user",
+        url: "restore-deleted-user",
         preHandler: CheckAuthAdmin({ rules: Rules.RESTORE_DELETED_USER }),
         handler: AdminController.RestoreDeletedUser,
         schema: {

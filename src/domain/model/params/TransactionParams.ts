@@ -66,7 +66,7 @@ export type CreateDeliveryStatusParams = {
 }
 
 export type GetUserTransactionListByIdParams = {
-    userid: number
+    user_id: number
 }
 
 export type UpdateDeliveryStatusParams = UpdateDeliveryStatusRequest & {

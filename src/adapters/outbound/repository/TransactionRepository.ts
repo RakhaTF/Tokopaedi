@@ -91,9 +91,9 @@ export default class TransactionRepository {
 
     static async DBPayTransaction(params: TransactionParamsDto.PayTransactionRepositoryParams, query_runner: QueryRunner) {
         const { is_paid, paid_at, payment_method, shipping_price, updated_at, user_id, shipping_address_id, transaction_id } = params
-
+        
         const query = `
-        UPDATE TRANSACTION SET 
+        UPDATE transaction SET 
         payment_method = ?, 
         is_paid = ?, 
         paid_at = ?, 
@@ -252,5 +252,9 @@ export default class TransactionRepository {
 
     static async DBCheckIsTransactionAlive(id: number) {
         return await db.query<{ id: number }[]>(`SELECT t.id FROM transaction t WHERE t.id = ? AND t.is_deleted <> 1`, [id])
+    }
+
+    static async DBCheckIsTransactionPaid(id: number) {
+        return await db.query<{ is_paid: number }[]>(`SELECT t.is_paid FROM transaction t WHERE t.id = ?`, [id])
     }
 }

@@ -1,11 +1,11 @@
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
 import ProductController from "@adapters/inbound/controller/ProductController"
-import * as Schema from "helpers/ApiSchema/ApiSchema"
+import * as Schema from "@helpers/ApiSchema/ApiSchema"
 
 const routes: RouteOptions[] = [
     {
         method: ["POST"],
-        url: "/api/v1/product/list",
+        url: "list",
         handler: ProductController.GetProductList,
         schema: {
             tags: ["Product"],
@@ -13,15 +13,15 @@ const routes: RouteOptions[] = [
                 pic: "Rakha",
                 search: {
                     name: "string",
-                    price: "string"
+                    price: "string",
                 },
             }),
-            response: Schema.BasePaginationResultSchema
-        }
+            response: Schema.BasePaginationResultSchema,
+        },
     },
     {
         method: ["POST"],
-        url: "/api/v1/product/detail",
+        url: "detail",
         handler: ProductController.GetProductDetail,
         schema: {
             tags: ["Product"],
@@ -34,6 +34,8 @@ const routes: RouteOptions[] = [
                     description: { type: "string" },
                     price: { type: "integer" },
                     stock: { type: "integer" },
+                    public_id: { type: "string" },
+                    img_src: { type: "string" }
                 },
             }),
         },

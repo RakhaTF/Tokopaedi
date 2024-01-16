@@ -1,11 +1,11 @@
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
 import AuthController from "../../controller/AuthController"
-import * as Schema from "helpers/ApiSchema/ApiSchema"
+import * as Schema from "@helpers/ApiSchema/ApiSchema"
 
 const routes: RouteOptions[] = [
     {
         method: ["POST"],
-        url: "/api/v1/auth/register",
+        url: "register",
         handler: AuthController.Register,
         schema: {
             tags: ["Auth"],
@@ -28,7 +28,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/auth/login",
+        url: "login",
         handler: AuthController.Login,
         schema: {
             tags: ["Auth"],
@@ -52,6 +52,16 @@ const routes: RouteOptions[] = [
                     },
                 },
             }),
+        },
+    },
+    {
+        method: ["GET"],
+        url: "/verify-email/:token",
+        handler: AuthController.VerifyEmail,
+        schema: {
+            tags: ["Auth"],
+            params: { token: { type: "string" } },
+            response: Schema.BaseResponse({ type: "Boolean" }),
         },
     },
 ]

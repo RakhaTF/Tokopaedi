@@ -64,3 +64,8 @@ export type GetUserShippingAddressResponse = {
     province: string
     country: string
 }
+
+export type CheckExpiredAccountResponse = {
+    id: number
+    email_token: string
+}

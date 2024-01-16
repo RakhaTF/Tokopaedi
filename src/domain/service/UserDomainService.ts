@@ -6,7 +6,7 @@ import { QueryRunner } from "typeorm"
 export default class UserDomainService {
     static async CreateUserDomain(user: UserParamsDto.RegisterParams, query_runner?: QueryRunner) {
         const createUser = await UserRepository.DBCreateUser(user, query_runner)
-        if(createUser.affectedRows < 1){
+        if (createUser.affectedRows < 1) {
             throw new Error("Failed to create user.")
         }
         return createUser
@@ -75,5 +75,20 @@ export default class UserDomainService {
             throw new Error("Failed change password")
         }
         return true
+    }
+
+    static async FindUserByTokenDomain(token: string) {
+        const user = await UserRepository.DBFindUserByToken(token)
+        if (user.length < 1) {
+            throw new Error("User not found")
+        }
+        return user[0]
+    }
+
+    static async VerifyEmailDomain(email: string, query_runner: QueryRunner) {
+        const verify = await UserRepository.DBVerifyEmail(email, query_runner)
+        if (verify.affectedRows < 1) {
+            throw new Error("Failed to verify email")
+        }
     }
 }

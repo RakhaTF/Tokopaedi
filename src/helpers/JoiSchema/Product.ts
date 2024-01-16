@@ -11,10 +11,13 @@ const Price = Joi.number().min(1).messages({
     "number.min": "Price must be greater than or equal to 1",
 })
 
-const Description = Joi.string().max(100).pattern(/^[a-zA-Z0-9 ]*$/).messages({
-    "string.base": "Description must be a string",
-    "string.max": "Description must be no more than 100 characters long",
-})
+const Description = Joi.string()
+    .max(100)
+    .pattern(/^[a-zA-Z0-9 _-]*$/)
+    .messages({
+        "string.base": "Description must be a string",
+        "string.max": "Description must be no more than 100 characters long",
+    })
 
 const Stock = Joi.number().min(1).messages({
     "number.base": "Stock must be a number",
@@ -27,19 +30,18 @@ const Name = Joi.string().messages({
 
 export const CreateProduct = Joi.object({
     name: Name.required().messages({
-        "any.required": "Product name is required"
+        "any.required": "Product name is required",
     }),
     description: Description.required().messages({
-        "any.required": "Description is required"
+        "any.required": "Description is required",
     }),
     price: Price.required().messages({
-        "any.required": "Price is required"
+        "any.required": "Price is required",
     }),
     stock: Stock.required().messages({
-        "any.required": "Stock is required"
+        "any.required": "Stock is required",
     }),
-}).options({ abortEarly: false })
-
+}).options({ abortEarly: false }).unknown(true)
 
 export const UpdateProduct = Joi.object({
     id: ProductId,

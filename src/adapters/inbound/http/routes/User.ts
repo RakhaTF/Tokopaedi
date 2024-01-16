@@ -1,14 +1,14 @@
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
-import { AuthValidate } from "helpers/prehandler/AuthValidate"
+import { AuthValidate } from "@helpers/prehandler/AuthValidate"
 import UserController from "@adapters/inbound/controller/UserController"
-import * as Schema from "helpers/ApiSchema/ApiSchema"
+import * as Schema from "@helpers/ApiSchema/ApiSchema"
 import ShippingAddressController from "@adapters/inbound/controller/ShippingAddressController"
 import TransactionController from "@adapters/inbound/controller/TransactionController"
 
 const routes: RouteOptions[] = [
     {
         method: ["GET"],
-        url: "/api/v1/user/profile",
+        url: "profile",
         handler: UserController.GetUserProfile,
         schema: {
             tags: ["User"],
@@ -27,7 +27,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/profile/update",
+        url: "profile/update",
         handler: UserController.UpdateUserProfile,
         schema: {
             tags: ["User"],
@@ -47,7 +47,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/shipping-address/create",
+        url: "shipping-address/create",
         handler: ShippingAddressController.CreateShippingAddress,
         schema: {
             tags: ["User"],
@@ -63,7 +63,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/shipping-address/detail",
+        url: "shipping-address/detail",
         handler: ShippingAddressController.GetShippingAddressDetail,
         schema: {
             tags: ["User"],
@@ -84,7 +84,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/shipping-address/list",
+        url: "shipping-address/list",
         handler: ShippingAddressController.GetShippingAddressList,
         schema: {
             tags: ["User"],
@@ -101,7 +101,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/shipping-address/update",
+        url: "shipping-address/update",
         handler: ShippingAddressController.UpdateShippingAddress,
         schema: {
             tags: ["User"],
@@ -117,7 +117,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/shipping-address/delete",
+        url: "shipping-address/delete",
         handler: ShippingAddressController.DeleteShippingAddress,
         schema: {
             tags: ["User"],
@@ -127,7 +127,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/transaction/create",
+        url: "transaction/create",
         handler: TransactionController.CreateTransaction,
         schema: {
             tags: ["User"],
@@ -140,7 +140,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/transaction/update-product-quantity",
+        url: "transaction/update-product-quantity",
         handler: TransactionController.UpdateTransactionProductQty,
         schema: {
             tags: ["User"],
@@ -154,7 +154,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/transaction/pay",
+        url: "transaction/pay",
         handler: TransactionController.PayTransaction,
         schema: {
             tags: ["User"],
@@ -169,7 +169,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/transaction/detail",
+        url: "transaction/detail",
         handler: TransactionController.TransactionDetail,
         schema: {
             tags: ["User"],
@@ -215,7 +215,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/transaction/delete",
+        url: "transaction/delete",
         handler: UserController.DeleteTransaction,
         schema: {
             tags: ["User"],
@@ -225,7 +225,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/transaction/list",
+        url: "transaction/list",
         handler: UserController.TransactionList,
         schema: {
             tags: ["User"],
@@ -244,7 +244,7 @@ const routes: RouteOptions[] = [
     },
     {
         method: ["POST"],
-        url: "/api/v1/user/change-pass",
+        url: "change-pass",
         handler: UserController.ChangePassword,
         schema: {
             tags: ["User"],

@@ -1,8 +1,8 @@
 import { RegisterRequest, LoginRequest } from "../request/UserRequest"
 
 export type RegisterParams = RegisterRequest & {
-    level: number
     created_at: number
+    email_token: string
 }
 
 export type LoginParams = LoginRequest

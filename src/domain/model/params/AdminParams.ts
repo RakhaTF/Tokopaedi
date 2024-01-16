@@ -1,5 +1,13 @@
 import { AssignRuleRequest, RevokeRuleRequest, UpdateRuleRequest, UpdateUserLevelRequest } from "../request/AdminRequest"
 
+export type CreateUserParams = {
+    id: number;
+    level: number;
+    email: string;
+    name: string;
+    password: string;
+}
+
 export type UpdateProfileUserParams = {
     id: number
     userid: number

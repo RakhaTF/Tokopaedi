@@ -6,7 +6,7 @@ import { RepoPaginationParams } from "key-pagination-sql"
 export default class TransactionDomainService {
     static async CreateTransactionIdDomain(params: TransactionParamsDto.CreateTransactionIdParams, query_runner?: QueryRunner) {
         const result = await TransactionRepository.DBCreateTransactionId(params, query_runner)
-        if(result.affectedRows < 1){
+        if (result.affectedRows < 1) {
             throw new Error("Failed To Create Transaction")
         }
         return result
@@ -42,7 +42,7 @@ export default class TransactionDomainService {
 
     static async CreateTransactionStatusDomain(params: { transaction_id: number; update_time: number }, query_runner: QueryRunner) {
         const txStatus = await TransactionRepository.DBCreateTransactionStatus(params, query_runner)
-        if(txStatus.affectedRows < 1){
+        if (txStatus.affectedRows < 1) {
             throw new Error("Failed to create transaction status")
         }
     }
@@ -138,5 +138,15 @@ export default class TransactionDomainService {
             throw new Error("Transaction is deleted")
         }
         return true
+    }
+
+    static async CheckIsTransactionPaidDomain(id: number) {
+        const transaction = await TransactionRepository.DBCheckIsTransactionPaid(id)
+        if (transaction.length < 1) {
+            throw new Error("Transaction not found")
+        }
+        if (transaction[0].is_paid === 1) {
+            throw new Error("Transaction is already paid")
+        }
     }
 }

@@ -21,4 +21,6 @@ export const Pagination = Joi.object({
     search,
     sort,
     lastId,
-}).unknown(true).options({ abortEarly: false })
+})
+    .unknown(true)
+    .options({ abortEarly: false })

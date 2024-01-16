@@ -1,18 +1,19 @@
-import * as AdminSchema from "helpers/JoiSchema/Admin"
+import * as AdminSchema from "@helpers/JoiSchema/Admin"
 import AdminDomainService from "@domain/service/AdminDomainService"
 import UserDomainService from "@domain/service/UserDomainService"
-import { checkPassword, hashPassword } from "helpers/Password/Password"
+import { checkPassword, hashPassword } from "@helpers/Password/Password"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import moment from "moment"
 import { AdminParamsDto, LogParamsDto, UserParamsDto } from "@domain/model/params"
 import { AdminResponseDto } from "@domain/model/response"
 import LogDomainService from "@domain/service/LogDomainService"
 import { CommonRequestDto } from "@domain/model/request"
-import * as CommonSchema from "helpers/JoiSchema/Common"
+import * as CommonSchema from "@helpers/JoiSchema/Common"
 import { GenerateWhereClause, Paginate } from "key-pagination-sql"
 import unicorn from "format-unicorn/safe"
 import { Profanity } from "indonesian-profanity"
-
+import jwt, { JwtPayload } from "jsonwebtoken"
+import { signJWT } from "@helpers/jwt/jwt"
 export default class AdminAppService {
     static async GetAdminProfileService(id: number) {
         await AdminSchema.GetAdminProfile.validateAsync(id)
@@ -22,22 +23,25 @@ export default class AdminAppService {
         return admin
     }
 
-    static async CreateUserService({ id, level = 3, name, email, password }, logData: LogParamsDto.CreateLogParams) {
+    static async CreateUserService({ id, level, name, email, password }: AdminParamsDto.CreateUserParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.CreateUser.validateAsync({ id, level, name, email, password })
 
         //Add name checking, can not use bad words for the product name
-        if (Profanity.flag(name)) {
+        if (Profanity.flag(name.toLowerCase())) {
             throw new Error("You can't use this name!")
         }
 
         await UserDomainService.GetEmailExistDomain(email)
 
+        //Create an email token used to verify email.
+        const email_token: string = await signJWT({ email }, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRES_IN })
         const user = {
-            name: name,
-            email: email,
+            name,
+            email,
             password: await hashPassword(password),
             level,
             created_at: moment().unix(),
+            email_token,
         }
 
         const db = AppDataSource
@@ -67,11 +71,11 @@ export default class AdminAppService {
 
     static async UpdateProfileUser(params: AdminParamsDto.UpdateProfileUserParams, logData: LogParamsDto.CreateLogParams) {
         await AdminSchema.UpdateProfileUser.validateAsync(params)
-        
+
         //Add name checking, can not use bad words for the product name
         const banned = ["SuperAdmin", "Product Management Staff", "User Management Staff", "Shipping and Transaction Management Staff"]
 
-        if (banned.includes(params.name) || Profanity.flag(params.name)) {
+        if (banned.includes(params.name) || Profanity.flag(params.name.toLowerCase())) {
             throw new Error("Banned words name")
         }
 
@@ -126,9 +130,7 @@ export default class AdminAppService {
             }
         }
 
-        const banned = ["SuperAdmin", "Admin", "Product Manager", "User Manager", "Transaction Manager"]
-
-        if (banned.includes(params.name) || Profanity.flag(params.name)) {
+        if (Profanity.flag(params.name.toLowerCase())) {
             throw new Error("Banned words name")
         }
 
@@ -547,6 +549,25 @@ export default class AdminAppService {
             await query_runner.rollbackTransaction()
             await query_runner.release()
             throw error
+        }
+    }
+
+    static async CheckExpiredAccount() {
+        //check expired account, filter it from unverified account.
+        const expiredAccounts = (await AdminDomainService.CheckExpiredAccountDomain())
+            .map((acc) => ({ id: acc.id, token: acc.email_token }))
+            .map((acc) => {
+                const decoded = jwt.decode(acc.token) as JwtPayload
+                return decoded ? { id: acc.id, isExpired: decoded.exp < moment().unix() } : undefined
+            })
+            .filter((account) => account?.isExpired)
+
+        //if there is an expired account or more, delete it permanently (hard delete).
+        if (expiredAccounts.length !== 0) {
+            const logData: LogParamsDto.CreateLogParams = { user_id: 1, action: `Delete Expired Account #`, browser: `CRON JOB`, ip: "127.0.0.1", time: moment().unix() }
+
+            await Promise.all(expiredAccounts.map((acc) => Promise.all([AdminDomainService.HardDeleteUserDomain(acc.id), LogDomainService.CreateLogDomain({ ...logData, action: `Delete Expired Account #${acc.id}` })])))
+            return true
         }
     }
 }

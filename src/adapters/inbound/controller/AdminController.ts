@@ -24,6 +24,7 @@ export default class AdminController {
                 name,
                 email,
                 password,
+                level: 3
             },
             {
                 user_id: jwt.id,
@@ -255,11 +256,11 @@ export default class AdminController {
     }
 
     static async GetUserTransactionListById(request: FastifyRequest) {
-        const { userid } = request.body as TransactionRequestDto.GetUserTransactionListByIdRequest
+        const { user_id } = request.body as TransactionRequestDto.GetUserTransactionListByIdRequest
         const paginationRequest = request.body as CommonRequestDto.PaginationRequest
         const getUserTransactionListById = await TransactionAppService.GetUserTransactionListByIdService(
             {
-                userid,
+                user_id,
             },
             paginationRequest
         )
@@ -295,7 +296,7 @@ export default class AdminController {
                 ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
                 browser: request.headers["user-agent"],
                 time: moment().unix(),
-            }   
+            }
         )
         return { message: approveTransaction }
     }

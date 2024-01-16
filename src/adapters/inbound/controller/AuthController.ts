@@ -5,7 +5,8 @@ import moment from "moment"
 
 export default class AuthController {
     static async Register(request: FastifyRequest) {
-        const register = await AuthService.Register(request.body as UserRequestDto.RegisterRequest)
+        const { name, email, password } = request.body as UserRequestDto.RegisterRequest
+        const register = await AuthService.Register({ email, name, password, level: 3 })
         return { message: register }
     }
 
@@ -18,5 +19,18 @@ export default class AuthController {
             time: moment().unix(),
         })
         return { message: login }
+    }
+
+    static async VerifyEmail(request: FastifyRequest) {
+        const { token } = request.query as { token: string }
+        const verifyEmail = await AuthService.VerifyEmail(token, {
+            user_id: 0,
+            action: `Verify Email`,
+            ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+            browser: request.headers["user-agent"],
+            time: moment().unix(),
+        })
+
+        return { message: verifyEmail }
     }
 }

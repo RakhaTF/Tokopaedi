@@ -12,7 +12,7 @@ export default class UserRepository {
             throw new Error("Must in Transaction")
         }
 
-        const result = await db.query<ResultSetHeader>(`INSERT INTO user (NAME, email, PASSWORD, LEVEL, created_at) VALUES (?,?,?,?,?)`, [user.name, user.email, user.password, user.level, user.created_at], query_runner)
+        const result = await db.query<ResultSetHeader>(`INSERT INTO user (NAME, email, PASSWORD, LEVEL, created_at, email_token) VALUES (?,?,?,?,?,?)`, [user.name, user.email, user.password, user.level, user.created_at, user.email_token], query_runner)
 
         return result
     }
@@ -23,7 +23,8 @@ export default class UserRepository {
             SELECT 
             u.id
             FROM user u
-            WHERE u.email = ?`,
+            WHERE u.email = ?
+            AND u.is_deleted <> 1`,
             [email]
         )
         return result
@@ -33,9 +34,10 @@ export default class UserRepository {
         return await db.query<UserResponseDto.CheckUserExistResult[]>(
             `
             SELECT 
-            u.id, u.name, u.email, u.password, u.level, u.created_at, u.is_deleted
+            u.id, u.name, u.email, u.password, u.level, u.is_verified, u.created_at, u.is_deleted
             FROM user u
-            WHERE u.email = ?`,
+            WHERE u.email = ?
+            AND u.is_deleted <> 1`,
             [email],
             query_runner
         )
@@ -96,5 +98,13 @@ export default class UserRepository {
     static async DBUpdatePassword(passEncrypt: string, id: number, query_runner?: QueryRunner) {
         const result = await db.query<ResultSetHeader>(`UPDATE user SET password = ? WHERE id = ?`, [passEncrypt, id], query_runner)
         return result
+    }
+
+    static async DBFindUserByToken(token: string) {
+        return await db.query<UserResponseDto.FindUserByTokenResult[]>(`SELECT id, email, is_verified, email_token FROM user WHERE email_token = ?`, [token])
+    }
+
+    static async DBVerifyEmail(email: string, query_runner: QueryRunner) {
+        return await db.query<ResultSetHeader>(`UPDATE user SET is_verified = 1, email_token = NULL WHERE email = ?`, [email], query_runner)
     }
 }

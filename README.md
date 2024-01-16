@@ -1,8 +1,6 @@
-
 # Tokopaedi
 
 Tokopaedi is a robust backend project designed with a focus on efficiency and scalability. It leverages several powerful technologies including Fastify, TypeScript, and TypeORM to ensure a high-performance, reliable, and maintainable system.
-
 
 ## Run Locally
 
@@ -31,16 +29,16 @@ Start the server
 ```
 
 ## ERD
-![tokopaedi](https://github.com/RakhaTF/Tokopaedi/assets/77679643/b1dd9d8b-df79-459d-bfaa-f26f53322895)
 
+![tokopaedi](https://github.com/RakhaTF/Tokopaedi/assets/77679643/b1dd9d8b-df79-459d-bfaa-f26f53322895)
 
 ## API Reference
 
 For list of api, go to:
+
 ```
 localhost:8080/documentation/
 ```
+
 Or, if you prefer postman, go to:
 https://documenter.getpostman.com/view/28871141/2s9YkrazBH
-
-

@@ -1,5 +1,5 @@
 import TransactionAppService from "@application/service/Transaction"
-import { IScheduler, Scheduler } from "cronJobs/Scheduler"
+import { IScheduler, Scheduler } from "@cronJobs/Scheduler"
 
 export class TransactionScheduler extends Scheduler {
     constructor() {
@@ -16,7 +16,7 @@ export class TransactionScheduler extends Scheduler {
     }
 
     async executeJob(): Promise<IScheduler> {
-        console.log("CRON JOB HIT")
+        console.log("TRANSACTION CRON JOB HIT")
         return await this.CheckTransactionExpiration()
     }
 }
