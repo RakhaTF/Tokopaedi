@@ -7,7 +7,8 @@ const server = buildServer();
 
 async function main() {
   try {
-    server.listen({ port: 8080 }, (err, address) => {
+    const port = Number(process.env.HTTP_PORT)
+    server.listen({ port: port }, (err, address) => {
         if (err) {
             console.error(err)
             process.exit(1)
@@ -18,7 +19,6 @@ async function main() {
         new UserScheduler()
         new ProductScheduler()
     })
-    console.log(`Server ready at http://localhost:3000`);
   } catch (e) {
     console.error(e);
     process.exit(1);
