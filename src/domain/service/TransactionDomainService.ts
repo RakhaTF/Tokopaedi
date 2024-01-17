@@ -149,4 +149,11 @@ export default class TransactionDomainService {
             throw new Error("Transaction is already paid")
         }
     }
+
+    static async HardDeleteTransactionDomain(id: number){
+        const deleteTx = await TransactionRepository.DBHardDeleteTransaction(id)
+        if(deleteTx.affectedRows < 1){
+            throw new Error("Failed to delete transaction")
+        }
+    }
 }

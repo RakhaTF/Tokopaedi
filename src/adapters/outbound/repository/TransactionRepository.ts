@@ -91,7 +91,7 @@ export default class TransactionRepository {
 
     static async DBPayTransaction(params: TransactionParamsDto.PayTransactionRepositoryParams, query_runner: QueryRunner) {
         const { is_paid, paid_at, payment_method, shipping_price, updated_at, user_id, shipping_address_id, transaction_id } = params
-        
+
         const query = `
         UPDATE transaction SET 
         payment_method = ?, 
@@ -256,5 +256,9 @@ export default class TransactionRepository {
 
     static async DBCheckIsTransactionPaid(id: number) {
         return await db.query<{ is_paid: number }[]>(`SELECT t.is_paid FROM transaction t WHERE t.id = ?`, [id])
+    }
+
+    static async DBHardDeleteTransaction(id: number) {
+        return await db.query<ResultSetHeader>(`DELETE from transaction where id = ?`, [id])
     }
 }

@@ -277,18 +277,6 @@ export const BaseResponse = ({ type, message }: BaseResponseSchema) => {
                 ...message,
             },
         }
-    } else if (type == "Dynamic Key Object" && typeof message != "boolean" && typeof message != "string") {
-        sub = {
-            type: "object",
-            additionalProperties: {
-                ...message,
-            },
-        }
-    } else if (type == "File") {
-        return {
-            200: {},
-            ...errorResponse,
-        }
     }
 
     const schema = {

@@ -15,12 +15,8 @@ export default class AuthAppService {
     static async Register({ level, name, email, password }: UserRequestDto.RegisterRequest) {
         await UserSchema.Register.validateAsync({ level, name, email, password })
 
-        if (name === "SuperAdmin") {
-            throw new Error("Prohibited name")
-        }
-
-        //Add name checking, can not use bad words for the product name
-        if (Profanity.flag(name.toLowerCase())) {
+        //Add name checking, can not use bad words for the user name
+        if (Profanity.flag(name.toLowerCase()) || name.toLowerCase() === "superadmin") {
             throw new Error("You can't use this name!")
         }
 
@@ -86,8 +82,8 @@ export default class AuthAppService {
                 throw new Error("Please verify your email first!")
             }
 
-            const checkPassworduUser = await checkPassword(params.password, existingUser.password)
-            if (!checkPassworduUser) {
+            const checkPasswordUser = await checkPassword(params.password, existingUser.password)
+            if (!checkPasswordUser) {
                 throw new Error("Wrong Username Or Password")
             }
 
@@ -137,11 +133,8 @@ export default class AuthAppService {
 
         await verifyJWT(token, process.env.JWT_SECRET)
 
-        //Checking if the user is already verify their email
+        //getting user data to verify
         const user = await UserDomainService.FindUserByTokenDomain(token)
-        if (user.is_verified == 1) {
-            throw new Error("Account is already verified")
-        }
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()

@@ -36,8 +36,7 @@ export default class UserRepository {
             SELECT 
             u.id, u.name, u.email, u.password, u.level, u.is_verified, u.created_at, u.is_deleted
             FROM user u
-            WHERE u.email = ?
-            AND u.is_deleted <> 1`,
+            WHERE u.email = ?`,
             [email],
             query_runner
         )

@@ -56,4 +56,11 @@ export default class ShippingAddressDomainService {
         }
         return true
     }
+
+    static async HardDeleteShippingAddressDomain(id: number){
+        const deleteAddress = await ShippingAddressRepository.DBHardDeleteShippingAddress(id)
+        if(deleteAddress.affectedRows < 1){
+            throw new Error("Failed to delete shipping address")
+        }
+    }
 }

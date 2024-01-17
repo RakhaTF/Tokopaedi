@@ -33,8 +33,11 @@ export default class AdminAppService {
 
         await UserDomainService.GetEmailExistDomain(email)
 
+        //if environtment TESTING is set to true, create a user with 10ms expiration time. this is made to ensure we can test the check expired account function.
+        const expiresIn = process.env.TESTING ? "10" : process.env.EXPIRES_IN
+
         //Create an email token used to verify email.
-        const email_token: string = await signJWT({ email }, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRES_IN })
+        const email_token: string = await signJWT({ email }, process.env.JWT_SECRET, { expiresIn: expiresIn })
         const user = {
             name,
             email,

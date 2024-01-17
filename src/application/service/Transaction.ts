@@ -51,7 +51,14 @@ export default class TransactionAppService {
          * declare transaction expiration time based on when transaction is created, default is 30 minutes.
          * if expired, transaction will be deleted.
          */
-        const transactionExpireAt = moment.unix(params.created_at).add(30, "minutes").unix()
+
+        /**
+         * If TESTING is set to true, make the transaction expires in 1 second instead 
+         */
+        const testingExpireTime = moment.unix(params.created_at).add(1, "seconds").unix()
+        const defaultExpireTime = moment.unix(params.created_at).add(30, "minutes").unix()
+
+        const transactionExpireAt = process.env.TESTING ? testingExpireTime : defaultExpireTime
 
         const db = AppDataSource
         const query_runner = db.createQueryRunner()
@@ -572,7 +579,6 @@ export default class TransactionAppService {
          */
         const now = moment().unix()
         const expiredTx = pendingTransaction.filter((tx) => moment.unix(tx.expire_at).diff(moment.unix(now), "minutes") <= 0)
-
         if (expiredTx.length > 0) {
             const db = AppDataSource
             const query_runner = db.createQueryRunner()

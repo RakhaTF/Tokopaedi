@@ -36,6 +36,8 @@ describe('Lists of routes accessible to regular user (level 3)', () => {
 
     afterAll(async () => {
         await app.close()
+        //hard delete, delete the account from database entirely, including data in the other table that has relation to the account (transaction, shipping address, etc.)
+        await AdminDomainService.HardDeleteUserDomain(newlyRegisteredUserId)
     })
 
     const userColumnName = ["id",
@@ -126,6 +128,16 @@ describe('Lists of routes accessible to regular user (level 3)', () => {
             expect(userName).toEqual(newUserData.name)
             expect(userEmail).toEqual(newUserData.email)
         });
+
+        it('Should fail to login before account is verified', async () => {
+            const { body } = await supertest(app.server)
+                .post('/api/v1/auth/login')
+                .set('user-agent', "Test")
+                .send({ email: newUserData.email, password: newUserData.password })
+                .expect(500)
+
+            expect(body.message).toEqual("Please verify your email first!")
+        })
 
         it('Should verify newly registered user', async () => {
 
@@ -250,6 +262,7 @@ describe('Lists of routes accessible to regular user (level 3)', () => {
             expect(userData.email).toEqual(updateUserData.email)
             expect(userData.authority).toEqual([])
         })
+
     })
 
     describe('User interacting with shipping address endpoints', () => {
@@ -616,9 +629,107 @@ describe('Lists of routes accessible to regular user (level 3)', () => {
 
             expect(typeof body.message).toEqual('boolean')
             expect(body.message).toBe(true)
-
-            //hard delete, delete the account from database entirely, including data in the other table that has relation to the account (transaction, shipping address, etc.)
-            await AdminDomainService.HardDeleteUserDomain(newlyRegisteredUserId)
         });
+    })
+
+    describe('Fail test scenario', () => {
+        describe('Auth routes', () => {
+            it('Should fail to register with "SuperAdmin" as name', async () => {
+                const { body } = await supertest(app.server)
+                    .post('/api/v1/auth/register')
+                    .send({ ...newUserData, name: "SuperAdmin" })
+                    .expect(500)
+
+                expect(body.message).toEqual("You can't use this name!")
+            })
+
+            it('Should fail to register with bad word as name', async () => {
+                const { body } = await supertest(app.server)
+                    .post('/api/v1/auth/register')
+                    .send({ ...newUserData, name: "anjing" })
+                    .expect(500)
+
+                expect(body.message).toEqual("You can't use this name!")
+            })
+
+            it('Should fail to login after user has been deleted', async () => {
+                const { body } = await supertest(app.server)
+                    .post('/api/v1/auth/login')
+                    .set('user-agent', "Test")
+                    .send({ email: updateUserData.email, password: changePasswordRequest.newPassword })
+                    .expect(500)
+
+                expect(body.message).toEqual("Your account is deleted, please contact an admin")
+            })
+        })
+
+        it('Should fail to update user name to banned words', async () => {
+            updateUserData = {
+                email: "rakharan@gmail.com",
+                name: "anjing"
+            }
+
+            const { body } = await supertest(app.server)
+                .post('/api/v1/user/profile/update')
+                .set('Authorization', newlyRegisteredUserJWTToken)
+                .set('user-agent', "Test")
+                .send(updateUserData)
+                .expect(500)
+
+            expect(typeof body).toEqual('object')
+            expect(body.message).toEqual("Banned words name")
+        })
+
+        it('Should fail to update user with wrong email (used by others/existed)', async () => {
+            updateUserData = {
+                email: "user.admin@gmail.com",
+                name: "randhika"
+            }
+
+            const { body } = await supertest(app.server)
+                .post('/api/v1/user/profile/update')
+                .set('Authorization', newlyRegisteredUserJWTToken)
+                .set('user-agent', "Test")
+                .send(updateUserData)
+                .expect(500)
+
+            expect(typeof body).toEqual('object')
+            expect(body.message).toEqual("Email is not available")
+        })
+
+        it('Should fail to update password with invalid old password', async () => {
+            changePasswordRequest = {
+                oldPassword: 'passwordbaru',
+                newPassword: 'password1234',
+            }
+
+            const { body } = await supertest(app.server)
+                .post('/api/v1/user/change-pass')
+                .set('Authorization', newlyRegisteredUserJWTToken)
+                .set('user-agent', "Test")
+                .send(changePasswordRequest)
+                .expect(500)
+
+            expect(typeof body).toEqual('object')
+            expect(body.message).toEqual("Invalid old password")
+        })
+
+        it('Should fail accessing route without login', async () => {
+            const { body } = await supertest(app.server)
+                .get('/api/v1/user/profile')
+                .expect(500)
+
+            expect(body.message).toEqual("PLEASE_LOGIN_FIRST")
+        })
+
+        it('Should fail accessing admin route', async () => {
+            const { body } = await supertest(app.server)
+                .get('/api/v1/admin/rules/list')
+                .set('Authorization', newlyRegisteredUserJWTToken)
+                .set('user-agent', "Test")
+                .expect(500)
+
+            expect(body.message).toEqual("NOT_ENOUGH_RIGHTS")
+        })
     })
 })
