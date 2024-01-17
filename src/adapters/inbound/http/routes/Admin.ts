@@ -8,6 +8,7 @@ import LogController from "@adapters/inbound/controller/LogController"
 import fastifyMulter from "fastify-multer"
 import moment from "moment"
 import path from "path"
+import { fileFilter } from "@helpers/utils/image/imageHelper"
 
 const multer = fastifyMulter;
 const storage = multer.diskStorage({
@@ -21,7 +22,8 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage })
+//limit file size to 2MB
+const upload = multer({ storage, limits: { fileSize: 2 * 1024 * 1024 }, fileFilter: fileFilter })
 const routes: RouteOptions[] = [
     {
         method: ["POST"],

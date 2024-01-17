@@ -255,7 +255,7 @@ describe('Lists of routes accessible to product manager', () => {
                     .attach('image', newImageFilepath, { contentType: 'text/csv' })
 
                 expect(statusCode).toEqual(500)
-                expect(body.message).toEqual("INVALID_FILE_TYPE")
+                expect(body.message).toEqual("Only .jpg and .png format allowed!")
             })
 
             it('Should fail to create a product with too big image size', async () => {
@@ -276,7 +276,7 @@ describe('Lists of routes accessible to product manager', () => {
                     .attach('image', bigImageFilepath, { contentType: 'image/jpeg' })
 
                 expect(statusCode).toEqual(500)
-                expect(body.message).toEqual("IMAGE_FILE_SIZE_TOO_BIG._MAX_2_MB")
+                expect(body.message).toEqual("File too large")
             })
         })
 
@@ -312,7 +312,7 @@ describe('Lists of routes accessible to product manager', () => {
                     .attach('image', updateImageFilepath, { contentType: 'text/csv' })
 
                 expect(statusCode).toEqual(500)
-                expect(body.message).toEqual("INVALID_FILE_TYPE")
+                expect(body.message).toEqual("Only .jpg and .png format allowed!")
             });
 
             it('Should fail to update a product with wrong image mimetype', async () => {
@@ -329,7 +329,7 @@ describe('Lists of routes accessible to product manager', () => {
                     .attach('image', bigImageFilepath, { contentType: 'image/jpeg' })
 
                 expect(statusCode).toEqual(500)
-                expect(body.message).toEqual("IMAGE_FILE_SIZE_TOO_BIG._MAX_2_MB")
+                expect(body.message).toEqual("File too large")
             });
         })
     })

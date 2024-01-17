@@ -59,14 +59,25 @@ export default class ProductController {
     static async UpdateProduct(request: FastifyRequest) {
         const jwt = request.user
         const files = request.files
-        const productUpdate = request.body as ProductRequestDto.UpdateProductRequest
-        const updateProduct = await ProductAppService.UpdateProduct(productUpdate, files, {
-            user_id: jwt.id,
-            action: `Update Product`,
-            ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
-            browser: request.headers["user-agent"],
-            time: moment().unix(),
-        })
-        return { message: updateProduct }
+        try {
+            const productUpdate = request.body as ProductRequestDto.UpdateProductRequest
+            const updateProduct = await ProductAppService.UpdateProduct(productUpdate, files, {
+                user_id: jwt.id,
+                action: `Update Product`,
+                ip: (request.headers["x-forwarded-for"] as string) || (request.ip == "::1" ? "127.0.0.1" : request.ip),
+                browser: request.headers["user-agent"],
+                time: moment().unix(),
+            })
+            return { message: updateProduct }
+        } catch (error) {
+            // Delete tmp files when error occured
+            for (const file in files) {
+                const imagePath = files[file][0].path
+                if (fs.existsSync(imagePath)) {
+                    fs.unlinkSync(imagePath)
+                }
+            }
+            throw error
+        }
     }
 }

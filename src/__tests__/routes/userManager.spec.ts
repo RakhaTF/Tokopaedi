@@ -2,6 +2,7 @@ import buildServer from "../../index"
 import { expect, beforeAll, afterAll, describe, it, } from 'vitest'
 import supertest from "supertest"
 import AdminDomainService from "../../../src/domain/service/AdminDomainService"
+import AdminAppService from "../../application/service/Admin"
 
 describe('Lists of routes accessible to user manager', () => {
     let app;
@@ -111,7 +112,7 @@ describe('Lists of routes accessible to user manager', () => {
             .post('/api/v1/admin/update-user')
             .set('Authorization', superAdminJwt)
             .set('user-agent', "Test")
-            .send({...updateUserDataRequest, userid: newlyRegisteredUserId})
+            .send({ ...updateUserDataRequest, userid: newlyRegisteredUserId })
 
         //extract the data
         const data = body.message
@@ -141,6 +142,58 @@ describe('Lists of routes accessible to user manager', () => {
         expect(body.message).toEqual(true)
     });
 
+    describe('Fail test scenario', () => {
+        it('Should fail to create user with bad name', async () => {
+            const { body } = await supertest(app.server)
+                .post('/api/v1/admin/create-user')
+                .set('Authorization', superAdminJwt)
+                .set('user-agent', "Test")
+                .send({ ...createNewUserData, name: "anjing" })
+                .expect(500)
+
+            expect(body.message).toEqual("You can't use this name!")
+        })
+
+        it('Should fail update user data with bad name', async () => {
+            const { body } = await supertest(app.server)
+                .post('/api/v1/admin/update-user')
+                .set('Authorization', superAdminJwt)
+                .set('user-agent', "Test")
+                .send({ ...updateUserDataRequest, name: "anjing", userid: newlyRegisteredUserId })
+                .expect(500)
+
+            expect(body.message).toEqual("Banned words name")
+        });
+
+        it('Should fail to update user email with existent email', async () => {
+            const { body } = await supertest(app.server)
+                .post('/api/v1/admin/update-user')
+                .set('Authorization', superAdminJwt)
+                .set('user-agent', "Test")
+                .send({ ...updateUserDataRequest, email: "user.admin@gmail.com", userid: newlyRegisteredUserId })
+                .expect(500)
+
+            expect(body.message).toEqual("Email is not available")
+        })
+
+        it('Should fail update/change user password', async () => {
+            const changeUserPasswordRequest = {
+                userid: newlyRegisteredUserId,
+                password: "passwordBaru",
+                confirmPassword: "salahconfirm"
+            }
+
+            const { body } = await supertest(app.server)
+                .post('/api/v1/admin/change-user-pass')
+                .set('Authorization', superAdminJwt)
+                .set('user-agent', "Test")
+                .send(changeUserPasswordRequest)
+                .expect(500)
+
+            expect(body.message).toEqual("Invalid Confirm Password")
+        });
+    })
+
     describe('Managing deleted user', () => {
 
         it('Should delete newly created user', async () => {
@@ -149,7 +202,7 @@ describe('Lists of routes accessible to user manager', () => {
                 .set('Authorization', superAdminJwt)
                 .set('user-agent', "Test")
                 .send({ email: "rakhaUserManager.tokopaedi@gmail.com" })
-                
+
             expect(typeof body.message).toEqual('boolean')
             expect(body.message).toBe(true)
         });
@@ -167,7 +220,7 @@ describe('Lists of routes accessible to user manager', () => {
                 .set('Authorization', superAdminJwt)
                 .set('user-agent', "Test")
                 .send(deletedUserListRequest)
-            
+
             //extract the data
             const data = body.message.data
             const firstData = data[0]
@@ -191,11 +244,11 @@ describe('Lists of routes accessible to user manager', () => {
             expect(body.message).toEqual(true)
         });
 
-        //final step
-        //hard delete, delete the account from database entirely, including data in the other table that has relation to the account (transaction, shipping address, etc.)
-        it('Final step', async () => {
-            await AdminDomainService.HardDeleteUserDomain(newlyRegisteredUserId)
-        });
+        it('Should check expired account (unverified)', async () => {
+            //final step
+            //hard delete, delete the account from database entirely, including data in the other table that has relation to the account (transaction, shipping address, etc.)
+            const response = await AdminAppService.CheckExpiredAccount()
+            expect(response).toEqual(true)
+        })
     })
-
 })

@@ -69,4 +69,8 @@ export class ShippingAddressRepository {
             [user_id, limit + 1]
         )
     }
+
+    static async DBHardDeleteShippingAddress(id: number) {
+        return await db.query<ResultSetHeader>(`DELETE from shipping_address WHERE id = ?`, [id])
+    }
 }

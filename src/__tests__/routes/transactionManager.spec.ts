@@ -1,8 +1,10 @@
 import buildServer from "../../index"
 import { expect, beforeAll, afterAll, describe, it, } from 'vitest'
 import supertest from "supertest"
+import TransactionDomainService from "../../domain/service/TransactionDomainService"
+import ShippingAddressDomainService from "../../domain/service/ShippingAddressDomainService"
 
-describe('List of routes accessible to super admin', () => {
+describe('List of routes accessible to transaction manager', () => {
     let app;
     let superAdminJwt: string;
     let newlyCreatedAddressId: number;
@@ -16,6 +18,9 @@ describe('List of routes accessible to super admin', () => {
 
     afterAll(async () => {
         await app.close()
+        //last step, cleanup created data from database.
+        await TransactionDomainService.HardDeleteTransactionDomain(newlyCreatedTxId)
+        await ShippingAddressDomainService.HardDeleteShippingAddressDomain(newlyCreatedAddressId)
     })
 
     const shippingAddressColumnName = [
@@ -49,6 +54,22 @@ describe('List of routes accessible to super admin', () => {
         'currentPageDataCount'
     ]
 
+    it('Should fail to create transaction with out of stock product', async () => {
+        const newTransactionRequestData = {
+            product_id: [5, 6],
+            qty: [10, 10]
+        }
+
+        const { body } = await supertest(app.server)
+            .post('/api/v1/user/transaction/create')
+            .set('Authorization', superAdminJwt)
+            .set('user-agent', "Test")
+            .send(newTransactionRequestData)
+            .expect(500)
+
+        expect(body.message).toEqual(`Product Huawei P30 is out of stock!`)
+    })
+
     it('Should create a new transaction for testing', async () => {
         const newTransactionRequestData = {
             product_id: [7, 8],
@@ -60,9 +81,45 @@ describe('List of routes accessible to super admin', () => {
             .set('Authorization', superAdminJwt)
             .set('user-agent', "Test")
             .send(newTransactionRequestData)
+            .expect(200)
 
-        expect(body.message).toBe(true)
+        expect(body.message).toEqual(true)
     });
+
+    describe('Fail test scenario', () => {
+
+        it('Should fail to create another transaction if the previous transaction is unpaid', async () => {
+            const newTransactionRequestData = {
+                product_id: [7, 8],
+                qty: [10, 10]
+            }
+
+            const { body } = await supertest(app.server)
+                .post('/api/v1/user/transaction/create')
+                .set('Authorization', superAdminJwt)
+                .set('user-agent', "Test")
+                .send(newTransactionRequestData)
+                .expect(500)
+
+            expect(body.message).toEqual("Please pay your current transaction.")
+        })
+
+        it('Should fail to create transaction with mismatch length of qty & prodcut_id', async () => {
+            const newTransactionRequestData = {
+                product_id: [7, 8, 9],
+                qty: [10, 10]
+            }
+
+            const { body } = await supertest(app.server)
+                .post('/api/v1/user/transaction/create')
+                .set('Authorization', superAdminJwt)
+                .set('user-agent', "Test")
+                .send(newTransactionRequestData)
+                .expect(500)
+
+            expect(body.message).toEqual("Product_id and qty not match")
+        })
+    })
 
     it('Should create a new shipping address', async () => {
         const newShippingAddressData = {
@@ -80,7 +137,7 @@ describe('List of routes accessible to super admin', () => {
             .send(newShippingAddressData)
             .expect(200)
 
-        expect(body.message).toBe(true)
+        expect(body.message).toEqual(true)
     });
 
     describe('Transaction manager interacting with shipping address endpoints', () => {
@@ -209,6 +266,23 @@ describe('List of routes accessible to super admin', () => {
                 .send(payTransactionRequest)
 
             expect(body.message).toEqual(true)
+        });
+
+        it('Should fail to update the delivery status of an unapproved transaction', async () => {
+            const updateDeliveryStatusRequest = {
+                transaction_id: newlyCreatedTxId,
+                is_delivered: 1, // 0 = pending, 1 = delivered
+                status: 1, //0 = Pending, 1 = On Delivery, 2 = Delivered, 3 = Rejected
+            }
+
+            const { body } = await supertest(app.server)
+                .post('/api/v1/admin/transaction/update-delivery-status')
+                .set('Authorization', superAdminJwt)
+                .set('user-agent', "Test")
+                .send(updateDeliveryStatusRequest)
+                .expect(500)
+
+            expect(body.message).toEqual("Please approve the transaction first!")
         });
 
         it('Should approve a transaction', async () => {

@@ -247,5 +247,51 @@ describe('List of routes accessible to super admin', () => {
 
             expect(body.message).toEqual(true)
         });
+
+        describe('Fail test scenario', () => {
+            it('Should fail to create an already existing rule', async () => {
+                const { body } = await supertest(app.server)
+                    .post('/api/v1/admin/rules/create')
+                    .set('Authorization', superAdminJwt)
+                    .set('user-agent', "Test")
+                    .send({ rule: "UPDATE_USER_LEVEL" })
+                    .expect(500)
+
+                expect(body.message).toEqual("Rule Already Exist!")
+            })
+
+            it('Should fail to update rule to an existing rule', async () => {
+                const { body } = await supertest(app.server)
+                    .post('/api/v1/admin/rules/update')
+                    .set('Authorization', superAdminJwt)
+                    .set('user-agent', "Test")
+                    .send({ rules_id: 101, rule: "VIEW_USER_PROFILE" })
+                    .expect(500)
+
+                expect(body.message).toEqual("Rule Already Exist!")
+            });
+
+            it('Should fail to reassign existing rule to a group', async () => {
+                const { body } = await supertest(app.server)
+                    .post('/api/v1/admin/rules/assign')
+                    .set('Authorization', superAdminJwt)
+                    .set('user-agent', "Test")
+                    .send({ rules_id: 101, group_id: 1 })
+                    .expect(500)
+
+                expect(body.message).toEqual("Can't Reassign Existing Rule!")
+            })
+
+            it('Should fail to revoke a nonexistent rule', async () => {
+                const { body } = await supertest(app.server)
+                    .post('/api/v1/admin/rules/revoke')
+                    .set('Authorization', superAdminJwt)
+                    .set('user-agent', "Test")
+                    .send({ rules_id: 101, group_id: 6 })
+                    .expect(500)
+
+                expect(body.message).toEqual("Failed to Revoke Rule From Admin")
+            });
+        })
     })
 })
