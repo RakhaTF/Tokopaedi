@@ -93,13 +93,6 @@ export default class ProductAppService {
                     const fileArray = files[key];
                     if (Array.isArray(fileArray) && fileArray.length > 0) {
                         const imageFile = fileArray[0]; // Assuming each key in files is an array and you want the first file
-                        const imageFileType = imageFile.mimetype;
-                        const imageMimeTypes = ['image/gif', 'image/jpeg', 'image/png'];
-                        const imageSize = imageFile.size / 1000; // Size in kilobytes
-
-                        // Validate files mimetype and size
-                        if (!imageMimeTypes.includes(imageFileType)) throw new Error("INVALID_FILE_TYPE")
-                        if (imageSize > 2048) throw new Error(`${imageFile.fieldname?.toUpperCase()}_FILE_SIZE_TOO_BIG._MAX_2_MB`)
 
                         imageObjects.push({
                             fieldname: imageFile.fieldname,
@@ -166,14 +159,7 @@ export default class ProductAppService {
                             const fileArray = files[key];
                             if (Array.isArray(fileArray) && fileArray.length > 0) {
                                 const imageFile = fileArray[0]; // Assuming each key in files is an array and you want the first file
-                                const imageFileType = imageFile.mimetype;
-                                const imageMimeTypes = ['image/gif', 'image/jpeg', 'image/png'];
-                                const imageSize = imageFile.size / 1000; // Size in kilobytes
-
-                                // Validate files mimetype and size
-                                if (!imageMimeTypes.includes(imageFileType)) throw new Error("INVALID_FILE_TYPE")
-                                if (imageSize > 2048) throw new Error(`${imageFile.fieldname?.toUpperCase()}_FILE_SIZE_TOO_BIG._MAX_2_MB`)
-
+                                
                                 const imageObjects: Partial<File[]> = [];
 
                                 imageObjects.push({

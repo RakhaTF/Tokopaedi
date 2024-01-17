@@ -41,3 +41,12 @@ export async function UploadImage(request: File): Promise<UploadApiResponse> {
 export async function DeleteImage(public_id: string, options?: { resource_type?: ResourceType; type?: DeliveryType; invalidate?: boolean; }, callback?: ResponseCallback) {
     cloudinary.uploader.destroy(public_id, { ...options, invalidate: true }, callback).then(callback)
 }
+
+export const fileFilter = (_req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    if ((file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') && (ext === '.jpg' || ext === '.png' || ext === '.jpeg')) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only .jpg and .png format allowed!'), false);
+    }
+}
