@@ -4,7 +4,7 @@ export class CreateOrderItemTable1701752189548 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             CREATE TABLE order_item (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id SERIAL PRIMARY KEY,
                 order_id INT NOT NULL,
                 qty INT NOT NULL,
                 product_id INT,

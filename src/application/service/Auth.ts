@@ -3,7 +3,7 @@ import UserDomainService from "@domain/service/UserDomainService"
 import moment from "moment"
 import { checkPassword, hashPassword } from "@helpers/Password/Password"
 import { signJWT, verifyJWT } from "@helpers/jwt/jwt"
-import { AppDataSource } from "@infrastructure/mysql/connection"
+import { AppDataSource } from "@infrastructure/postgres/connection"
 import { LogParamsDto, UserParamsDto } from "@domain/model/params"
 import { UserResponseDto } from "@domain/model/response"
 import LogDomainService from "@domain/service/LogDomainService"
@@ -48,8 +48,8 @@ export default class AuthAppService {
                 email_token,
             }
 
-            const { insertId } = await UserDomainService.CreateUserDomain(user, query_runner)
-
+            const insertId = await UserDomainService.CreateUserDomain(user, query_runner)
+            console.log({insertId})
             const user_result = await UserDomainService.GetUserByIdDomain(insertId, query_runner)
 
             //Email service to notify newly registered user and admin.

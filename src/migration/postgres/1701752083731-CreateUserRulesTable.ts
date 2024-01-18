@@ -4,7 +4,7 @@ export class CreateUserRulesTable1701752083731 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             CREATE TABLE user_rules (
-                rules_id INT AUTO_INCREMENT PRIMARY KEY,
+                rules_id SERIAL PRIMARY KEY,
                 rules VARCHAR(255) NOT NULL
             )
         `)

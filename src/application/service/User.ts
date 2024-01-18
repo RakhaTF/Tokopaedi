@@ -3,7 +3,7 @@ import UserDomainService from "@domain/service/UserDomainService"
 import * as UserSchema from "@helpers/JoiSchema/User"
 import { checkPassword, hashPassword } from "@helpers/Password/Password"
 import LogDomainService from "@domain/service/LogDomainService"
-import { AppDataSource } from "@infrastructure/mysql/connection"
+import { AppDataSource } from "@infrastructure/postgres/connection"
 import { Profanity } from "indonesian-profanity"
 import { BadInputError } from "@domain/model/Error/Error"
 export default class UserAppService {

@@ -2,8 +2,8 @@ import fastify from "fastify"
 import FastifyBaseAddon from "./application/boot/fastify/base"
 import FastifyRouteAddon from "@application/boot/fastify/route"
 import FastifySwaggerAddon from "@application/boot/fastify/swagger"
-import Ajv from "ajv"
-import { AppDataSource } from "@infrastructure/mysql/connection"
+import Ajv from 'ajv'
+import { AppDataSource } from "@infrastructure/postgres/connection"
 
 //Ajv file plugin, so fastify could know what is isFile used in multer.
 function ajvFilePlugin(ajv: Ajv) {
@@ -45,7 +45,7 @@ function buildServer() {
     server.register(FastifyBaseAddon)
     server.register(FastifySwaggerAddon)
     server.register(FastifyRouteAddon)
-
+    
     return server
 }
 
