@@ -4,19 +4,19 @@ export class CreateTransactionTable1701752161871 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             CREATE TABLE transaction (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id SERIAL PRIMARY KEY,
                 user_id INT NOT NULL,
                 payment_method VARCHAR(255) NOT NULL,
                 items_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 shipping_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 total_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 shipping_address_id INT,
-                is_paid TINYINT(1) NOT NULL DEFAULT 0,
-                paid_at INT(11),
-                created_at INT(11) NOT NULL,
-                updated_at INT(11) NOT NULL,
-                is_deleted TINYINT(1) DEFAULT '0' COMMENT '0 = false, 1 = true',
-                FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+                is_paid BOOLEAN NOT NULL DEFAULT FALSE,
+                paid_at INT,
+                created_at INT NOT NULL,
+                updated_at INT NOT NULL,
+                is_deleted BOOLEAN DEFAULT FALSE,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
                 FOREIGN KEY (shipping_address_id) REFERENCES shipping_address(id) ON DELETE SET NULL
             )
         `)

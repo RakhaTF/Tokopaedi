@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  
   "scripts": {
     "dev": "nodemon -e ts --exec \"ts-node -r tsconfig-paths/register -r ./src/app.ts\"",
-    "migrate": "npx typeorm-ts-node-commonjs migration:run -d src/infrastructure/mysql/connection.ts",
+    "migrate": "npx typeorm-ts-node-commonjs migration:run -d src/infrastructure/postgres/connection.ts",
     "lint": "eslint \"**/*.{js,ts}\" --quiet --fix",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && ts-node copy-templates.ts",
     "test": "vitest",
@@ -37,9 +36,9 @@
     "key-pagination-sql": "^1.0.1",
     "moment": "2.29.4",
     "moment-timezone": "^0.5.43",
-    "mysql2": "^3.4.5",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.8",
+    "pg": "^8.11.3",
     "pino-pretty": "^10.2.3",
     "typeorm": "0.3.17",
     "vite-tsconfig-paths": "^4.2.3"

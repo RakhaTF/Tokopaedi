@@ -6,9 +6,7 @@ import { QueryRunner } from "typeorm"
 export default class UserDomainService {
     static async CreateUserDomain(user: UserParamsDto.RegisterParams, query_runner?: QueryRunner) {
         const createUser = await UserRepository.DBCreateUser(user, query_runner)
-        if (createUser.affectedRows < 1) {
-            throw new Error("Failed to create user.")
-        }
+        console.log({createUser})
         return createUser
     }
 

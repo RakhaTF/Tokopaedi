@@ -1,4 +1,4 @@
-import { AppDataSource } from "@infrastructure/mysql/connection"
+import { AppDataSource } from "@infrastructure/postgres/connection"
 import { AdminResponseDto } from "@domain/model/response"
 import { AdminParamsDto } from "@domain/model/params"
 import { ResultSetHeader } from "mysql2"
@@ -13,9 +13,9 @@ export default class AdminRepository {
             `SELECT 
         u.id, u.name, u.email, u.level, u.created_at,
         GROUP_CONCAT(DISTINCT d.rules_id separator ',') as group_rules
-        FROM user u
+        FROM users u
         LEFT JOIN user_group_rules d ON u.level = d.group_id
-        WHERE u.id = ?
+        WHERE u.id = $1
         GROUP BY u.id`,
             [id]
         )
@@ -24,7 +24,7 @@ export default class AdminRepository {
     }
 
     static async DBSoftDeleteUser(email: string, query_runner?: QueryRunner) {
-        const result = await db.query(`UPDATE user SET is_deleted = 1 WHERE email = ?`, [email], query_runner)
+        const result = await db.query(`UPDATE users SET is_deleted = true WHERE email = $1`, [email], query_runner)
         return result
     }
 
@@ -36,16 +36,16 @@ export default class AdminRepository {
         SELECT 
         u.id, u.name, u.email, u.created_at,
         CASE
-            WHEN u.is_deleted = 0
+            WHEN u.is_deleted = false
                 THEN 'Active'
-            WHEN u.is_deleted = 1
+            WHEN u.is_deleted = true
                 THEN 'Deleted'
         END as is_deleted
-        FROM user u 
+        FROM users u 
         ${whereClause}
         AND u.level = 3
         ORDER BY u.id ${sort}
-        LIMIT ?`,
+        LIMIT $1`,
             [limit + 1]
         )
         return result
@@ -54,7 +54,7 @@ export default class AdminRepository {
     static async DBGetUserDetailProfile(email: string): Promise<AdminResponseDto.GetUserDetailProfileResponse[]> {
         const result = await db.query<AdminResponseDto.GetUserDetailProfileResponse[]>(
             `
-        SELECT u.id, u.name, u.email, u.created_at FROM user u WHERE u.email = ?`,
+        SELECT u.id, u.name, u.email, u.created_at FROM users u WHERE u.email = $1`,
             [email]
         )
 
@@ -66,7 +66,7 @@ export default class AdminRepository {
         SELECT u.name, 
             GROUP_CONCAT(ur.rules SEPARATOR ",") AS rights, 
             GROUP_CONCAT(ur.rules_id SEPARATOR ",") AS rules_id 
-        FROM user u
+        FROM users u
         JOIN user_groups ug
             ON u.level = ug.level_id
         JOIN user_group_rules ugr
@@ -82,7 +82,7 @@ export default class AdminRepository {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`INSERT INTO user_rules(rules) VALUES(?)`, [rules], query_runner)
+        return await db.query<ResultSetHeader>(`INSERT INTO user_rules(rules) VALUES($1)`, [rules], query_runner)
     }
 
     static async DBGetRulesList() {
@@ -93,28 +93,28 @@ export default class AdminRepository {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`UPDATE user_rules SET rules = ? WHERE rules_id = ?`, [rule, rules_id], query_runner)
+        return await db.query<ResultSetHeader>(`UPDATE user_rules SET rules = $1 WHERE rules_id = $2`, [rule, rules_id], query_runner)
     }
 
     static async DBSoftDeleteRule(rules_id: number, query_runner: QueryRunner) {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`DELETE FROM user_rules WHERE rules_id = ?`, [rules_id], query_runner)
+        return await db.query<ResultSetHeader>(`DELETE FROM user_rules WHERE rules_id = $1`, [rules_id], query_runner)
     }
 
     static async DBAssignRule({ group_id, rules_id }: AdminParamsDto.AssignRuleParams, query_runner: QueryRunner) {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`INSERT INTO user_group_rules(group_id, rules_id) VALUES(?, ?)`, [group_id, rules_id], query_runner)
+        return await db.query<ResultSetHeader>(`INSERT INTO user_group_rules(group_id, rules_id) VALUES($1, $2)`, [group_id, rules_id], query_runner)
     }
 
     static async DBRevokeRule({ group_id, rules_id }: AdminParamsDto.RevokeRuleParams, query_runner: QueryRunner) {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`DELETE FROM user_group_rules WHERE group_id = ? AND rules_id = ?`, [group_id, rules_id], query_runner)
+        return await db.query<ResultSetHeader>(`DELETE FROM user_group_rules WHERE group_id = $1 AND rules_id = $2`, [group_id, rules_id], query_runner)
     }
 
     static async DBGetUserGroupRulesList(group_id: number) {
@@ -122,14 +122,14 @@ export default class AdminRepository {
             `
         SELECT group_id, GROUP_CONCAT(rules_id SEPARATOR ",") AS list_of_rules 
         FROM user_group_rules
-        WHERE group_id = ?
+        WHERE group_id = $1
         GROUP BY 1`,
             [group_id]
         )
     }
 
     static async DBChangeUserPass(userid: number, encryptPass: string, query_runner?: QueryRunner) {
-        return db.query(`UPDATE user SET password = ? WHERE id = ?`, [encryptPass, userid], query_runner)
+        return db.query(`UPDATE users SET password = $1 WHERE id = $2`, [encryptPass, userid], query_runner)
     }
 
     static async DBGetTransactionList(paginationParams: RepoPaginationParams): Promise<AdminResponseDto.GetTransactionListResponse[]> {
@@ -150,7 +150,7 @@ export default class AdminRepository {
         FROM TRANSACTION t
         ${whereClause}
         ORDER BY t.id ${sort}
-        LIMIT ?`,
+        LIMIT $1`,
             [limit + 1]
         )
     }
@@ -162,28 +162,28 @@ export default class AdminRepository {
             `SELECT sa.id, sa.user_id, sa.address, sa.postal_code, sa.city, sa.province, sa.country
             FROM shipping_address sa ${whereClause}
             ORDER BY sa.id ${sort}
-            LIMIT ?`,
+            LIMIT $1`,
             [limit + 1]
         )
     }
 
     static async DBUpdateUserLevel(user_id: number, level: number, query_runner: QueryRunner) {
-        return db.query(`UPDATE user SET LEVEL = ? WHERE id = ?`, [level, user_id], query_runner)
+        return db.query(`UPDATE users SET LEVEL = $1 WHERE id = $2`, [level, user_id], query_runner)
     }
 
     static async DBRestoreDeletedUser(user_id: number, query_runner: QueryRunner) {
-        return await db.query<ResultSetHeader>(`UPDATE user SET is_deleted = 0 WHERE id = ?`, [user_id], query_runner)
+        return await db.query<ResultSetHeader>(`UPDATE users SET is_deleted = false WHERE id = $1`, [user_id], query_runner)
     }
 
     static async DBCheckIsUserAlive(id: number) {
-        return await db.query<{ id: number }[]>(`SELECT u.id FROM user u WHERE u.id = ? AND u.is_deleted <> 1`, [id])
+        return await db.query<{ id: number }[]>(`SELECT u.id FROM users u WHERE u.id = $1 AND u.is_deleted != true`, [id])
     }
 
     static async DBCheckExpiredAccount(): Promise<AdminResponseDto.CheckExpiredAccountResponse[]> {
-        return await db.query(`SELECT u.id, u.email_token FROM user u WHERE u.is_verified <> 1`)
+        return await db.query(`SELECT u.id, u.email_token FROM users u WHERE u.is_verified != true`)
     }
 
     static async DBHardDeleteUser(userId: number, query_runner?: QueryRunner) {
-        return await db.query<ResultSetHeader>(`DELETE FROM user WHERE id = ?`, [userId], query_runner)
+        return await db.query<ResultSetHeader>(`DELETE FROM user WHERE id = $1`, [userId], query_runner)
     }
 }

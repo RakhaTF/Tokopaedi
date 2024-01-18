@@ -1,4 +1,4 @@
-import { AppDataSource } from "@infrastructure/mysql/connection"
+import { AppDataSource } from "@infrastructure/postgres/connection"
 import { ResultSetHeader } from "mysql2"
 import { QueryRunner } from "typeorm"
 import { LogParamsDto } from "@domain/model/params"
@@ -12,7 +12,7 @@ export default class LogRepository {
         return await db.query<ResultSetHeader>(
             `
         INSERT INTO log(user_id, action, ip, browser, time)
-        VALUES(?, ?, ?, ?, ?)
+        VALUES($1, $2, $3, $4, $5)
         `,
             [user_id, action, ip, browser, time],
             query_runner
@@ -28,7 +28,7 @@ export default class LogRepository {
         JOIN user u ON l.user_id = u.id
         ${whereClause}
         ORDER BY l.id ${sort}
-        LIMIT ?`,
+        LIMIT $1`,
             [limit + 1]
         )
     }

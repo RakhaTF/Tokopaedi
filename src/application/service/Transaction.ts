@@ -1,7 +1,7 @@
 import { LogParamsDto, TransactionParamsDto } from "@domain/model/params"
 import * as TransactionSchema from "@helpers/JoiSchema/Transaction"
 import TransactionDomainService from "@domain/service/TransactionDomainService"
-import { AppDataSource } from "@infrastructure/mysql/connection"
+import { AppDataSource } from "@infrastructure/postgres/connection"
 import ProductDomainService from "@domain/service/ProductDomainService"
 import { CommonRequestDto, TransactionRequestDto } from "@domain/model/request"
 import { TransactionResponseDto } from "@domain/model/response"

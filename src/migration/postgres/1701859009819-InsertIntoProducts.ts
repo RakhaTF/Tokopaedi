@@ -86,7 +86,7 @@ const products = [
 export class InsertIntoProducts1701859009819 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         for (const product of products) {
-            await queryRunner.query(`INSERT INTO product (name, description, price, stock, img_src, public_id) VALUES (?, ?, ?, ?, ?, ?)`, [product.name, product.description, product.price, product.stock, product.img_src, product.public_id])
+            await queryRunner.query(`INSERT INTO product (name, description, price, stock, img_src, public_id) VALUES ($1, $2, $3, $4, $5, $6)`, [product.name, product.description, product.price, product.stock, product.img_src, product.public_id])
         }
     }
 

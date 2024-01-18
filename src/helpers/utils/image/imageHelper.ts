@@ -44,6 +44,7 @@ export async function DeleteImage(public_id: string, options?: { resource_type?:
 
 export const fileFilter = (_req, file, cb) => {
     const ext = path.extname(file.originalname);
+    console.log({ext})
     if ((file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') && (ext === '.jpg' || ext === '.png' || ext === '.jpeg')) {
         cb(null, true);
     } else {

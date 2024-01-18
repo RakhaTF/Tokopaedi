@@ -4,10 +4,10 @@ export class CreateTransactionStatusTable1701752168949 implements MigrationInter
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             CREATE TABLE transaction_status (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id SERIAL PRIMARY KEY,
                 transaction_id INT,
-                status TINYINT(1) DEFAULT '0',
-                update_time INT(11),
+                status SMALLINT DEFAULT '0',
+                update_time INT,
                 FOREIGN KEY (transaction_id) REFERENCES transaction(id) ON DELETE CASCADE
             )
         `)
