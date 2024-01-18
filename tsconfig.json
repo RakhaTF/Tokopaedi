@@ -23,6 +23,6 @@
     },
     "skipLibCheck": true
   },
-  "include": ["./src/**/*", "src/helpers/Email/template/**/*.handlebars"],
+  "include": ["./src/**/*", "src/helpers/Email/template/**/*.handlebars", "migrations/**/*.ts"],
   "exclude": ["node_modules", "./src/__tests__", "./src/__mocks__"],
  }

@@ -8,9 +8,20 @@ export const AppDataSource = new DataSource({
    username: process.env.DB_USER,
    password: process.env.DB_PASSWORD,
    database: process.env.DB_DATABASE,
-   migrations: process.env.TESTING === 'true' ? undefined : ["src/migration/**/*.ts"],
+   migrations: process.env.TESTING === 'true' ? undefined : [migrationDir()],
    migrationsTableName: "custom_migration_table",
+   migrationsRun: true,
    timezone: "+07:00",
    logging: true,
    logger: "file",
 })
+
+function migrationDir() {
+   const production = process.env.PRODUCTION
+
+   if (production) {
+      return "build/migration/**/*.js"
+   } else {
+      return "src/migration/**/*.ts"
+   }
+}

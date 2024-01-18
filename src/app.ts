@@ -7,18 +7,18 @@ const server = buildServer();
 
 async function main() {
   try {
-    const port = Number(process.env.HTTP_PORT)
-    server.listen({ port: port }, (err, address) => {
-        if (err) {
-            console.error(err)
-            process.exit(1)
-        }
-        console.log(`Server listening at ${address}`)
-        //CronJobs
-        new TransactionScheduler()
-        new UserScheduler()
-        new ProductScheduler()
-    })
+    const port = Number(process.env.HTTP_PORT);
+    server.listen({ port: port, host: '0.0.0.0' }, (err, address) => {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+      console.log(`Server listening at ${address}`);
+      // CronJobs
+      new TransactionScheduler();
+      new UserScheduler();
+      new ProductScheduler();
+    });
   } catch (e) {
     console.error(e);
     process.exit(1);

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  
   "scripts": {
     "dev": "nodemon -e ts --exec \"ts-node -r tsconfig-paths/register -r ./src/app.ts\"",
     "migrate": "npx typeorm-ts-node-commonjs migration:run -d src/infrastructure/mysql/connection.ts",
@@ -44,6 +45,7 @@
     "vite-tsconfig-paths": "^4.2.3"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.0",
     "@types/bcrypt": "5.0.2",
     "@types/format-unicorn": "^1.1.5",
     "@types/fs-extra": "^11.0.4",
