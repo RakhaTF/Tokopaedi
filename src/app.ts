@@ -5,6 +5,7 @@ import { UserScheduler } from "@cronJobs/user-scheduler/User"
 import { ProductScheduler } from "@cronJobs/product-scheduler/Product"
 import dotenvFlow from "dotenv-flow"
 import path from "path"
+import "reflect-metadata";
 
 dotenvFlow.config({ path: path.resolve(__dirname, `../`) })
 

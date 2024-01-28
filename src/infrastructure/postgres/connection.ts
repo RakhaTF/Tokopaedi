@@ -1,3 +1,4 @@
+import { ShippingAddress, Users, DeliveryStatus, Log, OrderItem, Product, Transaction, TransactionStatus, UserGroup, UserGroupRules, UserRules } from "@domain/entity"
 import "dotenv/config"
 import { DataSource } from "typeorm"
 
@@ -11,9 +12,10 @@ export const AppDataSource = new DataSource({
    migrations: process.env.TESTING === 'true' ? undefined : ["src/migration/postgres/**/*.ts"],
    migrationsTableName: "custom_migration_table",
    migrationsRun: true,
+   entities: [Users, ShippingAddress, DeliveryStatus, Log, OrderItem, Product, Transaction, TransactionStatus, UserGroup, UserGroupRules, UserRules],
    logging: true,
    logger: "file",
-   synchronize: true,
+   synchronize: false,
 })
 
 

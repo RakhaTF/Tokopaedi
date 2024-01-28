@@ -6,7 +6,6 @@ import { QueryRunner } from "typeorm"
 export default class UserDomainService {
     static async CreateUserDomain(user: UserParamsDto.RegisterParams, query_runner?: QueryRunner) {
         const createUser = await UserRepository.DBCreateUser(user, query_runner)
-        console.log({createUser})
         return createUser
     }
 
@@ -22,10 +21,7 @@ export default class UserDomainService {
 
     static async CheckUserExistsDomain(email: string, query_runner?: QueryRunner) {
         const user = await UserRepository.DBCheckUserExists(email, query_runner)
-        if (user.length < 1) {
-            throw new Error("Account not found!")
-        }
-        return user[0]
+        return user
     }
 
     static async GetUserDataByIdDomain(id: number, query_runner?: QueryRunner) {
@@ -52,7 +48,7 @@ export default class UserDomainService {
 
     static async UpdateUserEditProfileDomainService(params: UserParamsDto.UpdateUserEditProfileParams, query_runner?: QueryRunner) {
         const result = await UserRepository.DBUpdateUserEditProfile(params, query_runner)
-        if (result.affectedRows < 1) {
+        if (result.affected < 1) {
             throw new Error("Failed update data")
         }
         return result
@@ -69,7 +65,7 @@ export default class UserDomainService {
 
     static async UpdatePasswordDomain(passEncrypt: string, id: number, query_runner?: QueryRunner) {
         const result = await UserRepository.DBUpdatePassword(passEncrypt, id, query_runner)
-        if (result.affectedRows < 1) {
+        if (result.affected < 1) {
             throw new Error("Failed change password")
         }
         return true
@@ -85,7 +81,7 @@ export default class UserDomainService {
 
     static async VerifyEmailDomain(email: string, query_runner: QueryRunner) {
         const verify = await UserRepository.DBVerifyEmail(email, query_runner)
-        if (verify.affectedRows < 1) {
+        if (verify.affected < 1) {
             throw new Error("Failed to verify email")
         }
     }

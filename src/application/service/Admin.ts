@@ -61,7 +61,7 @@ export default class AdminAppService {
         try {
             await query_runner.startTransaction()
 
-            const { insertId } = await UserDomainService.CreateUserDomain(user, query_runner)
+            const insertId  = await UserDomainService.CreateUserDomain(user, query_runner)
 
             const user_result = await UserDomainService.GetUserByIdDomain(insertId, query_runner)
 

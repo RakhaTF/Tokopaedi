@@ -34,6 +34,7 @@ export default class TransactionAppService {
         }
 
         const products = await ProductDomainService.GetProductsPricesAndStockDomain(product_id)
+        console.log({products})
         //looping to get total of items price
         let items_price = 0
         for (let i = 0; i < product_id.length; i++) {
@@ -68,7 +69,9 @@ export default class TransactionAppService {
         try {
             await query_runner.startTransaction()
 
-            const { insertId } = await TransactionDomainService.CreateTransactionIdDomain({ ...params, items_price, expire_at: transactionExpireAt }, query_runner)
+            const createTransaction = await TransactionDomainService.CreateTransactionIdDomain({ ...params, items_price, expire_at: transactionExpireAt, user_id: id }, query_runner)
+
+            const insertId = createTransaction.raw[0].id
 
             //auto create transaction_status after every create transaction.
             await TransactionDomainService.CreateTransactionStatusDomain({ transaction_id: insertId, update_time: moment().unix() }, query_runner)
@@ -82,7 +85,8 @@ export default class TransactionAppService {
             await TransactionDomainService.InsertOrderItemDomain(insertOrderObj, query_runner)
 
             const orderItem = await TransactionDomainService.GetOrderItemByOrderIdDomain(insertId, query_runner)
-
+            console.log({orderItem})
+            console.log({insertId})
             /*
             Update product stock after create transaction
             */
@@ -94,7 +98,7 @@ export default class TransactionAppService {
             })
 
             const updateProductPromises = productOrder.map(async (p) => {
-                const productDetail = await ProductDomainService.GetProductDetailDomain(p.product_id)
+                const productDetail = await ProductDomainService.GetProductDetailDomain(p.product_id, query_runner)
 
                 const updateProductData: Partial<Product> = {
                     ...productDetail,
@@ -149,7 +153,7 @@ export default class TransactionAppService {
         const currentOrder = await TransactionDomainService.GetCurrentTransactionDetailDomain(order_id)
 
         // Find the current product in the order
-        const currentProductOrder = currentOrder.find((order) => order.product_id === product_id)
+        const currentProductOrder = currentOrder[0].orderItems.find((order) => order.product_id === product_id)
 
         // Calculate the difference in quantity
         const qtyDifference = qty - currentProductOrder.qty
@@ -174,11 +178,14 @@ export default class TransactionAppService {
             await TransactionDomainService.UpdateOrderDomain(updateOrderObj, query_runner)
 
             // Update the transaction with the new items_price after qty changes (add or substract)
-            const newprice = parseFloat(currentOrder[0].items_price) + priceDifference
+            const newItemsPrice = parseFloat(currentOrder[0].items_price.toString()) + priceDifference.toFixed(2);
+            const newItemsPriceFixed = parseFloat(newItemsPrice); // This ensures the value is a number with two decimal places
+
+            console.log({newItemsPrice, priceDifference: priceDifference.toFixed(2), currentOrder, newItemsPriceFixed})
             await TransactionDomainService.UpdateTransactionProductQtyDomain(
                 {
                     order_id,
-                    items_price: newprice,
+                    items_price: newItemsPriceFixed,
                     updated_at,
                 },
                 query_runner
@@ -236,7 +243,7 @@ export default class TransactionAppService {
             **/
             const shipping_price = CalculateShippingPrice({ expedition_name, shipping_address_id })
             const payTransactionObject: TransactionParamsDto.PayTransactionRepositoryParams = {
-                is_paid: 1,
+                is_paid: true,
                 paid_at: now,
                 payment_method,
                 shipping_address_id,

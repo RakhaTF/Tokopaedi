@@ -11,8 +11,8 @@ export default class LogDomainService {
         }
 
         const createLog = await LogRepository.CreateLog(params, query_runner)
-        if (createLog.affectedRows < 1) {
-            throw new ApiError("Failed to insert log.")
+        if (createLog.raw < 1) {
+            throw new Error("Failed to insert log.")
         }
     }
 

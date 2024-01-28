@@ -9,7 +9,7 @@ export type CreateTransactionParams = {
 }
 
 export type CreateTransactionIdParams = {
-    id: number
+    user_id: number
     items_price: number
     created_at: number
     updated_at: number
@@ -49,7 +49,7 @@ export type PayTransactionRepositoryParams = {
     transaction_id: number
     user_id: number
     payment_method: PaymentMethod
-    is_paid: number // 0 = pending, 1 = paid
+    is_paid: boolean // 0 = pending, 1 = paid
     paid_at: number
     shipping_address_id: number
     shipping_price: number

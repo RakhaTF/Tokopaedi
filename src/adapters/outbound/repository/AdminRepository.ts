@@ -9,16 +9,20 @@ const db = AppDataSource
 
 export default class AdminRepository {
     static async DBGetAdminData(id: number): Promise<AdminResponseDto.GetAdminDataResult[]> {
-        const result = await db.query<AdminResponseDto.GetAdminDataResult[]>(
-            `SELECT 
-        u.id, u.name, u.email, u.level, u.created_at,
-        GROUP_CONCAT(DISTINCT d.rules_id separator ',') as group_rules
-        FROM users u
-        LEFT JOIN user_group_rules d ON u.level = d.group_id
-        WHERE u.id = $1
-        GROUP BY u.id`,
-            [id]
-        )
+        const result = await db.manager.createQueryBuilder()
+            .select([
+                "u.id",
+                "u.name",
+                "u.email",
+                "u.level",
+                "u.created_at",
+                "string_agg(DISTINCT d.rules_id::text, ',') as group_rules"
+            ])
+            .from("users", "u")
+            .leftJoin("user_group_rules", "d", "u.level = d.group_id")
+            .where("u.id = :id", { id })
+            .groupBy("u.id")
+            .getRawMany();
 
         return result
     }
