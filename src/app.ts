@@ -2,6 +2,7 @@ import { TransactionScheduler } from "@cronJobs/transaction-scheduler/Transactio
 import buildServer from "./index";
 import { UserScheduler } from "@cronJobs/user-scheduler/User";
 import { ProductScheduler } from "@cronJobs/product-scheduler/Product";
+import "reflect-metadata";
 
 const server = buildServer();
 

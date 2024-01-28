@@ -14,30 +14,26 @@ export default class ProductDomainService {
     }
 
     static async GetProductDetailDomain(id: number, query_runner?: QueryRunner) {
-        const productDetail = await ProductRepository.DBGetProductDetail(id, query_runner)
-        if (productDetail.length < 1) {
-            throw new Error("Product not found!")
-        }
-        return productDetail[0]
+        return await ProductRepository.DBGetProductDetail(id, query_runner)
     }
 
     static async SoftDeleteProductDomain(id: number, query_runner?: QueryRunner) {
         const deleteProduct = await ProductRepository.DBSoftDeleteProduct(id, query_runner)
-        if (deleteProduct.affectedRows < 1) {
+        if (deleteProduct.affected < 1) {
             throw new Error("Delete Failed")
         }
     }
 
     static async CreateProductDomain(product: ProductParamsDto.CreateProductParams, query_runner?: QueryRunner) {
         const newProduct = await ProductRepository.DBCreateProduct(product, query_runner)
-        if (newProduct.affectedRows < 1) {
+        if (newProduct.raw < 1) {
             throw new Error("Create Product Failed!")
         }
     }
 
     static async UpdateProductDomain(product: ProductParamsDto.UpdateProductParams, query_runner?: QueryRunner) {
         const newProduct = await ProductRepository.DBUpdateProduct(product, query_runner)
-        if (newProduct.affectedRows < 1) {
+        if (newProduct.affected < 1) {
             throw new Error("Update Product Failed!")
         }
         return newProduct
@@ -47,15 +43,15 @@ export default class ProductDomainService {
         const products: Product[] = []
         for (const id of ids) {
             const product = await ProductRepository.DBGetProductDetail(id)
-            if (product.length > 0) {
+            if (product) {
                 products.push({
-                    id: product[0].id,
-                    name: product[0].name,
-                    price: product[0].price,
-                    stock: product[0].stock,
-                    description: product[0].description,
-                    img_src: product[0].img_src,
-                    public_id: product[0].public_id,
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    stock: product.stock,
+                    description: product.description,
+                    img_src: product.img_src,
+                    public_id: product.public_id,
                 })
             }
         }

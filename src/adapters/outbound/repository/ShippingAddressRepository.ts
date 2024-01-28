@@ -1,29 +1,18 @@
+import { ShippingAddress } from "@domain/entity"
 import { ShippingAddressParamsDto } from "@domain/model/params"
 import { ShippingAddressResponseDto } from "@domain/model/response"
 import { AppDataSource } from "@infrastructure/postgres/connection"
 import { RepoPaginationParams } from "key-pagination-sql"
-import { ResultSetHeader } from "mysql2"
-import { QueryRunner } from "typeorm"
+import { InsertResult, QueryRunner, UpdateResult } from "typeorm"
 const db = AppDataSource
 
 export class ShippingAddressRepository {
-    static async DBCreateShippingAddress(params: ShippingAddressParamsDto.CreateShippingAddressParams, query_runner?: QueryRunner): Promise<ResultSetHeader> {
-        const { user_id, address, city, country, postal_code, province } = params
-        return await db.query<ResultSetHeader>(
-            `
-        INSERT INTO shipping_address(user_id, address, city, country, postal_code, province) 
-        VALUES($1, $2, $3, $4, $5, $6)`,
-            [user_id, address, city, country, postal_code, province],
-            query_runner
-        )
+    static async DBCreateShippingAddress(params: ShippingAddressParamsDto.CreateShippingAddressParams, query_runner?: QueryRunner): Promise<InsertResult> {
+        return await query_runner.manager.insert(ShippingAddress, params)
     }
 
     static async DBGetShippingAddressDetail(id: number) {
-        return await db.query<ShippingAddressResponseDto.ShippingAddressResponse[]>(
-            `
-        SELECT id, user_id, address, postal_code, city, province, country FROM shipping_address WHERE id = $1`,
-            [id]
-        )
+        return await db.manager.find(ShippingAddress, { where: { id } })
     }
 
     static async DBGetShippingAddressList(user_id: number, paginationParams: RepoPaginationParams): Promise<ShippingAddressResponseDto.ShippingAddressResponse[]> {
@@ -39,22 +28,19 @@ export class ShippingAddressRepository {
         )
     }
 
-    static async DBSoftDeleteShippingAddress(id: number, query_runner?: QueryRunner): Promise<ResultSetHeader> {
-        return await db.query<ResultSetHeader>(`UPDATE shipping_address SET is_deleted = true WHERE id = $1`, [id], query_runner)
+    static async DBSoftDeleteShippingAddress(id: number, query_runner?: QueryRunner): Promise<UpdateResult> {
+        return await query_runner.manager.update(ShippingAddress, { id }, { is_deleted: true })
     }
 
     static async DBUpdateShippingAddress(params: ShippingAddressParamsDto.UpdateShippingAddressParams, query_runner?: QueryRunner) {
-        const { id, address, city, country, postal_code, province } = params
-        return await db.query<ResultSetHeader>(
-            `
-        UPDATE shipping_address SET address = $1, city = $2, country = $3, postal_code = $4, province = $5 WHERE id = $6`,
-            [address, city, country, postal_code, province, id],
-            query_runner
-        )
+        return await query_runner.manager.update(ShippingAddress, { id: params.id }, params)
     }
 
     static async DBCheckIsAddressAlive(id: number) {
-        return await db.query<{ id: number }[]>(`SELECT s.id FROM shipping_address s WHERE s.is_deleted != true AND s.id = $1`, [id])
+        return await db.manager.findOne(ShippingAddress, {
+            select: { id: true },
+            where: { id, is_deleted: false }
+        })
     }
 
     static async DBGetUserShippingAddressById(user_id: number, paginationParams: RepoPaginationParams): Promise<ShippingAddressResponseDto.GetUserShippingAddressById[]> {
@@ -71,6 +57,6 @@ export class ShippingAddressRepository {
     }
 
     static async DBHardDeleteShippingAddress(id: number) {
-        return await db.query<ResultSetHeader>(`DELETE from shipping_address WHERE id = $1`, [id])
+        return await db.manager.delete(ShippingAddress, { id })
     }
 }

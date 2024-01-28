@@ -6,9 +6,6 @@ import { RepoPaginationParams } from "key-pagination-sql"
 export default class TransactionDomainService {
     static async CreateTransactionIdDomain(params: TransactionParamsDto.CreateTransactionIdParams, query_runner?: QueryRunner) {
         const result = await TransactionRepository.DBCreateTransactionId(params, query_runner)
-        if (result.affectedRows < 1) {
-            throw new Error("Failed To Create Transaction")
-        }
         return result
     }
 
@@ -33,7 +30,7 @@ export default class TransactionDomainService {
     static async UpdateOrderDomain(params: TransactionParamsDto.UpdateOrderParams, query_runner: QueryRunner) {
         const result = await TransactionRepository.DBUpdateOrder(params, query_runner)
 
-        if (result.affectedRows < 1) {
+        if (result.affected < 1) {
             throw Error("Failed to update product qty")
         }
 
@@ -42,9 +39,7 @@ export default class TransactionDomainService {
 
     static async CreateTransactionStatusDomain(params: { transaction_id: number; update_time: number }, query_runner: QueryRunner) {
         const txStatus = await TransactionRepository.DBCreateTransactionStatus(params, query_runner)
-        if (txStatus.affectedRows < 1) {
-            throw new Error("Failed to create transaction status")
-        }
+        console.log({ txStatus })
     }
 
     static async GetCurrentTransactionDetailDomain(id: number) {
@@ -58,7 +53,7 @@ export default class TransactionDomainService {
     static async UpdateTransactionProductQtyDomain(params: TransactionParamsDto.UpdateTransactionProductQty, query_runner: QueryRunner) {
         const result = await TransactionRepository.DBUpdateTransactionProductQty(params, query_runner)
 
-        if (result.affectedRows < 1) {
+        if (result.affected < 1) {
             throw Error("Failed to update product qty in transaction")
         }
 
@@ -67,7 +62,7 @@ export default class TransactionDomainService {
 
     static async PayTransactionDomain(params: TransactionParamsDto.PayTransactionRepositoryParams, query_runner: QueryRunner) {
         const paymentResult = await TransactionRepository.DBPayTransaction(params, query_runner)
-        if (paymentResult.affectedRows < 1) {
+        if (paymentResult.affected < 1) {
             throw Error("Failed to Pay Transaction")
         }
     }
@@ -150,9 +145,9 @@ export default class TransactionDomainService {
         }
     }
 
-    static async HardDeleteTransactionDomain(id: number){
+    static async HardDeleteTransactionDomain(id: number) {
         const deleteTx = await TransactionRepository.DBHardDeleteTransaction(id)
-        if(deleteTx.affectedRows < 1){
+        if (deleteTx.affectedRows < 1) {
             throw new Error("Failed to delete transaction")
         }
     }

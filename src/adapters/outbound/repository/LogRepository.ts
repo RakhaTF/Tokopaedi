@@ -1,22 +1,14 @@
 import { AppDataSource } from "@infrastructure/postgres/connection"
-import { ResultSetHeader } from "mysql2"
 import { QueryRunner } from "typeorm"
 import { LogParamsDto } from "@domain/model/params"
 import { RepoPaginationParams } from "key-pagination-sql"
+import { Log } from "@domain/entity"
 
 const db = AppDataSource
 
 export default class LogRepository {
     static async CreateLog(params: LogParamsDto.CreateLogParams, query_runner?: QueryRunner) {
-        const { user_id, action, ip, browser, time } = params
-        return await db.query<ResultSetHeader>(
-            `
-        INSERT INTO log(user_id, action, ip, browser, time)
-        VALUES($1, $2, $3, $4, $5)
-        `,
-            [user_id, action, ip, browser, time],
-            query_runner
-        )
+        return await query_runner.manager.insert(Log, params)
     }
 
     static async GetSystemLog(params: RepoPaginationParams) {

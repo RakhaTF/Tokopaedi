@@ -72,13 +72,12 @@ export default class AuthAppService {
             await query_runner.startTransaction()
 
             const existingUser = await UserDomainService.CheckUserExistsDomain(email, query_runner)
-
             //if user is deleted and they attempt to login, throw an error.
-            if (existingUser.is_deleted === 1) {
+            if (existingUser.is_deleted === true) {
                 throw new Error("Your account is deleted, please contact an admin")
             }
 
-            if (existingUser.is_verified === 0) {
+            if (existingUser.is_verified === false) {
                 throw new Error("Please verify your email first!")
             }
 
@@ -114,7 +113,7 @@ export default class AuthAppService {
             }
 
             //Insert into log, to track user action.
-            await LogDomainService.CreateLogDomain({ ...logData, user_id: user_data.id })
+            await LogDomainService.CreateLogDomain({ ...logData, user_id: user_data.id }, query_runner)
 
             await query_runner.commitTransaction()
 

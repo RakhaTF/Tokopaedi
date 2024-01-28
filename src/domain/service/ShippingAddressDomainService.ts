@@ -6,7 +6,7 @@ import { QueryRunner } from "typeorm"
 export default class ShippingAddressDomainService {
     static async CreateShippingAddressDomain(params: ShippingAddressParamsDto.CreateShippingAddressParams, query_runner?: QueryRunner) {
         const shippingAddress = await ShippingAddressRepository.DBCreateShippingAddress(params, query_runner)
-        if (shippingAddress.affectedRows < 1) {
+        if (shippingAddress.raw < 1) {
             throw new Error("Create Shipping Address Failed!")
         }
     }
@@ -29,14 +29,14 @@ export default class ShippingAddressDomainService {
 
     static async SoftDeleteShippingAddressDomain(id: number, query_runner?: QueryRunner) {
         const shippingAddress = await ShippingAddressRepository.DBSoftDeleteShippingAddress(id, query_runner)
-        if (shippingAddress.affectedRows < 1) {
+        if (shippingAddress.affected < 1) {
             throw new Error("Failed to Delete Shipping Address")
         }
     }
 
     static async UpdateShippingAddressDomain(params: ShippingAddressParamsDto.UpdateShippingAddressParams, query_runner?: QueryRunner) {
         const shippingAddress = await ShippingAddressRepository.DBUpdateShippingAddress(params, query_runner)
-        if (shippingAddress.affectedRows < 1) {
+        if (shippingAddress.affected < 1) {
             throw new Error("Failed to Update Shipping Address")
         }
     }
@@ -51,7 +51,7 @@ export default class ShippingAddressDomainService {
 
     static async CheckIsShippingAddressAliveDomain(id: number) {
         const isAlive = await ShippingAddressRepository.DBCheckIsAddressAlive(Number(id))
-        if (isAlive.length < 1) {
+        if (!isAlive) {
             throw new Error("Shipping Address is Deleted")
         }
         return true
@@ -59,7 +59,7 @@ export default class ShippingAddressDomainService {
 
     static async HardDeleteShippingAddressDomain(id: number){
         const deleteAddress = await ShippingAddressRepository.DBHardDeleteShippingAddress(id)
-        if(deleteAddress.affectedRows < 1){
+        if(deleteAddress.affected < 1){
             throw new Error("Failed to delete shipping address")
         }
     }

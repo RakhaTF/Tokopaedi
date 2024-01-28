@@ -6,7 +6,7 @@ import { QueryRunner } from "typeorm"
 export default class LogDomainService {
     static async CreateLogDomain(params: LogParamsDto.CreateLogParams, query_runner?: QueryRunner) {
         const createLog = await LogRepository.CreateLog(params, query_runner)
-        if (createLog.affectedRows < 1) {
+        if (createLog.raw < 1) {
             throw new Error("Failed to insert log.")
         }
     }

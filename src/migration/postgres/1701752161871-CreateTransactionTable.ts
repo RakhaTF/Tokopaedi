@@ -6,7 +6,7 @@ export class CreateTransactionTable1701752161871 implements MigrationInterface {
             CREATE TABLE transaction (
                 id SERIAL PRIMARY KEY,
                 user_id INT NOT NULL,
-                payment_method VARCHAR(255) NOT NULL,
+                payment_method VARCHAR(255),
                 items_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 shipping_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
                 total_price DECIMAL(10,2) NOT NULL DEFAULT 0.0,
