@@ -17,7 +17,7 @@ export default class TransactionDomainService {
         const valueProduct = products.map((product) => `(${params.insertId}, ${product.product_id}, ${product.qty})`).join(", ")
         const result = await TransactionRepository.DBInsertOrderItem(valueProduct, query_runner)
 
-        if (result.affectedRows < 1) {
+        if (result.raw < 1) {
             throw new Error("Failed insert order")
         }
         return result
@@ -73,7 +73,7 @@ export default class TransactionDomainService {
 
     static async CreateDeliveryStatusDomain(params: TransactionParamsDto.CreateDeliveryStatusParams, query_runner: QueryRunner) {
         const deliveryStatus = await TransactionRepository.DBCreateDeliveryStatus(params, query_runner)
-        if (deliveryStatus.affectedRows < 1) {
+        if (deliveryStatus.raw < 1) {
             throw new Error("Failed to create delivery_status")
         }
     }
@@ -96,14 +96,14 @@ export default class TransactionDomainService {
 
     static async UpdateDeliveryStatusDomain(params: TransactionParamsDto.UpdateDeliveryStatusParams, query_runner: QueryRunner) {
         const updateDeliveryStatusDomain = await TransactionRepository.DBUpdateDeliveryStatus(params, query_runner)
-        if (updateDeliveryStatusDomain.affectedRows < 1) {
+        if (updateDeliveryStatusDomain.raw < 1) {
             throw new Error("Failed to update delivery status")
         }
     }
 
     static async UpdateTransactionStatusDomain(params: TransactionParamsDto.UpdateTransactionStatusParams, query_runner: QueryRunner) {
         const updateTransactionStatus = await TransactionRepository.DBUpateTransactionStatus(params, query_runner)
-        if (updateTransactionStatus.affectedRows < 1) {
+        if (updateTransactionStatus.raw < 1) {
             throw new Error("Failed to update transaction status")
         }
     }
@@ -118,7 +118,7 @@ export default class TransactionDomainService {
 
     static async SoftDeleteTransactionDomain(transaction_id: number, query_runner?: QueryRunner) {
         const deleteTransaction = await TransactionRepository.DBSoftDeleteTransaction(transaction_id, query_runner)
-        if (deleteTransaction.affectedRows < 1) {
+        if (deleteTransaction.raw < 1) {
             throw new Error("Failed to delete transaction!")
         }
     }
@@ -147,7 +147,7 @@ export default class TransactionDomainService {
 
     static async HardDeleteTransactionDomain(id: number) {
         const deleteTx = await TransactionRepository.DBHardDeleteTransaction(id)
-        if (deleteTx.affectedRows < 1) {
+        if (deleteTx.raw < 1) {
             throw new Error("Failed to delete transaction")
         }
     }

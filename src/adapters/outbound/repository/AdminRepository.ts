@@ -1,7 +1,6 @@
 import { AppDataSource } from "@infrastructure/postgres/connection"
 import { AdminResponseDto } from "@domain/model/response"
 import { AdminParamsDto } from "@domain/model/params"
-import { ResultSetHeader } from "mysql2"
 import { QueryRunner } from "typeorm"
 import { RepoPaginationParams } from "key-pagination-sql"
 
@@ -86,7 +85,7 @@ export default class AdminRepository {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`INSERT INTO user_rules(rules) VALUES($1)`, [rules], query_runner)
+        return await db.query(`INSERT INTO user_rules(rules) VALUES($1)`, [rules], query_runner)
     }
 
     static async DBGetRulesList() {
@@ -97,28 +96,28 @@ export default class AdminRepository {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`UPDATE user_rules SET rules = $1 WHERE rules_id = $2`, [rule, rules_id], query_runner)
+        return await db.query(`UPDATE user_rules SET rules = $1 WHERE rules_id = $2`, [rule, rules_id], query_runner)
     }
 
     static async DBSoftDeleteRule(rules_id: number, query_runner: QueryRunner) {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`DELETE FROM user_rules WHERE rules_id = $1`, [rules_id], query_runner)
+        return await db.query(`DELETE FROM user_rules WHERE rules_id = $1`, [rules_id], query_runner)
     }
 
     static async DBAssignRule({ group_id, rules_id }: AdminParamsDto.AssignRuleParams, query_runner: QueryRunner) {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`INSERT INTO user_group_rules(group_id, rules_id) VALUES($1, $2)`, [group_id, rules_id], query_runner)
+        return await db.query(`INSERT INTO user_group_rules(group_id, rules_id) VALUES($1, $2)`, [group_id, rules_id], query_runner)
     }
 
     static async DBRevokeRule({ group_id, rules_id }: AdminParamsDto.RevokeRuleParams, query_runner: QueryRunner) {
         if (query_runner && !query_runner.isTransactionActive) {
             throw new Error("Must in Transaction")
         }
-        return await db.query<ResultSetHeader>(`DELETE FROM user_group_rules WHERE group_id = $1 AND rules_id = $2`, [group_id, rules_id], query_runner)
+        return await db.query(`DELETE FROM user_group_rules WHERE group_id = $1 AND rules_id = $2`, [group_id, rules_id], query_runner)
     }
 
     static async DBGetUserGroupRulesList(group_id: number) {
@@ -176,7 +175,7 @@ export default class AdminRepository {
     }
 
     static async DBRestoreDeletedUser(user_id: number, query_runner: QueryRunner) {
-        return await db.query<ResultSetHeader>(`UPDATE users SET is_deleted = false WHERE id = $1`, [user_id], query_runner)
+        return await db.query(`UPDATE users SET is_deleted = false WHERE id = $1`, [user_id], query_runner)
     }
 
     static async DBCheckIsUserAlive(id: number) {
@@ -188,6 +187,6 @@ export default class AdminRepository {
     }
 
     static async DBHardDeleteUser(userId: number, query_runner?: QueryRunner) {
-        return await db.query<ResultSetHeader>(`DELETE FROM user WHERE id = $1`, [userId], query_runner)
+        return await db.query(`DELETE FROM user WHERE id = $1`, [userId], query_runner)
     }
 }

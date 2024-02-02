@@ -19,7 +19,7 @@ export default class AdminDomainService {
         }
 
         const result = await AdminRepository.DBSoftDeleteUser(email, query_runner)
-        if (result.affectedRows < 1) {
+        if (result.raw < 1) {
             throw new ApiError("Failed delete data")
         }
         return true
@@ -63,7 +63,7 @@ export default class AdminDomainService {
         }
 
         const newRule = await AdminRepository.DBCreateRules(rule, query_runner)
-        if (newRule.affectedRows < 1) {
+        if (newRule.raw < 1) {
             throw new ApiError("Failed to Create New Rule")
         }
     }
@@ -74,7 +74,7 @@ export default class AdminDomainService {
         }
 
         const newRule = await AdminRepository.DBUpdateRule(params, query_runner)
-        if (newRule.affectedRows < 1) {
+        if (newRule.raw < 1) {
             throw new ApiError("Failed to Create New Rule")
         }
     }
@@ -85,7 +85,7 @@ export default class AdminDomainService {
         }
 
         const deleteRule = await AdminRepository.DBSoftDeleteRule(rules_id, query_runner)
-        if (deleteRule.affectedRows < 1) {
+        if (deleteRule.raw < 1) {
             throw new ApiError("Failed to Delete Rule")
         }
     }
@@ -96,7 +96,7 @@ export default class AdminDomainService {
         }
 
         const assignRule = await AdminRepository.DBAssignRule(params, query_runner)
-        if (assignRule.affectedRows < 1) {
+        if (assignRule.raw < 1) {
             throw new ApiError("Failed to Assign Rule to Admin")
         }
     }
@@ -107,7 +107,7 @@ export default class AdminDomainService {
         }
 
         const revokeRule = await AdminRepository.DBRevokeRule(params, query_runner)
-        if (revokeRule.affectedRows < 1) {
+        if (revokeRule.raw < 1) {
             throw new ApiError("Failed to Revoke Rule From Admin")
         }
     }
@@ -126,7 +126,7 @@ export default class AdminDomainService {
         }
 
         const result = await AdminRepository.DBChangeUserPass(userid, encryptPass, query_runner)
-        if (result.affectedRows < 1) {
+        if (result.raw < 1) {
             throw new ApiError("Failed change user password")
         }
         return true
@@ -154,7 +154,7 @@ export default class AdminDomainService {
         }
 
         const result = await AdminRepository.DBUpdateUserLevel(user_id, level, query_runner)
-        if (result.affectedRows < 1) {
+        if (result.raw < 1) {
             throw new ApiError("Failed update user level")
         }
         return true
@@ -166,7 +166,7 @@ export default class AdminDomainService {
         }
 
         const restore = await AdminRepository.DBRestoreDeletedUser(user_id, query_runner)
-        if (restore.affectedRows < 1) {
+        if (restore.raw < 1) {
             throw new ApiError("Failed to restore user")
         }
     }
@@ -189,7 +189,7 @@ export default class AdminDomainService {
         }
 
         const deleteUser = await AdminRepository.DBHardDeleteUser(userId, query_runner)
-        if (deleteUser.affectedRows < 1) {
+        if (deleteUser.raw < 1) {
             throw new ApiError("Failed to delete user!")
         }
     }
