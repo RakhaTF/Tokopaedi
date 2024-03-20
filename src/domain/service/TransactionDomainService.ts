@@ -143,7 +143,7 @@ export default class TransactionDomainService {
         }
     }
 
-    static async UpdateTransactionStatusDomain(params: TransactionParamsDto.UpdateTransactionStatusParams, query_runner: QueryRunner) {
+    static async UpdateTransactionStatusDomain(params: TransactionParamsDto.UpdateTransactionStatusParams, query_runner?: QueryRunner) {
         const updateTransactionStatus = await TransactionRepository.DBUpateTransactionStatus(params, query_runner)
         if (updateTransactionStatus.affectedRows < 1) {
             throw new ApiError("FAILED_TO_UPDATE_TRANSACTION_STATUS")

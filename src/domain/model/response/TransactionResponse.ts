@@ -33,6 +33,7 @@ export type TransactionDetailQueryResult = {
     total_price: string
     product_bought_id: string
     product_bought: string
+    product_price: string
     qty: string
     is_paid: string
     paid_at: number

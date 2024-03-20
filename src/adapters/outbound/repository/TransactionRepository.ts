@@ -116,6 +116,7 @@ export default class TransactionRepository {
                 COALESCE(t.total_price, 0) AS total_price,
                 COALESCE(GROUP_CONCAT(p.id SEPARATOR ","), 'No Products') AS product_bought_id,
                 COALESCE(GROUP_CONCAT(p.name SEPARATOR ","), 'No Products') AS product_bought,
+                COALESCE(GROUP_CONCAT(p.price SEPARATOR ","), 'No Products') AS product_price,
                 COALESCE(GROUP_CONCAT(o.qty SEPARATOR ","), 'No Products') AS qty,
                 CASE 
                     WHEN t.is_paid = 0

@@ -17,6 +17,7 @@ import UserDomainService from "@domain/service/UserDomainService"
 import ShippingAddressDomainService from "@domain/service/ShippingAddressDomainService"
 import { CalculateShippingPrice, CalculateTotalPrice } from "@helpers/utils/transaction/transactionHelper"
 import { ApiError, BadInputError } from "@domain/model/Error/Error"
+import midtrans from "@infrastructure/midtrans/midtrans"
 
 export default class TransactionAppService {
     static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams, logData: LogParamsDto.CreateLogParams) {
@@ -120,6 +121,62 @@ export default class TransactionAppService {
 
             //get user info
             const { email, name } = await UserDomainService.GetUserDataByIdDomain(id)
+
+
+            const productList = await Promise.all(productOrder.map(async (prod) => {
+                return await ProductDomainService.GetProductDetailDomain(Number(prod.product_id));
+            }));
+
+            const midtransPayload = {
+                "transaction_details": {
+                    "order_id": insertId,
+                    "gross_amount": items_price
+                },
+                "item_details": productList.map((prod, index) => {
+                    return {
+                        "id": prod.id,
+                        "price": prod.price,
+                        "quantity": qty[index],
+                        "name": prod.name,
+                        "category": prod.category_name,
+                        "merchant_name": "Tokopaedi"
+                    }
+                }),
+                // "customer_details": {
+                //     "first_name": email,
+                //     "last_name": "Randhikatama",
+                //     "email": email,
+                //     "phone": "089697832017",
+                //     "billing_address": {
+                //         "first_name": name,
+                //         "last_name": "Randhikatama",
+                //         "email": email,
+                //         "phone": "089697832017",
+                //         "address": address,
+                //         "city": city,
+                //         "postal_code": postal_code,
+                //         "country_code": "IDN"
+                //     },
+                //     "shipping_address": {
+                //         "first_name": name,
+                //         "last_name": "Randhikatama",
+                //         "email": email,
+                //         "phone": "089697832017",
+                //         "address": address,
+                //         "city": city,
+                //         "postal_code": postal_code,
+                //         "country_code": "IDN"
+                //     }
+                // },
+            }
+
+
+            const midtransResponse = await midtrans.createTransaction(midtransPayload)
+
+            const transactionToken = midtransResponse.token
+            const redirect_url = midtransResponse.redirect_url
+
+            console.log({ transactionToken, redirect_url, midtransResponse })
 
             //send email to notify user
             emailer.notifyUserToPayTransaction({ email, products: productToEmail, total: items_price, username: name })
@@ -264,12 +321,14 @@ export default class TransactionAppService {
             //extract product name & qty
             const productId = transactionDetail.product_bought_id.split(",")
             const productName = transactionDetail.product_bought.split(",")
+            const productPrice = transactionDetail.product_price.split(",")
             const qty = transactionDetail.qty.split(",")
 
             const product_bought = productName.map((prod, index) => {
                 return {
                     product_id: productId,
                     product_name: prod,
+                    price: productPrice[index],
                     qty: qty[index],
                 }
             })
@@ -642,5 +701,27 @@ export default class TransactionAppService {
         updateProductData.stock = updateProductData.stock + Number(qty)
 
         await ProductDomainService.UpdateProductDomain({ ...updateProductData, id: Number(id) }, query_runner)
+    }
+
+    static async MidtransNotificationHandler(notification: object) {
+
+        const { order_id, transaction_status, fraud_status } = await midtrans.transaction.notification(JSON.stringify(notification))
+
+        // Sample transactionStatus handling logic
+        if (transaction_status == 'capture') {
+            // capture only applies to card transaction, which you need to check for the fraudStatus
+            if (fraud_status == 'challenge') {
+                await TransactionDomainService.UpdateTransactionStatusDomain({ transaction_id: order_id, updated_at: moment().unix(), status: 2 })
+            } else if (fraud_status == 'accept') {
+                await TransactionDomainService.UpdateTransactionStatusDomain({ transaction_id: order_id, updated_at: moment().unix(), status: 1 })
+            }
+        } else if (transaction_status == 'settlement') {
+            await TransactionDomainService.UpdateTransactionStatusDomain({ transaction_id: order_id, updated_at: moment().unix(), status: 1 })
+        } else if (transaction_status == 'cancel' ||
+            transaction_status == 'expire') {
+            await TransactionDomainService.UpdateTransactionStatusDomain({ transaction_id: order_id, updated_at: moment().unix(), status: 2 })
+        } else if (transaction_status == 'pending') {
+            await TransactionDomainService.UpdateTransactionStatusDomain({ transaction_id: order_id, updated_at: moment().unix(), status: 0 })
+        }
     }
 }

@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify"
 import ProductController from "@adapters/inbound/controller/ProductController"
 import * as Schema from "@helpers/ApiSchema/ApiSchema"
+import TransactionController from "@adapters/inbound/controller/TransactionController"
 
 const routes: RouteOptions[] = [
     {
@@ -100,6 +101,11 @@ const routes: RouteOptions[] = [
             }),
             response: Schema.BasePaginationResultSchema,
         },
+    },
+    {
+        method: ["POST"],
+        url: "midtrans/notification",
+        handler: TransactionController.MidtransNotification
     },
 ]
 
