@@ -197,4 +197,28 @@ export default class TransactionDomainService {
             throw new Error("FAILED_TO_DELETE_TRANSACTION")
         }
     }
+
+    static async GetPaymentLinkDomain(id: number, query_runner?: QueryRunner) {
+        const payment_link = await TransactionRepository.DBGetTransactionPaymentLink(id, query_runner)
+        if (payment_link.length < 1) {
+            throw new ResultNotFoundError("PAYMENT_LINK_NOT_FOUND_OR_TRANSACTION_IS_PAID")
+        }
+        return payment_link[0]
+    }
+
+    static async CreatePaymentLinkDomain(id: number, paymentLink: string, query_runner?: QueryRunner) {
+        const createPaymentLink = await TransactionRepository.DBCreatePaymentLink(id, paymentLink, query_runner)
+
+        if (createPaymentLink.affectedRows < 1) {
+            throw new ApiError("FAILED_TO_CREATE_PAYMENT_LINK")
+        }
+    }
+
+    static async DeletePaymentLinkDomain(id: number, query_runner?: QueryRunner) {
+        const deletePaymentLink = await TransactionRepository.DBDeletePaymentLink(id, query_runner)
+
+        if (deletePaymentLink.affectedRows < 1) {
+            throw new ApiError("FAILED_TO_DELETE_PAYMENT_LINK")
+        }
+    }
 }

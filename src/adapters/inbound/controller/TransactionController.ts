@@ -77,8 +77,7 @@ export default class TransactionController {
     }
 
     static async MidtransNotification(request: FastifyRequest) {
-        const test = request.body as object
-        console.log({test})
-        await TransactionAppService.MidtransNotificationHandler(test)
+        const notification = request.body as object
+        await TransactionAppService.MidtransNotificationHandler(notification)
     }
 }

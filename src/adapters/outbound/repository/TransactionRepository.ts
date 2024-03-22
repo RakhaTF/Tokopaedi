@@ -240,4 +240,16 @@ export default class TransactionRepository {
     static async DBHardDeleteTransaction(id: number) {
         return await db.query<ResultSetHeader>(`DELETE from transaction where id = ?`, [id])
     }
+
+    static async DBGetTransactionPaymentLink(id: number, query_runner?: QueryRunner) {
+        return await db.query<{ payment_link: string }[]>(`SELECT payment_link from transaction WHERE id = ? AND is_paid = 0`, [id], query_runner)
+    }
+
+    static async DBCreatePaymentLink(id: number, payment_link: string, query_runner?: QueryRunner) {
+        return await db.query<ResultSetHeader>(`UPDATE transaction SET payment_link = ? WHERE id = ?`, [payment_link, id], query_runner)
+    }
+
+    static async DBDeletePaymentLink(id: number, query_runner?: QueryRunner) {
+        return await db.query<ResultSetHeader>(`UPDATE transaction SET payment_link = NULL WHERE id = ?`, [id], query_runner)
+    }
 }

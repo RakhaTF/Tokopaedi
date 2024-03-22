@@ -178,6 +178,9 @@ export default class TransactionAppService {
 
             console.log({ transactionToken, redirect_url, midtransResponse })
 
+            // insert payment link to the database
+            await TransactionDomainService.CreatePaymentLinkDomain(insertId, redirect_url, query_runner)
+
             //send email to notify user
             emailer.notifyUserToPayTransaction({ email, products: productToEmail, total: items_price, username: name })
 
