@@ -28,9 +28,9 @@ export default class ProductRepository {
         GROUP_CONCAT(pg.img_src SEPARATOR ",") AS img_src,
         GROUP_CONCAT(pg.public_id SEPARATOR ",") AS public_id
         FROM product p
-        JOIN product_category pc
+        LEFT JOIN product_category pc
             ON p.category = pc.id
-        JOIN product_gallery pg
+        LEFT JOIN product_gallery pg
             ON p.id = pg.product_id
         ${whereClause}
         AND p.is_deleted <> 1
