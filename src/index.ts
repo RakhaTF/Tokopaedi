@@ -55,13 +55,4 @@ function buildServer() {
     return server
 }
 
-export const server = fastify({
-    logger: {
-        transport: {
-            target: "pino-pretty",
-        },
-    },
-    ajv: { plugins: [ajvFilePlugin] },
-})
-
 export default buildServer

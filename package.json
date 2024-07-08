@@ -22,6 +22,8 @@
     "@fastify/swagger": "^8.7.0",
     "@fastify/swagger-ui": "^1.9.2",
     "ajv": "^8.12.0",
+    "amqp-connection-manager": "^4.1.14",
+    "amqplib": "^0.10.4",
     "bcrypt": "^5.1.0",
     "cloudinary": "^2.0.0-rc",
     "dotenv-flow": "^4.1.0",
@@ -45,6 +47,7 @@
     "vite-tsconfig-paths": "^4.2.3"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.5",
     "@types/autocannon": "^7.12.5",
     "@types/bcrypt": "5.0.2",
     "@types/format-unicorn": "^1.1.5",
