@@ -43,7 +43,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.9",
     "pino-pretty": "^10.2.3",
-    "typeorm": "0.3.17",
+    "typeorm": "0.3.26",
     "vite-tsconfig-paths": "^4.2.3"
   },
   "devDependencies": {
