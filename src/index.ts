@@ -6,17 +6,14 @@ import Ajv from "ajv"
 import { AppDataSource } from "@infrastructure/mysql/connection"
 import cors from '@fastify/cors'
 
-//Ajv file plugin, so fastify could know what is isFile used in multer.
 function ajvFilePlugin(ajv: Ajv) {
     return ajv.addKeyword({
         keyword: "isFile",
         compile: (_schema, parent) => {
-            // Updates the schema to match the file type
             parent.type = "file"
             parent.format = "binary"
             delete parent.isFile
-
-            return (field /* MultipartFile */) => !!field.file
+            return (field) => !!field.file
         },
         error: {
             message: "should be a file",
@@ -25,14 +22,14 @@ function ajvFilePlugin(ajv: Ajv) {
 }
 
 function buildServer() {
-        const server = fastify({
-            logger: {
-                transport: {
-                    target: "pino-pretty",
-                },
+    const server = fastify({
+        logger: {
+            transport: {
+                target: "pino-pretty",
             },
-            ajv: { plugins: [ajvFilePlugin] },
-        })
+        },
+        ajv: { plugins: [ajvFilePlugin] },
+    })
 
     server.register(cors, {
         methods: ["PUT", "GET", "POST"],
@@ -44,8 +41,8 @@ function buildServer() {
             console.log("Data Source has been initialized!")
         })
         .catch((err) => {
+            console.log({err})
             console.error("Error during Data Source initialization", err)
-            throw new Error("Failed to initialize database") // Throw an error if initialization fails
         })
 
     server.register(FastifyBaseAddon)
@@ -54,14 +51,5 @@ function buildServer() {
 
     return server
 }
-
-export const server = fastify({
-    logger: {
-        transport: {
-            target: "pino-pretty",
-        },
-    },
-    ajv: { plugins: [ajvFilePlugin] },
-})
 
 export default buildServer

@@ -17,6 +17,7 @@ import UserDomainService from "@domain/service/UserDomainService"
 import ShippingAddressDomainService from "@domain/service/ShippingAddressDomainService"
 import { CalculateShippingPrice, CalculateTotalPrice, checkShippingServicePrice, findDestinationId } from "@helpers/utils/transaction/transactionHelper"
 import { ApiError, BadInputError } from "@domain/model/Error/Error"
+import * as TransactionTypes from "@domain/model/types/TransactionTypes"
 
 export default class TransactionAppService {
     static async CreateTransactionService(params: TransactionParamsDto.CreateTransactionParams, logData: LogParamsDto.CreateLogParams) {
@@ -220,7 +221,7 @@ export default class TransactionAppService {
             //create delivery_status with pending status. 0 = pending, 1 = on delivery, 2 = delivered
             const deliveryStatus: TransactionParamsDto.CreateDeliveryStatusParams = {
                 transaction_id,
-                status: TransactionParamsDto.DeliveryStatus.Pending,
+                status: TransactionTypes.DeliveryStatus.Pending,
                 delivered_at: moment().unix(),
                 expedition_name,
                 is_delivered: 0,
@@ -419,7 +420,7 @@ export default class TransactionAppService {
         const transactionDetail = await TransactionDomainService.GetTransactionDetailDomain(transaction_id)
 
         const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
-            status: TransactionParamsDto.TransactionStatus.Approved,
+            status: TransactionTypes.TransactionStatus.Approved,
             transaction_id: transactionDetail.transaction_id,
             updated_at: moment().unix(),
         }
@@ -451,7 +452,7 @@ export default class TransactionAppService {
         await TransactionDomainService.CheckIsTransactionAliveDomain(transaction_id)
 
         const updateTransactionStatus: TransactionParamsDto.UpdateTransactionStatusParams = {
-            status: TransactionParamsDto.TransactionStatus.Rejected,
+            status: TransactionTypes.TransactionStatus.Rejected,
             transaction_id,
             updated_at: moment().unix(),
         }
@@ -486,11 +487,11 @@ export default class TransactionAppService {
         //get transaction status if transaction hasn't been approved / rejected, can not update delivery status
         const transactionStatus = await TransactionDomainService.GetTransactionStatusDomain(transaction_id)
 
-        if (transactionStatus.status !== TransactionParamsDto.TransactionStatus.Approved) {
+        if (transactionStatus.status !== TransactionTypes.TransactionStatus.Approved) {
             switch (transactionStatus.status) {
-                case TransactionParamsDto.TransactionStatus.Pending:
+                case TransactionTypes.TransactionStatus.Pending:
                     throw new BadInputError("PLEASE_APPROVE_THE_TRANSACTION_FIRST")
-                case TransactionParamsDto.TransactionStatus.Rejected:
+                case TransactionTypes.TransactionStatus.Rejected:
                     throw new ApiError("THIS_TRANSACTION_IS_REJECTED")
                 default:
                     throw new ApiError("INVALID_TRANSACTION_STATUS")

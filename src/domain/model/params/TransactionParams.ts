@@ -1,4 +1,5 @@
 import { UpdateDeliveryStatusRequest, UpdateTransactionStatusRequest } from "../request/TransactionRequest"
+import { PaymentMethod } from "../types/TransactionTypes";
 
 export type CreateTransactionParams = {
     id: number
@@ -42,9 +43,6 @@ export type UpdateTransactionProductQty = {
     updated_at: number
 }
 
-//Allowed payment method.
-export type PaymentMethod = "Cash" | "Credit Card" | "Debit Card"
-
 export type PayTransactionRepositoryParams = {
     transaction_id: number
     user_id: number
@@ -76,16 +74,4 @@ export type UpdateDeliveryStatusParams = UpdateDeliveryStatusRequest & {
 export type UpdateTransactionStatusParams = UpdateTransactionStatusRequest & {
     status: number
     updated_at: number
-}
-
-export enum TransactionStatus {
-    Pending = 0,
-    Approved = 1,
-    Rejected = 2,
-}
-
-export enum DeliveryStatus {
-    Pending = 0,
-    OnDelivery = 1,
-    Delivered = 2,
 }

@@ -1,4 +1,4 @@
-import { PaymentMethod } from "../params/TransactionParams"
+import { PaymentMethod } from "../types/TransactionTypes";
 
 export type CreateTransactionRequest = {
     id: number
@@ -15,7 +15,7 @@ export type UpdateTransactionRequest = {
 export type PayTransactionRequest = {
     transaction_id: number
     user_id: number
-    payment_method: PaymentMethod
+    payment_method: PaymentMethod // This now works without a circular dependency
     shipping_address_id: number
     expedition_name: string
 }
