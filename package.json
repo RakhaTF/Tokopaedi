@@ -22,7 +22,7 @@
     "@fastify/swagger": "^8.7.0",
     "@fastify/swagger-ui": "^1.9.2",
     "ajv": "^8.12.0",
-    "axios": "^1.7.2",
+    "axios": "^1.12.0",
     "bcrypt": "^5.1.0",
     "cloudinary": "^2.0.0-rc",
     "dotenv-flow": "^4.1.0",
@@ -43,7 +43,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.9",
     "pino-pretty": "^10.2.3",
-    "typeorm": "0.3.17",
+    "typeorm": "0.3.26",
     "vite-tsconfig-paths": "^4.2.3"
   },
   "devDependencies": {
